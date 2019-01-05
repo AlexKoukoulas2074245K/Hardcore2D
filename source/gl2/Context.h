@@ -27,7 +27,7 @@ extern GLFuncTable glFuncTable;
 //  Otherwise, use the system's GL headers
 //---------------------------------------------------------------------------
 #ifdef __APPLE__
-	#import <OpenGL/gl.h>
+	#include <OpenGL/gl.h>
 #else
 	#include <GLES2/gl2.h>
 #endif

@@ -368,7 +368,7 @@ public:
 //  Main loop
 //---------------------------------------------------------------------------
 /*
-int main(int argc, char *argv[]) {
+int main(int, char **) {
     // Initialize
     AppState* appState = new AppState;
     View* view = new View(appState);

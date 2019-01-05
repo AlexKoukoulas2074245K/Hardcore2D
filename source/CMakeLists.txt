@@ -15,7 +15,13 @@ endif()
 
 # Define executable target
 include_directories(${SDL2_INCLUDE_DIRS} ${SDL2main_INCLUDE_DIRS} ${OPENGL_INCLUDE_DIR} ${CMAKE_BINARY_DIR})
-add_executable(Ninja Main.cpp gl2/Context.cpp)
+
+file(GLOB_RECURSE source_dir
+    "*.h"
+    "*.cpp"
+)
+
+add_executable(Ninja ${source_dir})
 target_link_libraries(Ninja ${SDL2_LIBS} ${OPENGL_LIBRARIES})
 
 # Copy SDL2 DLLs to output folder on Windows
@@ -25,3 +31,9 @@ if(WIN32)
             ${CMAKE_COMMAND} -E copy_if_different ${DLL} $<TARGET_FILE_DIR:Ninja>)
     endforeach()
 endif()
+
+if(MSVC)
+  target_compile_options(Ninja PRIVATE /W4 /WX)
+else(MSVC)
+  target_compile_options(Ninja PRIVATE -Wall -Wextra -pedantic -Werror)
+endif(MSVC)
