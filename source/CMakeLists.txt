@@ -1,26 +1,20 @@
 cmake_minimum_required(VERSION 3.1)
-project(Ninja)
+set(PROJECT_NAME Ninja)
+project(${PROJECT_NAME})
 
-MACRO(SOURCE_GROUP_BY_FOLDER target)
-  SET(SOURCE_GROUP_DELIMITER "/")
-  SET(last_dir "")
-  SET(files "")
-  FOREACH(file ${${target}_SRC} ${${target}_HEADERS})
-    file(RELATIVE_PATH relative_file "${PROJECT_SOURCE_DIR}/${target}" ${file})
-    GET_FILENAME_COMPONENT(dir "${relative_file}" PATH)
-    IF (NOT "${dir}" STREQUAL "${last_dir}")
-      IF (files)
-        SOURCE_GROUP("${last_dir}" FILES ${files})
-      ENDIF (files)
-      SET(files "")
-    ENDIF (NOT "${dir}" STREQUAL "${last_dir}")
-    SET(files ${files} ${file})
-    SET(last_dir "${dir}")
-  ENDFOREACH(file)
-  IF (files)
-    SOURCE_GROUP("${last_dir}" FILES ${files})
-  ENDIF (files)
-ENDMACRO(SOURCE_GROUP_BY_FOLDER)
+# Function to preserve source tree hierarchy of project
+function(assign_source_group)
+    foreach(_source IN ITEMS ${ARGN})
+        if (IS_ABSOLUTE "${_source}")
+            file(RELATIVE_PATH _source_rel "${CMAKE_CURRENT_SOURCE_DIR}" "${_source}")
+        else()
+            set(_source_rel "${_source}")
+        endif()
+        get_filename_component(_source_path "${_source_rel}" PATH)
+        string(REPLACE "/" "\\" _source_path_msvc "${_source_path}")
+        source_group("${_source_path_msvc}" FILES "${_source}")
+    endforeach()
+endfunction(assign_source_group)
 
 # Write demo-config.h
 message("Generating header file: ${CMAKE_BINARY_DIR}/demo-config.h")
@@ -37,19 +31,26 @@ endif()
 # Define executable target
 include_directories(${SDL2_INCLUDE_DIRS} ${SDL2main_INCLUDE_DIRS} ${OPENGL_INCLUDE_DIR} ${CMAKE_BINARY_DIR})
 
-add_executable(Ninja Main.cpp Main.h old/OldMain.cpp)
-target_link_libraries(Ninja ${SDL2_LIBS} ${OPENGL_LIBRARIES})
+file(GLOB_RECURSE SOURCE_DIR
+	    "*.h"
+	    "*.cpp"
+)	
+add_executable(${PROJECT_NAME} ${SOURCE_DIR})
+target_link_libraries(${PROJECT_NAME} ${SDL2_LIBS} ${OPENGL_LIBRARIES})
+
+assign_source_group(${SOURCE_DIR})
 
 # Copy SDL2 DLLs to output folder on Windows
 if(WIN32)
     foreach(DLL ${SDL2_DLLS})
-        add_custom_command(TARGET Ninja POST_BUILD COMMAND
-            ${CMAKE_COMMAND} -E copy_if_different ${DLL} $<TARGET_FILE_DIR:Ninja>)
+        add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD COMMAND
+            ${CMAKE_COMMAND} -E copy_if_different ${DLL} $<TARGET_FILE_DIR:${PROJECT_NAME}>)
     endforeach()
 endif()
 
+# Enable highest warning levels + treated as errors
 if(MSVC)
-  target_compile_options(Ninja PRIVATE /W4 /WX)
+  target_compile_options(${PROJECT_NAME} PRIVATE /W4 /WX)
 else(MSVC)
-  target_compile_options(Ninja PRIVATE -Wall -Wextra -pedantic -Werror)
+  target_compile_options(${PROJECT_NAME} PRIVATE -Wall -Wextra -pedantic -Werror)
 endif(MSVC)

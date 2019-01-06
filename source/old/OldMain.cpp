@@ -4,14 +4,14 @@
 //
 //  Created by Alex Koukoulas on 05/01/2019.
 //
-
+/*
 #include <SDL.h>
 #include <math.h>
 #include <assert.h>
 #include <vector>
 #include <algorithm>
-#include "gl2/Context.h"
 #include <demo-config.h>
+#include "../gl2/Context.h"
 
 static const float Pi = 3.14159265358979323846f;
 
@@ -367,7 +367,7 @@ public:
 //---------------------------------------------------------------------------
 //  Main loop
 //---------------------------------------------------------------------------
-/*
+
 int main(int, char **) {
     // Initialize
     AppState* appState = new AppState;
@@ -425,7 +425,6 @@ int main(int, char **) {
     delete appState;
     return 0;
 }
-*/
 
 //---------------------------------------------------------------------------
 //  3D model data
@@ -3735,3 +3734,4 @@ VertexGroup vertexGroups[] = {
     {{0.00000f, 0.00000f, 0.00000f}, NULL, 0, NULL, 0}
 };
 
+*/
