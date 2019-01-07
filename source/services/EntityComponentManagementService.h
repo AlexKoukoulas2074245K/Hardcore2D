@@ -29,14 +29,14 @@ public:
     }
 
     template<class ComponentType>
-    bool HasComponent(const EntityId eId) const
+    inline bool HasComponent(const EntityId eId) const
     {
         const auto componentTypeId = GetTypeHash<ComponentType>();
         return mComponentMap.at(componentTypeId).count(eId) == 1;
     }
     
     template<class ComponentType>
-    IComponent& GetComponent(const EntityId eId)
+    inline IComponent& GetComponent(const EntityId eId)
     {
         if (!HasComponent<ComponentType>(eId))
         {
@@ -48,34 +48,34 @@ public:
     }
 
     template<class ComponentType>
-    const IComponent& GetComponent(const EntityId eId) const
+    inline const IComponent& GetComponent(const EntityId eId) const
     {
         return GetComponent<ComponentType>(eId);
     }
     
     template<class ComponentType>
-    void AddComponent(const EntityId eId, std::unique_ptr<IComponent> component)
+    inline void AddComponent(const EntityId eId, std::unique_ptr<IComponent> component)
     {
         const auto componentTypeId = GetTypeHash<ComponentType>();
         mComponentMap[componentTypeId][eId] = std::move(component);
     }
     
     template<class ComponentType>
-    void RemoveComponent(const EntityId eId)
+    inline void RemoveComponent(const EntityId eId)
     {
         const auto componentTypeId = GetTypeHash<ComponentType>();
         mComponentMap[componentTypeId].erase(eId);
     }
     
     template<class ComponentType>
-    EntityComponentMap& GetAllComponents()
+    inline EntityComponentMap& GetAllComponents()
     {
         const auto componentTypeId = GetTypeHash<ComponentType>();
         return mComponentMap.at(componentTypeId);
     }
     
     template<class ComponentType>
-    const EntityComponentMap& GetAllComponents() const
+    inline const EntityComponentMap& GetAllComponents() const
     {
         return GetAllComponents<ComponentType>();
     }

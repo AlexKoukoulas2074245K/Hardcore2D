@@ -23,7 +23,7 @@ public:
     ServiceLocator& operator = (const ServiceLocator&) = delete;
     
     template <class ServiceType>
-    ServiceType& Resolve() const
+    inline ServiceType& ResolveService() const
     {
         
         const auto serviceTypeKey = GetTypeHash<ServiceType>();
@@ -32,7 +32,7 @@ public:
     }
     
     template <class ServiceType>
-    void RegisterService(IService* service)
+    inline void RegisterService(IService* service)
     {
         const auto serviceTypeKey = GetTypeHash<ServiceType>();
         assert(mServices.count(serviceTypeKey) == 0);

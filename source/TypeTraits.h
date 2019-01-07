@@ -12,12 +12,18 @@
 #include <string>
 #include <utility>
 
+static std::hash<std::string> hashFunction;
+
 // Compute a unique hash for a given template class
 template<class T>
-std::size_t GetTypeHash()
+inline std::size_t GetTypeHash()
 {
-    std::hash<std::string> hashFunction;
     return hashFunction(typeid(T).name());
+}
+
+inline std::size_t GetTypeHash(const std::string& name)
+{
+    return hashFunction(name);
 }
 
 #endif /* TypeTraits_h */

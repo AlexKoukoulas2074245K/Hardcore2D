@@ -5,10 +5,10 @@
 //  Created by Alex Koukoulas on 05/01/2019.
 //
 
-#include "Main.h"
 #include "components/DummyComponent.h"
 #include "services/ServiceLocator.h"
 #include "services/EntityComponentManagementService.h"
+#include "services/EventCommunicationService.h"
 
 #include <memory>
 #include <cassert>
@@ -28,7 +28,10 @@ int main(int, char**)
 {
     ServiceLocator sl;
     EntityComponentManagementService ecms;
+    EventCommunicationService ecs;
+    
     sl.RegisterService<EntityComponentManagementService>(&ecms);
+    sl.RegisterService<EventCommunicationService>(&ecs);
     
     testEntityComponentManagementService(ecms);
     
