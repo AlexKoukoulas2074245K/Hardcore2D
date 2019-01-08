@@ -9,9 +9,11 @@
 #include "services/ServiceLocator.h"
 #include "services/EntityComponentManagementService.h"
 #include "services/EventCommunicationService.h"
+#include "SDLCommon.h"
 
 #include <memory>
 #include <cassert>
+#include <iostream>
 
 void testEntityComponentManagementService(EntityComponentManagementService& ecms)
 {

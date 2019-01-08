@@ -23,7 +23,7 @@ set(DEMO_ENABLE_MULTISAMPLE 0 CACHE BOOL "Enable multisample anti-aliasing")
 configure_file(demo-config.h.in "${CMAKE_BINARY_DIR}/demo-config.h")
 
 # Find SDL2 and OpenGL
-set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/modules")
+set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/build_utilities")
 find_package(SDL2 REQUIRED COMPONENTS main)
 if(NOT WIN32)
     find_package(OpenGL REQUIRED)
