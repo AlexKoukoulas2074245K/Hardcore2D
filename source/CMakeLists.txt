@@ -26,7 +26,7 @@ configure_file(demo-config.h.in "${CMAKE_BINARY_DIR}/demo-config.h")
 set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/build_utilities")
 find_package(SDL2 REQUIRED COMPONENTS main)
 if(NOT WIN32)
-	find_package(SDL2_image REQUIRED)
+    find_package(SDL2_image REQUIRED)
     find_package(OpenGL REQUIRED)
 endif()
 
