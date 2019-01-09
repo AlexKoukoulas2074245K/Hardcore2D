@@ -10,10 +10,12 @@
 #include "services/EntityComponentManagementService.h"
 #include "services/EventCommunicationService.h"
 #include "SDLCommon.h"
+//#include "wingl/Context.h"
 
 #include <memory>
 #include <cassert>
 #include <iostream>
+#include <SDL_image.h>
 
 void testEntityComponentManagementService(EntityComponentManagementService& ecms)
 {
@@ -36,7 +38,9 @@ int main(int, char**)
     sl.RegisterService<EventCommunicationService>(&ecs);
     
     testEntityComponentManagementService(ecms);
-    
+	IMG_Init(IMG_INIT_PNG);
+	IMG_Quit();
+	ShowMessageBox(SDL_MESSAGEBOX_INFORMATION, "SDL_image", "SDL_image has been initialized correctly");
     return 0;
 }
 
