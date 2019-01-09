@@ -27,18 +27,19 @@ set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/build_utilities")
 find_package(SDL2 REQUIRED COMPONENTS main)
 if(NOT WIN32)
     find_package(SDL2_image REQUIRED)
+	find_package(SDL2_mixer REQUIRED)
     find_package(OpenGL REQUIRED)
 endif()
 
 # Define executable target
-include_directories(${SDL2_INCLUDE_DIRS} ${SDL2_IMAGE_INCLUDE_DIRS} ${SDL2main_INCLUDE_DIRS} ${OPENGL_INCLUDE_DIR} ${CMAKE_BINARY_DIR})
+include_directories(${SDL2_INCLUDE_DIRS} ${SDL2_IMAGE_INCLUDE_DIRS} ${SDL2_MIXER_INCLUDE_DIRS} ${SDL2main_INCLUDE_DIRS} ${OPENGL_INCLUDE_DIR} ${CMAKE_BINARY_DIR})
 
 file(GLOB_RECURSE SOURCE_DIR
 	    "*.h"
 	    "*.cpp"
 )	
 add_executable(${PROJECT_NAME} ${SOURCE_DIR})
-target_link_libraries(${PROJECT_NAME} ${SDL2_LIBS} ${SDL2_IMAGE_LIBRARIES} ${OPENGL_LIBRARIES})
+target_link_libraries(${PROJECT_NAME} ${SDL2_LIBS} ${SDL2_IMAGE_LIBRARIES} ${SDL2_MIXER_LIBRARIES} ${OPENGL_LIBRARIES})
 
 assign_source_group(${SOURCE_DIR})
 

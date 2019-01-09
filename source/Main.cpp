@@ -16,6 +16,8 @@
 #include <cassert>
 #include <iostream>
 #include <SDL_image.h>
+#include <SDL_mixer.h>
+
 
 void testEntityComponentManagementService(EntityComponentManagementService& ecms)
 {
@@ -38,9 +40,26 @@ int main(int, char**)
     sl.RegisterService<EventCommunicationService>(&ecs);
     
     testEntityComponentManagementService(ecms);
-	IMG_Init(IMG_INIT_PNG);
+
+	const auto sdlImageInitFlags = IMG_INIT_PNG | IMG_INIT_WEBP | IMG_INIT_JPG | IMG_INIT_TIF;	
+	if (IMG_Init(sdlImageInitFlags) != sdlImageInitFlags)
+	{
+		ShowMessageBox(SDL_MESSAGEBOX_INFORMATION, "SDL_image", "SDL_image did not initialize properly");
+		return -1;
+	}
+	
+	const auto sdlMixerInitFlags = MIX_INIT_OPUS | MIX_INIT_OGG | MIX_INIT_MP3 | MIX_INIT_MOD | MIX_INIT_MID | MIX_INIT_FLAC;
+	if (Mix_Init(sdlMixerInitFlags) != sdlMixerInitFlags)
+	{
+		ShowMessageBox(SDL_MESSAGEBOX_INFORMATION, "SDL_mixer", "SDL_mixer did not initialize properly");
+		return -1;
+	}
+	
+	ShowMessageBox(SDL_MESSAGEBOX_INFORMATION, "SDL_image", "SDL_image and SDL_mixer have been initialized correctly");
+
 	IMG_Quit();
-	ShowMessageBox(SDL_MESSAGEBOX_INFORMATION, "SDL_image", "SDL_image has been initialized correctly");
+	Mix_Quit();
+
     return 0;
 }
 

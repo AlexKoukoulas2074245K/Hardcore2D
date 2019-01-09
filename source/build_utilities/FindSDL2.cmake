@@ -42,28 +42,63 @@ if(WIN32)
                 set(SDL2_DLLS "${SDL2_ROOT}/lib/x64/SDL2.dll")
                 if(_SDL2_use_main)
                     list(APPEND SDL2_LIBS "${SDL2_ROOT}/lib/x64/SDL2main.lib")
+					
+					# Add sdl_image lib
 					list(APPEND SDL2_LIBS "${SDL2_ROOT}/lib/x64/SDL2_image.lib")
 					
+					# Add sdl_mixer lib
+					list(APPEND SDL2_LIBS "${SDL2_ROOT}/lib/x64/SDL2_mixer.lib")
+					
+					# Add sdl_image dlls
 					list(APPEND SDL2_DLLS "${SDL2_ROOT}/lib/x64/SDL2_image.dll")
 					list(APPEND SDL2_DLLS "${SDL2_ROOT}/lib/x64/zlib1.dll")
 					list(APPEND SDL2_DLLS "${SDL2_ROOT}/lib/x64/libwebp-7.dll")
 					list(APPEND SDL2_DLLS "${SDL2_ROOT}/lib/x64/libtiff-5.dll")
 					list(APPEND SDL2_DLLS "${SDL2_ROOT}/lib/x64/libpng16-16.dll")
 					list(APPEND SDL2_DLLS "${SDL2_ROOT}/lib/x64/libjpeg-9.dll")
+					
+					# Add sdl_mixer dlls
+					list(APPEND SDL2_DLLS "${SDL2_ROOT}/lib/x64/SDL2_mixer.dll")
+					list(APPEND SDL2_DLLS "${SDL2_ROOT}/lib/x64/libFLAC-8.dll")
+					list(APPEND SDL2_DLLS "${SDL2_ROOT}/lib/x64/libmodplug-1.dll")
+					list(APPEND SDL2_DLLS "${SDL2_ROOT}/lib/x64/libmpg123-0.dll")
+					list(APPEND SDL2_DLLS "${SDL2_ROOT}/lib/x64/libogg-0.dll")
+					list(APPEND SDL2_DLLS "${SDL2_ROOT}/lib/x64/libopus-0.dll")
+					list(APPEND SDL2_DLLS "${SDL2_ROOT}/lib/x64/libopusfile-0.dll")
+					list(APPEND SDL2_DLLS "${SDL2_ROOT}/lib/x64/libvorbis-0.dll")
+					list(APPEND SDL2_DLLS "${SDL2_ROOT}/lib/x64/libvorbisfile-3.dll")
+					
                 endif()
             else()
                 set(SDL2_LIBS "${SDL2_ROOT}/lib/x86/SDL2.lib")
                 set(SDL2_DLLS "${SDL2_ROOT}/lib/x86/SDL2.dll")
                 if(_SDL2_use_main)
-                    list(APPEND SDL2_LIBS "${SDL2_ROOT}/lib/x86/SDL2main.lib")
+					list(APPEND SDL2_LIBS "${SDL2_ROOT}/lib/x86/SDL2main.lib")
+				
+                    # Add sdl_image lib
 					list(APPEND SDL2_LIBS "${SDL2_ROOT}/lib/x86/SDL2_image.lib")
 					
+					# Add sdl_mixer lib
+					list(APPEND SDL2_LIBS "${SDL2_ROOT}/lib/x86/SDL2_mixer.lib")
+					
+					# Add sdl_image dlls
 					list(APPEND SDL2_DLLS "${SDL2_ROOT}/lib/x86/SDL2_image.dll")
 					list(APPEND SDL2_DLLS "${SDL2_ROOT}/lib/x86/zlib1.dll")
 					list(APPEND SDL2_DLLS "${SDL2_ROOT}/lib/x86/libwebp-7.dll")
 					list(APPEND SDL2_DLLS "${SDL2_ROOT}/lib/x86/libtiff-5.dll")
 					list(APPEND SDL2_DLLS "${SDL2_ROOT}/lib/x86/libpng16-16.dll")
 					list(APPEND SDL2_DLLS "${SDL2_ROOT}/lib/x86/libjpeg-9.dll")
+					                                        
+					# Add sdl_mixer dlls                    
+					list(APPEND SDL2_DLLS "${SDL2_ROOT}/lib/x86/SDL2_mixer.dll")
+					list(APPEND SDL2_DLLS "${SDL2_ROOT}/lib/x86/libFLAC-8.dll")
+					list(APPEND SDL2_DLLS "${SDL2_ROOT}/lib/x86/libmodplug-1.dll")
+					list(APPEND SDL2_DLLS "${SDL2_ROOT}/lib/x86/libmpg123-0.dll")
+					list(APPEND SDL2_DLLS "${SDL2_ROOT}/lib/x86/libogg-0.dll")
+					list(APPEND SDL2_DLLS "${SDL2_ROOT}/lib/x86/libopus-0.dll")
+					list(APPEND SDL2_DLLS "${SDL2_ROOT}/lib/x86/libopusfile-0.dll")
+					list(APPEND SDL2_DLLS "${SDL2_ROOT}/lib/x86/libvorbis-0.dll")
+					list(APPEND SDL2_DLLS "${SDL2_ROOT}/lib/x86/libvorbisfile-3.dll")
                 endif()
             endif()
         endif()
