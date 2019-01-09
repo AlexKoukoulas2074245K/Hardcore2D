@@ -14,7 +14,7 @@ def downloadZip(url, extractedFolderName = None):
         os.remove(zipFileName)
         assert os.path.exists(extractedFolderName)
 
-externFolder = os.path.normpath(os.path.join(__file__, '../extern'))
+externFolder = os.path.normpath(os.path.join(__file__, '../../extern'))
 os.makedirs(externFolder, exist_ok=True)
 os.chdir(externFolder)
 
