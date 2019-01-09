@@ -55,7 +55,7 @@ int main(int, char**)
 		return -1;
 	}
 	
-	ShowMessageBox(SDL_MESSAGEBOX_INFORMATION, "SDL_image", "SDL_image and SDL_mixer have been initialized correctly");
+	ShowMessageBox(SDL_MESSAGEBOX_INFORMATION, "Dependencies", "SDL_image and SDL_mixer have been initialized correctly");
 
 	IMG_Quit();
 	Mix_Quit();
