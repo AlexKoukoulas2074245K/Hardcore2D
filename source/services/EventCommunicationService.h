@@ -15,6 +15,7 @@
 #include <memory>
 #include <unordered_map>
 #include <vector>
+#include <functional>
 
 class IEvent;
 class BaseEventCommunicator;
