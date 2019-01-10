@@ -6,7 +6,7 @@
 //
 
 #include "BaseEventCommunicator.h"
-#include "../services/EventCommunicationService.h"
+#include "EventCommunicationService.h"
 
 BaseEventCommunicator::BaseEventCommunicator(EventCommunicationService& eventCommunicationService)
     : mEventCommunicationService(eventCommunicationService)

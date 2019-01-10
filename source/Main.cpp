@@ -5,11 +5,12 @@
 //  Created by Alex Koukoulas on 05/01/2019.
 //
 
+/*
 #include "components/DummyComponent.h"
 #include "services/ServiceLocator.h"
 #include "events/BaseEventCommunicator.h"
-#include "services/EntityComponentManagementService.h"
-#include "services/EventCommunicationService.h"
+#include "components/EntityComponentManager.h"
+#include "events/EventCommunicationService.h"
 #include "util/SDLCommonUtils.h"
 #include "util/Logging.h"
 //#include "wingl/Context.h"
@@ -22,7 +23,7 @@
 #include <SDL_mixer.h>
 
 
-void testEntityComponentManagementService(EntityComponentManagementService& ecms)
+void testEntityComponentManager(EntityComponentManager& ecms)
 {
     const auto entityId = ecms.GenerateEntity();
     auto dummyComponent = std::make_unique<DummyComponent>();
@@ -36,13 +37,13 @@ void testEntityComponentManagementService(EntityComponentManagementService& ecms
 int main(int, char**)
 {
     ServiceLocator sl;
-    EntityComponentManagementService ecms;
+    EntityComponentManager ecms;
     EventCommunicationService ecs;
     
-    sl.RegisterService<EntityComponentManagementService>(&ecms);
+    sl.RegisterService<EntityComponentManager>(&ecms);
     sl.RegisterService<EventCommunicationService>(&ecs);
     
-    testEntityComponentManagementService(ecms);
+    testEntityComponentManager(ecms);
 
     SDL_version imgCompiledVersion;
     SDL_IMAGE_VERSION(&imgCompiledVersion);
@@ -87,5 +88,13 @@ int main(int, char**)
 	Mix_Quit();
 
     return 0;
+}
+*/
+
+#include "App.h"
+
+int main(int, char**)
+{
+    App app;
 }
 

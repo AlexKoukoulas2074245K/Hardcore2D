@@ -10,7 +10,7 @@
 
 #include "IComponent.h"
 
-class DummyComponent: public IComponent
+class DummyComponent final: public IComponent
 {
 public:
     std::string SerializeToString() const override { return std::string(); };

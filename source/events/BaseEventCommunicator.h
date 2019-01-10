@@ -14,6 +14,7 @@ class BaseEventCommunicator
 public:
     virtual ~BaseEventCommunicator();
     
+protected:
     BaseEventCommunicator(EventCommunicationService&);
     
     EventCommunicationService& mEventCommunicationService;

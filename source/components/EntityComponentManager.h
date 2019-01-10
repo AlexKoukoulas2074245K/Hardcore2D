@@ -1,22 +1,22 @@
 //
-//  EntityComponentManagementService.h
+//  EntityComponentManager.h
 //  Ninja
 //
 //  Created by Alex Koukoulas on 07/01/2019.
 //
 
-#ifndef EntityComponentManagementService_h
-#define EntityComponentManagementService_h
+#ifndef EntityComponentManager_h
+#define EntityComponentManager_h
 
-#include "IService.h"
+#include "../services/IService.h"
 #include "../components/IComponent.h"
-#include "../TypeTraits.h"
+#include "../util/TypeTraits.h"
 
 #include <unordered_map>
 #include <memory>
 #include <cassert>
 
-class EntityComponentManagementService final: public IService
+class EntityComponentManager final: public IService
 {
 public:
     using EntityId = long long;
@@ -87,4 +87,4 @@ private:
     
 };
 
-#endif /* EntityComponentManagementService_h */
+#endif /* EntityComponentManager_h */

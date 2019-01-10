@@ -8,9 +8,9 @@
 #ifndef EventCommunicationService_h
 #define EventCommunicationService_h
 
-#include "IService.h"
-#include "../events/IEvent.h"
-#include "../TypeTraits.h"
+#include "../services/IService.h"
+#include "IEvent.h"
+#include "../util/TypeTraits.h"
 
 #include <memory>
 #include <unordered_map>

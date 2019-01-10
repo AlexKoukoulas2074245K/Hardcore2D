@@ -8,17 +8,18 @@
 #ifndef ServiceLocator_h
 #define ServiceLocator_h
 
-#include "../TypeTraits.h"
+#include "../util/TypeTraits.h"
 
 #include <unordered_map>
 #include <memory>
 #include <cassert>
 
 class IService;
-class ServiceLocator
+class ServiceLocator final
 {
 public:
     ServiceLocator() = default;
+    
     ServiceLocator(const ServiceLocator&) = delete;
     ServiceLocator& operator = (const ServiceLocator&) = delete;
     

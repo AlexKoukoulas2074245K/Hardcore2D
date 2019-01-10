@@ -10,6 +10,7 @@
 
 class IService
 {
+    friend class App;
 public:
     virtual ~IService() = default;
     
