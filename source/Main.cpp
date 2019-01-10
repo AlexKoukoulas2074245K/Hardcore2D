@@ -7,11 +7,14 @@
 
 #include "components/DummyComponent.h"
 #include "services/ServiceLocator.h"
+#include "events/BaseEventCommunicator.h"
 #include "services/EntityComponentManagementService.h"
 #include "services/EventCommunicationService.h"
-#include "SDLCommon.h"
+#include "util/SDLCommonUtils.h"
+#include "util/Logging.h"
 //#include "wingl/Context.h"
 
+#include <iostream>
 #include <memory>
 #include <cassert>
 #include <iostream>
@@ -41,21 +44,44 @@ int main(int, char**)
     
     testEntityComponentManagementService(ecms);
 
+    SDL_version imgCompiledVersion;
+    SDL_IMAGE_VERSION(&imgCompiledVersion);
+    
+    const auto* imgLinkedVersion = IMG_Linked_Version();
+    
+    const auto imgMajorVersionConsistency = imgCompiledVersion.major == imgLinkedVersion->major;
+    const auto imgMinorVersionConsistency = imgCompiledVersion.minor == imgLinkedVersion->minor;
+    const auto imgPatchConsistency = imgCompiledVersion.patch == imgLinkedVersion->patch;;
+    const auto imgVersionConsistency = imgMajorVersionConsistency && imgMinorVersionConsistency && imgPatchConsistency;
+    
 	const auto sdlImageInitFlags = IMG_INIT_PNG | IMG_INIT_WEBP | IMG_INIT_JPG | IMG_INIT_TIF;	
-	if (IMG_Init(sdlImageInitFlags) != sdlImageInitFlags)
+	if (!imgVersionConsistency || IMG_Init(sdlImageInitFlags) != sdlImageInitFlags)
 	{
 		ShowMessageBox(SDL_MESSAGEBOX_INFORMATION, "SDL_image", "SDL_image did not initialize properly");
 		return -1;
 	}
-	
+    
+    Log(LogType::INFO, "Successfully initialized SDL_image version %d.%d.%d", imgCompiledVersion.major, imgCompiledVersion.minor, imgCompiledVersion.patch);
+    
+    SDL_version mixCompiledVersion;
+    SDL_MIXER_VERSION(&mixCompiledVersion);
+    
+    const auto* mixLinkedVersion = Mix_Linked_Version();
+    
+    const auto mixMajorVersionConsistency = mixCompiledVersion.major == mixLinkedVersion->major;
+    const auto mixMinorVersionConsistency = mixCompiledVersion.minor == mixLinkedVersion->minor;
+    const auto mixPatchConsistency = mixCompiledVersion.patch == mixLinkedVersion->patch;
+    const auto mixVersionConsistency = mixMajorVersionConsistency && mixMinorVersionConsistency && mixPatchConsistency;
+    
 	const auto sdlMixerInitFlags = MIX_INIT_OPUS | MIX_INIT_OGG | MIX_INIT_MP3 | MIX_INIT_MOD | MIX_INIT_MID | MIX_INIT_FLAC;
-	if (Mix_Init(sdlMixerInitFlags) != sdlMixerInitFlags)
+    
+	if (!mixVersionConsistency || Mix_Init(sdlMixerInitFlags) != sdlMixerInitFlags)
 	{
 		ShowMessageBox(SDL_MESSAGEBOX_INFORMATION, "SDL_mixer", "SDL_mixer did not initialize properly");
 		return -1;
 	}
 	
-	ShowMessageBox(SDL_MESSAGEBOX_INFORMATION, "Dependencies", "SDL_image and SDL_mixer have been initialized correctly");
+	ShowMessageBox(SDL_MESSAGEBOX_INFORMATION, "Dependencies", "SDL_image and SDL_mixer have been initialized properly");
 
 	IMG_Quit();
 	Mix_Quit();

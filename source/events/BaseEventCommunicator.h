@@ -12,10 +12,10 @@ class EventCommunicationService;
 class BaseEventCommunicator
 {
 public:
-    BaseEventCommunicator(EventCommunicationService&);
     virtual ~BaseEventCommunicator();
     
-private:
+    BaseEventCommunicator(EventCommunicationService&);
+    
     EventCommunicationService& mEventCommunicationService;
 };
 

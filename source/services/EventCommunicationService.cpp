@@ -6,10 +6,7 @@
 //
 
 #include "EventCommunicationService.h"
-
-#if defined(DEBUG) || defined(_DEBUG)
-#include <iostream>
-#endif
+#include "../util/Logging.h"
 
 void EventCommunicationService::DispatchEvent(BaseEventCommunicator* dispatcher, std::unique_ptr<IEvent> evt)
 {
@@ -18,9 +15,7 @@ void EventCommunicationService::DispatchEvent(BaseEventCommunicator* dispatcher,
     const auto eventTypeName = typeid(eventImpl).name();
     const auto eventTypeHash = GetTypeHash(eventTypeName);
     
-#ifdef DEBUG
-    std::cout << "Dispatching event: " << eventTypeName << std::endl;
-#endif
+    Log(LogType::INFO, "Dispatching event: %s", eventTypeName);
     
     mEventDispatchingHistory.emplace_back(std::make_pair(eventTypeName, dispatcher));
     

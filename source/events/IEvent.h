@@ -12,6 +12,9 @@ class IEvent
 {
 public:
     virtual ~IEvent() = default;
+    
+protected:
+    IEvent() = default;
 };
 
 #endif /* IEvent_h */
