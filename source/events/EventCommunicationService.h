@@ -8,7 +8,7 @@
 #ifndef EventCommunicationService_h
 #define EventCommunicationService_h
 
-#include "../services/IService.h"
+#include "../IService.h"
 #include "IEvent.h"
 #include "../util/TypeTraits.h"
 

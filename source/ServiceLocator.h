@@ -8,7 +8,7 @@
 #ifndef ServiceLocator_h
 #define ServiceLocator_h
 
-#include "../util/TypeTraits.h"
+#include "util/TypeTraits.h"
 
 #include <unordered_map>
 #include <memory>

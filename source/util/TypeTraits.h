@@ -26,5 +26,9 @@ inline std::size_t GetTypeHash(const std::string& name)
     return hashFunction(name);
 }
 
+using EntityId = long long;
+using ComponentTypeId = int;
+using ResourceId = size_t;
+
 #endif /* TypeTraits_h */
 

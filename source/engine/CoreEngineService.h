@@ -8,7 +8,7 @@
 #ifndef CoreEngineService_h
 #define CoreEngineService_h
 
-#include "../services/IService.h"
+#include "../IService.h"
 
 #include <functional>
 
