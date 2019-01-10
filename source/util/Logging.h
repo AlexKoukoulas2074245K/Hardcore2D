@@ -8,7 +8,7 @@
 #ifndef Logging_h
 #define Logging_h
 
-
+#include <stdarg.h>
 #include <stdio.h>
 #include <string>
 

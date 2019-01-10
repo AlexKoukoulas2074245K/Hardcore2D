@@ -1,6 +1,7 @@
 GL_FUNC(void, AttachShader, (GLuint, GLuint))
 GL_FUNC(void, Clear, (GLbitfield))
 GL_FUNC(void, ClearColor, (GLclampf, GLclampf, GLclampf, GLclampf))
+GL_FUNC(void, Color4f, (GLfloat, GLfloat, GLfloat, GLfloat))
 GL_FUNC(void, CompileShader, (GLuint))
 GL_FUNC(GLuint, CreateProgram, (void))
 GL_FUNC(GLuint, CreateShader, (GLenum))
