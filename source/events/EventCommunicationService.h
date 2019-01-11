@@ -21,6 +21,7 @@ class IEvent;
 class BaseEventCommunicator;
 class EventCommunicationService final: public IService
 {
+    friend class App;
 public:
     using EventCallback = std::function<void(const IEvent&)>;
     
@@ -36,6 +37,8 @@ public:
     void UnregisterAllCallbacksForListener(BaseEventCommunicator* listener);
     
 private:
+    EventCommunicationService() = default;
+    
     std::unordered_map<size_t, std::vector<std::pair<BaseEventCommunicator*, EventCallback>>> mEventCallbackRegistry;
     std::vector<std::pair<std::string, BaseEventCommunicator*>> mEventDispatchingHistory;
 };

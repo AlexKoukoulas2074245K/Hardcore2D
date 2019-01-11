@@ -17,20 +17,23 @@ struct SDL_Context;
 
 class CoreEngineService final: public IService
 {
+    friend class App;
 public:
-    CoreEngineService();
     ~CoreEngineService();
     
-    bool InitializeContext();
+    bool InitializeEngine();
     void GameLoop(std::function<void(const float)> clientUpdateMethod);
     
 private:
-    void ParseEvent();
-    
     using SDL_GLContext = void*;
+    
+    CoreEngineService();
+    
+    void ParseEvents();
     
     SDL_Window* mSdlWindow;
     SDL_GLContext mSdlGlContext;
+    bool mRunning;
     int mRenderableAreaWidth;
     int mRenderableAreaHeight;
 };

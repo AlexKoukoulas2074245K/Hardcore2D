@@ -12,8 +12,12 @@
 
 class TextureLoader final: public IResourceLoader
 {
+    friend class ResourceManager;
 public:
-    std::unique_ptr<BaseResource> VCreateAndLoadResource(const std::string& path, const ResourceId id) override;
+    bool Initialize() override;
+    std::unique_ptr<IResource> VCreateAndLoadResource(const std::string& path, const ResourceId id) override;
+private:
+    TextureLoader() = default;
 };
 
 

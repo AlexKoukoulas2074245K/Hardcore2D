@@ -8,7 +8,7 @@
 #include "ResourceManager.h"
 #include "TextureLoader.h"
 #include "FileLoader.h"
-#include "BaseResource.h"
+#include "IResource.h"
 #include "../util/TypeTraits.h"
 #include "../util/Logging.h"
 #include "../util/StringUtils.h"
@@ -18,13 +18,24 @@
 #include <string>
 #include <cassert>
 
-ResourceManager::ResourceManager()
+ResourceManager::ResourceManager(const std::string& rootResourceDirectory)
+    : mRootResourceDirectory(rootResourceDirectory)
+    , mFileLoader(new FileLoader)
+    , mTextureLoader(new TextureLoader)
+
 {
     MapResourceExtensionsToLoaders();
 }
 
 ResourceManager::~ResourceManager()
 {
+}
+
+bool ResourceManager::InitializeResourceLoaders()
+{
+    if (!mTextureLoader->Initialize()) return false;
+    if (!mFileLoader->Initialize()) return false;
+    return true;
 }
 
 void ResourceManager::LoadResource(const std::string& resourcePath, const bool /* false */)
@@ -50,9 +61,9 @@ void ResourceManager::LoadResources(const std::vector<const std::string>& resour
     }
 }
 
-void ResourceManager::UnloadResource(const BaseResource& baseResource)
+void ResourceManager::UnloadResource(const IResource& IResource)
 {
-    mResourceMap.erase(baseResource.GetId());
+    mResourceMap.erase(IResource.GetId());
 }
 
 void ResourceManager::UnloadResource(const ResourceId resourceId)
@@ -60,13 +71,13 @@ void ResourceManager::UnloadResource(const ResourceId resourceId)
     mResourceMap.erase(resourceId);
 }
 
-BaseResource& ResourceManager::GetResource(const std::string& resourcePath)
+IResource& ResourceManager::GetResource(const std::string& resourcePath)
 {
     const auto resourceHash = GetTypeHash(resourcePath);
     return GetResource(resourceHash);
 }
 
-BaseResource& ResourceManager::GetResource(const ResourceId resourceId)
+IResource& ResourceManager::GetResource(const ResourceId resourceId)
 {
     if (mResourceMap.count(resourceId))
     {
@@ -81,11 +92,8 @@ BaseResource& ResourceManager::GetResource(const ResourceId resourceId)
 
 void ResourceManager::MapResourceExtensionsToLoaders()
 {
-    auto textureLoader = std::make_shared<TextureLoader>();
-    auto fileLoader = std::make_shared<FileLoader>();
-    
-    mResourceExtensionsToLoadersMap["png"] = textureLoader;
-    mResourceExtensionsToLoadersMap["json"] = fileLoader;
+    mResourceExtensionsToLoadersMap["png"] = mTextureLoader.get();
+    mResourceExtensionsToLoadersMap["json"] = mFileLoader.get();
 }
 
 void ResourceManager::LoadResourceInternal(const std::string& resourcePath, const ResourceId resourceId)

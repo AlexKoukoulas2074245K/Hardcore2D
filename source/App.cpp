@@ -36,21 +36,17 @@ void App::Update(const float)
 
 void App::CreateAndRegisterServices()
 {
-    mServiceLocator = std::make_unique<ServiceLocator>();
-    mEntityComponentManager = std::make_unique<EntityComponentManager>();
-    mEventCommunicationService = std::make_unique<EventCommunicationService>();
-    mCoreEngineService = std::make_unique<CoreEngineService>();
-    mResourceManager = std::make_unique<ResourceManager>();
+    mServiceLocator = std::unique_ptr<ServiceLocator>(new ServiceLocator);
+    mEntityComponentManager = std::unique_ptr<EntityComponentManager>(new EntityComponentManager);
+    mEventCommunicationService = std::unique_ptr<EventCommunicationService>(new EventCommunicationService);
+    mCoreEngineService = std::unique_ptr<CoreEngineService>(new CoreEngineService);
+    mResourceManager = std::unique_ptr<ResourceManager>(new ResourceManager("../../res"));
     
-    if (!mCoreEngineService->InitializeContext()) return;
+    if (!mCoreEngineService->InitializeEngine()) return;
+    if (!mResourceManager->InitializeResourceLoaders()) return;
     
     mServiceLocator->RegisterService<EntityComponentManager>(mEntityComponentManager.get());
     mServiceLocator->RegisterService<EventCommunicationService>(mEventCommunicationService.get());
     mServiceLocator->RegisterService<CoreEngineService>(mCoreEngineService.get());
     mServiceLocator->RegisterService<ResourceManager>(mResourceManager.get());
-    
-    mResourceManager->LoadResource("aasdkadl.png");
-    mResourceManager->LoadResource("asdad.json");
-    mResourceManager->GetResource("asdad.json");
-    mResourceManager->GetResource("asd.json");
 }

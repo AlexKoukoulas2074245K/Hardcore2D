@@ -13,13 +13,20 @@
 #include <memory>
 #include <string>
 
-class BaseResource;
+class IResource;
 class IResourceLoader
 {
 public:
     virtual ~IResourceLoader() = default;
-    virtual std::unique_ptr<BaseResource> VCreateAndLoadResource(const std::string& path, const ResourceId id) = 0;
+    IResourceLoader(const IResourceLoader&) = delete;
+    const IResourceLoader& operator = (const IResourceLoader&) = delete;
     
+    virtual bool Initialize() = 0;
+    
+    virtual std::unique_ptr<IResource> VCreateAndLoadResource(const std::string& path, const ResourceId id) = 0;
+
+protected:
+    IResourceLoader() = default;
 };
 
 #endif /* IResourceLoader.h */

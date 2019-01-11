@@ -17,9 +17,8 @@
 class IService;
 class ServiceLocator final
 {
+    friend class App;
 public:
-    ServiceLocator() = default;
-    
     ServiceLocator(const ServiceLocator&) = delete;
     ServiceLocator& operator = (const ServiceLocator&) = delete;
     
@@ -41,6 +40,8 @@ public:
     }
     
 private:
+    ServiceLocator() = default;
+    
     std::unordered_map<size_t, IService*> mServices;
 };
 

@@ -6,9 +6,14 @@
 //
 
 #include "TextureLoader.h"
-#include "BaseResource.h"
+#include "IResource.h"
 
-std::unique_ptr<BaseResource> TextureLoader::VCreateAndLoadResource(const std::string&, const ResourceId id)
+bool TextureLoader::Initialize()
 {
-    return std::unique_ptr<BaseResource>(new BaseResource(id));
+    return true;
+}
+
+std::unique_ptr<IResource> TextureLoader::VCreateAndLoadResource(const std::string&, const ResourceId id)
+{
+    return std::unique_ptr<IResource>(new IResource(id));
 }

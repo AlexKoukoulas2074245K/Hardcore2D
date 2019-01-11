@@ -12,6 +12,8 @@ class IEvent
 {
 public:
     virtual ~IEvent() = default;
+    IEvent(const IEvent&) = delete;
+    const IEvent& operator = (const IEvent&) = delete;
     
 protected:
     IEvent() = default;

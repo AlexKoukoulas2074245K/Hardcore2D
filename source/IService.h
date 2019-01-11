@@ -10,16 +10,13 @@
 
 class IService
 {
-    friend class App;
 public:
     virtual ~IService() = default;
+    IService(const IService&) = delete;
+    const IService& operator=(const IService&) = delete;
     
 protected:
     IService() = default;
-    
-private:
-    IService(const IService&) = delete;
-    const IService& operator=(const IService&) = delete;
 };
 
 #endif /* IService_h */

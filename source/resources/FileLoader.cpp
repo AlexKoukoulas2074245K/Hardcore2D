@@ -6,9 +6,14 @@
 //
 
 #include "FileLoader.h"
-#include "BaseResource.h"
+#include "IResource.h"
 
-std::unique_ptr<BaseResource> FileLoader::VCreateAndLoadResource(const std::string&, const ResourceId id)
+bool FileLoader::Initialize()
 {
-    return std::unique_ptr<BaseResource>(new BaseResource(id));
+    return true;
+}
+
+std::unique_ptr<IResource> FileLoader::VCreateAndLoadResource(const std::string&, const ResourceId id)
+{
+    return std::unique_ptr<IResource>(new IResource(id));
 }

@@ -18,6 +18,7 @@
 
 class EntityComponentManager final: public IService
 {
+    friend class App;
 public:
     using EntityComponentMap = std::unordered_map<EntityId, std::unique_ptr<IComponent>>;
     
@@ -79,6 +80,7 @@ public:
     }
     
 private:
+    EntityComponentManager() = default;
     
     EntityId mEntityCounter = 0;
     std::unordered_map<ComponentTypeId, EntityComponentMap> mComponentMap;

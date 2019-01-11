@@ -16,6 +16,9 @@ public:
     virtual ~IComponent() = default;
     virtual std::string SerializeToString() const = 0;
     virtual bool InitializeFromString(const std::string&) = 0;
+    
+protected:
+    IComponent() = default;
 };
 
 #endif /* IComponent_h */
