@@ -7,8 +7,8 @@
 
 #include "CoreEngineService.h"
 #include "../util/Logging.h"
-#include "../util/SDLCommonUtils.h"
-#include "../wingl/Context.h"
+#include "../util/SDLMessageBoxUtils.h"
+#include "../gl/Context.h"
 
 CoreEngineService::CoreEngineService()
     : mSdlWindow(nullptr)
@@ -40,6 +40,7 @@ bool CoreEngineService::InitializeEngine()
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 2);
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 0);
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_FLAGS, SDL_GL_CONTEXT_DEBUG_FLAG);
+    
 #if DEMO_ENABLE_MULTISAMPLE
     SDL_GL_SetAttribute(SDL_GL_MULTISAMPLEBUFFERS, 1);
     SDL_GL_SetAttribute(SDL_GL_MULTISAMPLESAMPLES, 2);

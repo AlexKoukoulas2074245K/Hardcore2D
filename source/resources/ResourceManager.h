@@ -27,20 +27,20 @@ public:
     
     bool InitializeResourceLoaders();
     
-    void LoadResource(const std::string& resourcePath, const bool async = false);
-    void LoadResources(const std::vector<const std::string>& resourcePaths, const bool async = false);
+    ResourceId LoadResource(const std::string& resourceRelativePath, const bool async = false);
+    void LoadResources(const std::vector<const std::string>& resourceRelativePaths, const bool async = false);
     
     void UnloadResource(const IResource& IResource);
     void UnloadResource(const ResourceId resourceId);
     
-    IResource& GetResource(const std::string& resourcePath);
+    IResource& GetResource(const std::string& resourceRelativePath);
     IResource& GetResource(const ResourceId resourceId);
     
 private:
     ResourceManager(const std::string& rootResourceDirectory);
     
     void MapResourceExtensionsToLoaders();
-    void LoadResourceInternal(const std::string& resourcePath, const ResourceId resourceId);
+    void LoadResourceInternal(const std::string& resourceRelativePath, const ResourceId resourceId);
     
     std::unordered_map<ResourceId, std::unique_ptr<IResource>> mResourceMap;
     std::map<std::string, IResourceLoader*> mResourceExtensionsToLoadersMap;

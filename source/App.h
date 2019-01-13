@@ -22,9 +22,10 @@ public:
     App();
     ~App();
     
-private:
-    void CreateAndRegisterServices();
+    bool Initialize();
     void Run();
+    
+private:
     void Update(const float dt);
     
     std::unique_ptr<ServiceLocator> mServiceLocator;

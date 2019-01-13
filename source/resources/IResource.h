@@ -12,7 +12,6 @@
 
 class IResource
 {
-    friend class TextureLoader;
     friend class FileLoader;
 public:
     virtual ~IResource() = default;
