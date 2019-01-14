@@ -13,7 +13,7 @@
 TextureResource::TextureResource(const ResourceId resourceId, SDL_Surface* sdlSurface, GLuint glTextureId)
     : IResource(resourceId)
     , mSdlSurface(sdlSurface)
-    , mGlTextureId(glTextureId)
+    , mGLTextureId(glTextureId)
 {
     
 }
@@ -21,10 +21,10 @@ TextureResource::TextureResource(const ResourceId resourceId, SDL_Surface* sdlSu
 TextureResource::~TextureResource()
 {
     SDL_FreeSurface(mSdlSurface);
-    GL_CHECK(DeleteTextures(1, &mGlTextureId));
+    GL_CHECK(glDeleteTextures(1, &mGLTextureId));
 }
 
-GLuint TextureResource::GetGlTextureId() const
+GLuint TextureResource::GetGLTextureId() const
 {
-    return mGlTextureId;
+    return mGLTextureId;
 }

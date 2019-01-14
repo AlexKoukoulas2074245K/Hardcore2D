@@ -13,7 +13,7 @@
 class ServiceLocator;
 class EntityComponentManager;
 class EventCommunicationService;
-class CoreEngineService;
+class CoreRenderingService;
 class ResourceManager;
 
 class App final
@@ -31,7 +31,7 @@ private:
     std::unique_ptr<ServiceLocator> mServiceLocator;
     std::unique_ptr<EntityComponentManager> mEntityComponentManager;
     std::unique_ptr<EventCommunicationService> mEventCommunicationService;
-    std::unique_ptr<CoreEngineService> mCoreEngineService;
+    std::unique_ptr<CoreRenderingService> mCoreRenderingService;
     std::unique_ptr<ResourceManager> mResourceManager;
 };
 

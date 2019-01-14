@@ -20,13 +20,13 @@ class TextureResource final: public IResource
 public:
     ~TextureResource();
     
-    GLuint GetGlTextureId() const;
+    GLuint GetGLTextureId() const;
     
 private:
     TextureResource(const ResourceId, SDL_Surface*, GLuint);
     
     SDL_Surface* mSdlSurface;
-    GLuint mGlTextureId;
+    GLuint mGLTextureId;
 };
 
 #endif /* TextureResource_h */

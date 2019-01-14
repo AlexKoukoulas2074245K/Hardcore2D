@@ -12,7 +12,6 @@
 
 class IResource
 {
-    friend class FileLoader;
 public:
     virtual ~IResource() = default;
     IResource(const IResource&) = delete;

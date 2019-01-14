@@ -7,7 +7,7 @@
 
 #include "ResourceManager.h"
 #include "TextureLoader.h"
-#include "FileLoader.h"
+#include "TextFileLoader.h"
 #include "IResource.h"
 #include "../util/TypeTraits.h"
 #include "../util/Logging.h"
@@ -20,7 +20,7 @@
 
 ResourceManager::ResourceManager(const std::string& rootResourceDirectory)
     : mRootResourceDirectory(rootResourceDirectory)
-    , mFileLoader(new FileLoader)
+    , mTextFileLoader(new TextFileLoader)
     , mTextureLoader(new TextureLoader)
 
 {
@@ -34,7 +34,7 @@ ResourceManager::~ResourceManager()
 bool ResourceManager::InitializeResourceLoaders()
 {
     if (!mTextureLoader->Initialize()) return false;
-    if (!mFileLoader->Initialize()) return false;
+    if (!mTextFileLoader->Initialize()) return false;
     return true;
 }
 
@@ -94,7 +94,9 @@ IResource& ResourceManager::GetResource(const ResourceId resourceId)
 void ResourceManager::MapResourceExtensionsToLoaders()
 {
     mResourceExtensionsToLoadersMap["png"] = mTextureLoader.get();
-    mResourceExtensionsToLoadersMap["json"] = mFileLoader.get();
+    mResourceExtensionsToLoadersMap["json"] = mTextFileLoader.get();
+    mResourceExtensionsToLoadersMap["vs"] = mTextFileLoader.get();
+    mResourceExtensionsToLoadersMap["fs"] = mTextFileLoader.get();
 }
 
 void ResourceManager::LoadResourceInternal(const std::string& resourceRelativePath, const ResourceId resourceId)

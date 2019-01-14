@@ -27,11 +27,11 @@ extern GLFuncTable glFuncTable;
 //  Otherwise, use the system's GL headers
 //---------------------------------------------------------------------------
 #ifdef __APPLE__
-	#include <OpenGL/gl.h>
+	#include <OpenGL/gl3.h>
 #else
-	#include <GLES2/gl2.h>
+	#include <GLES2/gl3.h>
 #endif
-#define GL_CHECK(call) do { gl ## call; assert(glGetError() == GL_NO_ERROR); } while (0)
-#define GL_NO_CHECK(call) (gl ## call)
+#define GL_CHECK(call) do { call; assert(glGetError() == GL_NO_ERROR); } while (0)
+#define GL_NO_CHECK(call) (call)
 
 #endif // TURF_TARGET_WIN32

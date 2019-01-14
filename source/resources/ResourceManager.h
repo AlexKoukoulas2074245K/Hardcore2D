@@ -47,7 +47,7 @@ private:
     
     const std::string mRootResourceDirectory;
     
-    std::unique_ptr<IResourceLoader> mFileLoader;
+    std::unique_ptr<IResourceLoader> mTextFileLoader;
     std::unique_ptr<IResourceLoader> mTextureLoader;
     
 };

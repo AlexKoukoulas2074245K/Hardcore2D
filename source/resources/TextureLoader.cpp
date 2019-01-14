@@ -48,8 +48,8 @@ std::unique_ptr<IResource> TextureLoader::VCreateAndLoadResource(const std::stri
     }
     
     GLuint glTextureId;
-    GL_CHECK(GenTextures(1, &glTextureId));
-    GL_CHECK(BindTexture(GL_TEXTURE_2D, glTextureId));
+    GL_CHECK(glGenTextures(1, &glTextureId));
+    GL_CHECK(glBindTexture(GL_TEXTURE_2D, glTextureId));
     
     int mode;
     switch (sdlSurface->format->BytesPerPixel)
@@ -59,9 +59,6 @@ std::unique_ptr<IResource> TextureLoader::VCreateAndLoadResource(const std::stri
             break;
         case 3:
             mode = GL_RGB;
-            break;
-        case 1:
-            mode = GL_LUMINANCE_ALPHA;
             break;
         default:
             throw std::runtime_error("Image with unknown channel profile");
@@ -74,10 +71,10 @@ std::unique_ptr<IResource> TextureLoader::VCreateAndLoadResource(const std::stri
     const auto textureFormat = GL_BGRA;
 #endif
     
-    GL_CHECK(TexImage2D(GL_TEXTURE_2D, 0, mode, sdlSurface->w, sdlSurface->h, 0, textureFormat, GL_UNSIGNED_BYTE, sdlSurface->pixels));
+    GL_CHECK(glTexImage2D(GL_TEXTURE_2D, 0, mode, sdlSurface->w, sdlSurface->h, 0, textureFormat, GL_UNSIGNED_BYTE, sdlSurface->pixels));
     
-    GL_CHECK(TexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR));
-    GL_CHECK(TexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR));
+    GL_CHECK(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR));
+    GL_CHECK(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR));
     
     return std::unique_ptr<IResource>(new TextureResource(id, sdlSurface, glTextureId));
 }
