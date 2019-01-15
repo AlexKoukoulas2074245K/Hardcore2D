@@ -10,7 +10,12 @@
 
 #include <vector>
 #include <string>
+
+#ifndef _WIN32
 #include <dirent.h>
+#else
+#include <filesystem>
+#endif
 
 inline std::string GetFileExtension(const std::string& filePath)
 {
@@ -69,10 +74,12 @@ inline std::string GetFileNameWithoutExtension(const std::string& filePath)
 
 inline std::vector<std::string> GetAllFilenamesInDirectory(const std::string& directory)
 {
+	std::vector<std::string> fileNames;
+
+#ifndef _WIN32
     DIR *dir;
     struct dirent *ent;
-    
-    std::vector<std::string> fileNames;
+        
     if ((dir = opendir(directory.c_str())) != nullptr)
     {
         while ((ent = readdir(dir)) != nullptr)
@@ -85,6 +92,15 @@ inline std::vector<std::string> GetAllFilenamesInDirectory(const std::string& di
             }
         }
     }
+#else
+	
+
+	for (const auto& entry : std::experimental::filesystem::v1::directory_iterator(directory))
+	{
+		fileNames.push_back(GetFileName(entry.path().string()));
+	}
+#endif
+
     
     return fileNames;
 }
