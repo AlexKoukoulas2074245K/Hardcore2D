@@ -15,6 +15,12 @@
 #include "gl/Context.h"
 #include "resources/TextureResource.h"
 
+#ifdef _WIN32
+static const char* RES_ROOT = "../res/";
+#else
+static const char* RES_ROOT = "../../res/";
+#endif
+
 App::App()
 {
 }
@@ -43,8 +49,8 @@ bool App::Initialize()
     mServiceLocator = std::unique_ptr<ServiceLocator>(new ServiceLocator);
     mEntityComponentManager = std::unique_ptr<EntityComponentManager>(new EntityComponentManager);
     mEventCommunicationService = std::unique_ptr<EventCommunicationService>(new EventCommunicationService);
-    mCoreRenderingService = std::unique_ptr<CoreRenderingService>(new CoreRenderingService(*mServiceLocator));
-    mResourceManager = std::unique_ptr<ResourceManager>(new ResourceManager("../../res/"));
+    mCoreRenderingService = std::unique_ptr<CoreRenderingService>(new CoreRenderingService(*mServiceLocator));	
+    mResourceManager = std::unique_ptr<ResourceManager>(new ResourceManager("../res/"));
     
     mServiceLocator->RegisterService<EntityComponentManager>(mEntityComponentManager.get());
     mServiceLocator->RegisterService<EventCommunicationService>(mEventCommunicationService.get());

@@ -28,7 +28,7 @@ public:
     bool InitializeResourceLoaders();
     
     ResourceId LoadResource(const std::string& resourceRelativePath, const bool async = false);
-    void LoadResources(const std::vector<const std::string>& resourceRelativePaths, const bool async = false);
+    void LoadResources(const std::vector<std::string>& resourceRelativePaths, const bool async = false);
     
     void UnloadResource(const IResource& IResource);
     void UnloadResource(const ResourceId resourceId);

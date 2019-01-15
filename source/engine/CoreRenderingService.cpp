@@ -245,7 +245,9 @@ void CoreRenderingService::CompileShaders()
     GL_CHECK(glAttachShader(mDefaultShaderId, vertexShader));
     GL_CHECK(glAttachShader(mDefaultShaderId, fragmentShader));
     GL_CHECK(glLinkProgram(mDefaultShaderId));
-    GL_CHECK(glGetProgramiv(mDefaultShaderId, GL_LINK_STATUS, &status));
+    
+#ifndef _WIN32
+	GL_CHECK(glGetProgramiv(mDefaultShaderId, GL_LINK_STATUS, &status));
     
     glGetProgramiv(mDefaultShaderId, GL_INFO_LOG_LENGTH, &infoLogLength);
     if (infoLogLength > 0)
@@ -255,10 +257,12 @@ void CoreRenderingService::CompileShaders()
         GL_CHECK(glGetProgramInfoLog(mDefaultShaderId, infoLogLength, NULL, &infoLog[0]));
         Log(LogType::INFO, "While linking shader:\n%s", infoLog.c_str());
     }
-    
+#endif
+
     GL_CHECK(glValidateProgram(mDefaultShaderId));
-    GL_CHECK(glGetProgramiv(mDefaultShaderId, GL_VALIDATE_STATUS, &status));
-    
+
+#ifndef _WIN32
+    GL_CHECK(glGetProgramiv(mDefaultShaderId, GL_VALIDATE_STATUS, &status));    
     glGetProgramiv(mDefaultShaderId, GL_INFO_LOG_LENGTH, &infoLogLength);
     if (infoLogLength > 0)
     {
@@ -267,7 +271,8 @@ void CoreRenderingService::CompileShaders()
         GL_CHECK(glGetProgramInfoLog(mDefaultShaderId, infoLogLength, NULL, &infoLog[0]));
         Log(LogType::INFO, "While validating shader:\n%s", infoLog.c_str());
     }
-    
+#endif
+
     // Destroy intermediate compiled shaders
     GL_CHECK(glDetachShader(mDefaultShaderId, vertexShader));
     GL_CHECK(glDetachShader(mDefaultShaderId, fragmentShader));

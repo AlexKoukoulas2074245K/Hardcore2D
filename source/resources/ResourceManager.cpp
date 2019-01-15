@@ -54,7 +54,7 @@ ResourceId ResourceManager::LoadResource(const std::string& resourceRelativePath
     }
 }
 
-void ResourceManager::LoadResources(const std::vector<const std::string>& resourceRelativePaths, const bool async /* false */)
+void ResourceManager::LoadResources(const std::vector<std::string>& resourceRelativePaths, const bool async /* false */)
 {
     for (const auto path: resourceRelativePaths)
     {
@@ -84,11 +84,10 @@ IResource& ResourceManager::GetResource(const ResourceId resourceId)
     {
         return *mResourceMap[resourceId];
     }
-    else
-    {
-        Log(LogType::ERROR, "Resource not loaded when requested. Aborting");
-        assert(false);
-    }
+    
+    Log(LogType::ERROR, "Resource not loaded when requested. Aborting");
+    assert(false);
+	return *mResourceMap[resourceId];
 }
 
 void ResourceManager::MapResourceExtensionsToLoaders()

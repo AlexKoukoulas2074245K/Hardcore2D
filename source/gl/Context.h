@@ -18,7 +18,7 @@ struct GLFuncTable {
     void initialize();
 };
 extern GLFuncTable glFuncTable;
-#define GL_CHECK(call) do { glFuncTable.call; assert(glFuncTable.GetError() == GL_NO_ERROR); } while (0)
+#define GL_CHECK(call) do { glFuncTable.call; assert(glFuncTable.glGetError() == GL_NO_ERROR); } while (0)
 #define GL_NO_CHECK(call) (glFuncTable.call)
 
 #else // TURF_TARGET_WIN32

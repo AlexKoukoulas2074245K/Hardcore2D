@@ -24,14 +24,14 @@ std::unique_ptr<IResource> TextFileLoader::VCreateAndLoadResource(const std::str
     
     if (!file.good())
     {
-        ShowMessageBox(SDL_MESSAGEBOX_ERROR, "File %s could not be found", resourcePath.c_str());
+        ShowMessageBox(SDL_MESSAGEBOX_ERROR, "File could not be found", resourcePath.c_str());
         return nullptr;
     }
     
     std::string str;
     
     file.seekg(0, std::ios::end);
-    str.reserve(file.tellg());
+    str.reserve(static_cast<size_t>(file.tellg()));
     file.seekg(0, std::ios::beg);
     
     str.assign((std::istreambuf_iterator<char>(file)),
