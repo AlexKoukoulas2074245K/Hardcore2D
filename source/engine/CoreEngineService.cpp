@@ -7,8 +7,8 @@
 
 #include "CoreEngineService.h"
 #include "../util/Logging.h"
-#include "../util/SDLCommonUtils.h"
-#include "../wingl/Context.h"
+#include "../util/SDLMessageBoxUtils.h"
+#include "../gl/Context.h"
 
 CoreEngineService::CoreEngineService()
     : mSdlWindow(nullptr)
@@ -27,7 +27,7 @@ CoreEngineService::~CoreEngineService()
     SDL_Quit();
 }
 
-bool CoreEngineService::InitializeContext()
+bool CoreEngineService::InitializeEngine()
 {
     // Initialize SDL
     if (SDL_Init(SDL_INIT_VIDEO|SDL_INIT_AUDIO) < 0)
@@ -40,6 +40,7 @@ bool CoreEngineService::InitializeContext()
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 2);
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 0);
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_FLAGS, SDL_GL_CONTEXT_DEBUG_FLAG);
+    
 #if DEMO_ENABLE_MULTISAMPLE
     SDL_GL_SetAttribute(SDL_GL_MULTISAMPLEBUFFERS, 1);
     SDL_GL_SetAttribute(SDL_GL_MULTISAMPLESAMPLES, 2);
@@ -53,6 +54,9 @@ bool CoreEngineService::InitializeContext()
         ShowMessageBox(SDL_MESSAGEBOX_ERROR, "Error creating SDL window", "An error has occurred while trying to create an SDL_Window");
         return false;
     }
+    
+    // Make window resizable
+    SDL_SetWindowResizable(mSdlWindow, SDL_TRUE);
     
     SDL_ShowWindow(mSdlWindow);
     
@@ -88,19 +92,19 @@ void CoreEngineService::GameLoop(std::function<void(const float)> clientUpdateMe
 {
     SDL_Event event;
     float elapsedTicks = 0.0f;
-    bool running = true;
+    mRunning = true;
     
-    while(running)
+    while(mRunning)
     {
         SDL_GL_SwapWindow(mSdlWindow);
         GL_CHECK(Clear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT));
-        GL_CHECK(Color4f(1.0f, 1.0f, 1.0, 1.0f));
+        GL_CHECK(ClearColor(1.0f, 1.0f, 1.0, 1.0f));
         
         while (SDL_PollEvent(&event))
         {
             switch (event.type)
             {
-                case SDL_QUIT: running = false; break;
+                case SDL_QUIT: mRunning = false; break;
                 case SDL_WINDOWEVENT:
                 {
                     switch (event.window.event)

@@ -44,25 +44,6 @@ int main(int, char**)
     sl.RegisterService<EventCommunicationService>(&ecs);
     
     testEntityComponentManager(ecms);
-
-    SDL_version imgCompiledVersion;
-    SDL_IMAGE_VERSION(&imgCompiledVersion);
-    
-    const auto* imgLinkedVersion = IMG_Linked_Version();
-    
-    const auto imgMajorVersionConsistency = imgCompiledVersion.major == imgLinkedVersion->major;
-    const auto imgMinorVersionConsistency = imgCompiledVersion.minor == imgLinkedVersion->minor;
-    const auto imgPatchConsistency = imgCompiledVersion.patch == imgLinkedVersion->patch;;
-    const auto imgVersionConsistency = imgMajorVersionConsistency && imgMinorVersionConsistency && imgPatchConsistency;
-    
-	const auto sdlImageInitFlags = IMG_INIT_PNG | IMG_INIT_WEBP | IMG_INIT_JPG | IMG_INIT_TIF;	
-	if (!imgVersionConsistency || IMG_Init(sdlImageInitFlags) != sdlImageInitFlags)
-	{
-		ShowMessageBox(SDL_MESSAGEBOX_INFORMATION, "SDL_image", "SDL_image did not initialize properly");
-		return -1;
-	}
-    
-    Log(LogType::INFO, "Successfully initialized SDL_image version %d.%d.%d", imgCompiledVersion.major, imgCompiledVersion.minor, imgCompiledVersion.patch);
     
     SDL_version mixCompiledVersion;
     SDL_MIXER_VERSION(&mixCompiledVersion);
@@ -96,5 +77,10 @@ int main(int, char**)
 int main(int, char**)
 {
     App app;
+    
+    if (app.Initialize())
+    {
+        app.Run();
+    }
 }
 

@@ -9,13 +9,14 @@
 #include "components/EntityComponentManager.h"
 #include "events/EventCommunicationService.h"
 #include "engine/CoreEngineService.h"
-#include "services/ServiceLocator.h"
+#include "ServiceLocator.h"
+#include "resources/ResourceManager.h"
 #include "util/Logging.h"
+#include "gl/Context.h"
+#include "resources/TextureResource.h"
 
 App::App()
 {
-    CreateAndRegisterServices();
-    Run();
 }
 
 App::~App()
@@ -28,21 +29,37 @@ void App::Run()
     mCoreEngineService->GameLoop([this](const float dt){ Update(dt); });
 }
 
-void App::Update(const float dt)
+void App::Update(const float)
 {
+    auto& textureResource = static_cast<TextureResource&>(mResourceManager->GetResource("jungle-sky.png"));
     
+    GL_CHECK(Enable(GL_TEXTURE_2D));
+    GL_CHECK(BindTexture(GL_TEXTURE_2D, textureResource.GetGlTextureId()));
+    glBegin(GL_QUADS);
+    glTexCoord2f(1.0f, 0.0f);glVertex2f(-1.0f, 1.0f);
+    glTexCoord2f(0.0f, 0.0f);glVertex2f(1.0f, 1.0f);
+    glTexCoord2f(0.0f, 1.0f);glVertex2f(1.0f, -1.0f);
+    glTexCoord2f(1.0f, 1.0f);glVertex2f(-1.0f, -1.0f);
+    glEnd();
+    GL_CHECK(Disable(GL_TEXTURE_2D));
 }
 
-void App::CreateAndRegisterServices()
+bool App::Initialize()
 {
-    mServiceLocator = std::make_unique<ServiceLocator>();
-    mEntityComponentManager = std::make_unique<EntityComponentManager>();
-    mEventCommunicationService = std::make_unique<EventCommunicationService>();
-    mCoreEngineService = std::make_unique<CoreEngineService>();
+    mServiceLocator = std::unique_ptr<ServiceLocator>(new ServiceLocator);
+    mEntityComponentManager = std::unique_ptr<EntityComponentManager>(new EntityComponentManager);
+    mEventCommunicationService = std::unique_ptr<EventCommunicationService>(new EventCommunicationService);
+    mCoreEngineService = std::unique_ptr<CoreEngineService>(new CoreEngineService);
+    mResourceManager = std::unique_ptr<ResourceManager>(new ResourceManager("../../res/"));
     
-    if (!mCoreEngineService->InitializeContext()) return;
+    if (!mCoreEngineService->InitializeEngine()) return false;
+    if (!mResourceManager->InitializeResourceLoaders()) return false;
     
     mServiceLocator->RegisterService<EntityComponentManager>(mEntityComponentManager.get());
     mServiceLocator->RegisterService<EventCommunicationService>(mEventCommunicationService.get());
     mServiceLocator->RegisterService<CoreEngineService>(mCoreEngineService.get());
+    mServiceLocator->RegisterService<ResourceManager>(mResourceManager.get());
+    
+    mResourceManager->LoadResource("jungle-sky.png");
+    return true;
 }

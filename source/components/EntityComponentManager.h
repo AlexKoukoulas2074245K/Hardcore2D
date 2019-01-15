@@ -8,7 +8,7 @@
 #ifndef EntityComponentManager_h
 #define EntityComponentManager_h
 
-#include "../services/IService.h"
+#include "../IService.h"
 #include "../components/IComponent.h"
 #include "../util/TypeTraits.h"
 
@@ -18,9 +18,8 @@
 
 class EntityComponentManager final: public IService
 {
+    friend class App;
 public:
-    using EntityId = long long;
-    using ComponentTypeId = int;
     using EntityComponentMap = std::unordered_map<EntityId, std::unique_ptr<IComponent>>;
     
     EntityId GenerateEntity()
@@ -81,6 +80,7 @@ public:
     }
     
 private:
+    EntityComponentManager() = default;
     
     EntityId mEntityCounter = 0;
     std::unordered_map<ComponentTypeId, EntityComponentMap> mComponentMap;
