@@ -8,11 +8,9 @@
 #ifndef FileUtils_h
 #define FileUtils_h
 
+#include <vector>
 #include <string>
-#include <filesystem>
-#include <functional>
-
-using dir_iter_entry = std::experimental::filesystem::directory_entry;
+#include <dirent.h>
 
 inline std::string GetFileExtension(const std::string& filePath)
 {
@@ -69,13 +67,26 @@ inline std::string GetFileNameWithoutExtension(const std::string& filePath)
 	return fileName;
 }
 
-inline void ApplyFunctionToEachFileRecursively(const std::string& rootDirectory, std::function<void(const dir_iter_entry&)> func)
+inline std::vector<std::string> GetAllFilenamesInDirectory(const std::string& directory)
 {
-	using dir_iter = std::experimental::filesystem::directory_iterator;
-	for (const auto& entry : dir_iter(rootDirectory))
-	{
-		func(entry);
-	}
+    DIR *dir;
+    struct dirent *ent;
+    
+    std::vector<std::string> fileNames;
+    if ((dir = opendir(directory.c_str())) != nullptr)
+    {
+        while ((ent = readdir(dir)) != nullptr)
+        {
+            const std::string fileName(ent->d_name);
+            
+            if (fileName != "." && fileName != "..")
+            {
+                fileNames.push_back(fileName);
+            }
+        }
+    }
+    
+    return fileNames;
 }
 
 #endif

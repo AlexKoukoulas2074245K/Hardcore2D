@@ -203,11 +203,10 @@ void CoreRenderingService::CompileAllShaders()
 	auto currentFragmentShaderId = 0;
 	auto currentProgramId = 0;
 
-	ApplyFunctionToEachFileRecursively(resourceManager.GetRootResourceDirectory() + SHADER_DIRECTORY, [this, &resourceManager, &currentVertexShaderId, &currentFragmentShaderId, &currentProgramId](const dir_iter_entry& fileEntry) 
-	{			
-		const auto filePath = fileEntry.path().string();
-		const auto fileName = GetFileName(filePath);
-
+    const auto shaderFileNames = GetAllFilenamesInDirectory(resourceManager.GetRootResourceDirectory() + SHADER_DIRECTORY);
+    
+    for (const auto fileName: shaderFileNames)
+	{
 		if (GetFileExtension(fileName) == "vs")
 		{
 			// Generate vertex shader id
@@ -254,6 +253,7 @@ void CoreRenderingService::CompileAllShaders()
 			GL_CHECK(glValidateProgram(currentProgramId));
 
 #ifndef _WIN32
+            GLint status;
 			GL_CHECK(glGetProgramiv(currentProgramId, GL_VALIDATE_STATUS, &status));
 			glGetProgramiv(currentProgramId, GL_INFO_LOG_LENGTH, &infoLogLength);
 			if (infoLogLength > 0)
@@ -299,5 +299,5 @@ void CoreRenderingService::CompileAllShaders()
 				Log(LogType::INFO, "While compiling fragment shader:\n%s", infoLog.c_str());
 			}
 		}		
-	});
+	}
 }

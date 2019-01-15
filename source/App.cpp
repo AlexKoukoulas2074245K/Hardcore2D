@@ -50,7 +50,7 @@ bool App::Initialize()
     mEntityComponentManager = std::unique_ptr<EntityComponentManager>(new EntityComponentManager);
     mEventCommunicationService = std::unique_ptr<EventCommunicationService>(new EventCommunicationService);
     mCoreRenderingService = std::unique_ptr<CoreRenderingService>(new CoreRenderingService(*mServiceLocator));	
-    mResourceManager = std::unique_ptr<ResourceManager>(new ResourceManager("../res/"));
+    mResourceManager = std::unique_ptr<ResourceManager>(new ResourceManager(RES_ROOT));
     
     mServiceLocator->RegisterService<EntityComponentManager>(mEntityComponentManager.get());
     mServiceLocator->RegisterService<EventCommunicationService>(mEventCommunicationService.get());
