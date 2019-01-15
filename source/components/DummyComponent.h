@@ -13,8 +13,8 @@
 class DummyComponent final: public IComponent
 {
 public:
-    std::string SerializeToString() const override { return std::string(); };
-    bool InitializeFromString(const std::string&) override { return true; }
+    std::string VSerializeToString() const override { return std::string(); };
+    bool VInitializeFromString(const std::string&) override { return true; }
 };
 
 #endif /* DummyComponent_h */

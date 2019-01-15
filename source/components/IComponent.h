@@ -14,8 +14,8 @@ class IComponent
 {
 public:
     virtual ~IComponent() = default;
-    virtual std::string SerializeToString() const = 0;
-    virtual bool InitializeFromString(const std::string&) = 0;
+    virtual std::string VSerializeToString() const = 0;
+    virtual bool VInitializeFromString(const std::string&) = 0;
 };
 
 #endif /* IComponent_h */
