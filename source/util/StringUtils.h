@@ -10,18 +10,4 @@
 
 #include <string>
 
-inline std::string GetFileExtension(const std::string& path)
-{
-    auto reverseIter = path.rbegin();
-    std::string pathExt;
-    
-    while (reverseIter != path.rend() && (*reverseIter != '.'))
-    {
-        pathExt = *reverseIter + pathExt;
-        reverseIter++;
-    }
-    
-    return pathExt;
-}
-
 #endif /* StringUtils_h */

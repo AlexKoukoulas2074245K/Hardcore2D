@@ -7,6 +7,7 @@
 
 #include "CoreRenderingService.h"
 #include "../ServiceLocator.h"
+#include "../util/FileUtils.h"
 #include "../util/Logging.h"
 #include "../util/SDLMessageBoxUtils.h"
 #include "../gl/Context.h"
@@ -15,6 +16,9 @@
 #include "../resources/TextFileResource.h"
 
 #include <string>
+#include <vector>
+
+static const char* SHADER_DIRECTORY = "shaders/";
 
 static const GLfloat QUAD_VERTICES[] =
 {
@@ -31,8 +35,7 @@ CoreRenderingService::CoreRenderingService(const ServiceLocator& serviceLocator)
     , mRenderableAreaWidth(0)
     , mRenderableAreaHeight(0)
     , mVAO(0U)
-    , mVBO(0U)
-    , mDefaultShaderId(0U)
+    , mVBO(0U)    
 {
     
 }
@@ -115,7 +118,7 @@ bool CoreRenderingService::InitializeEngine()
     GL_CHECK(glClearColor(1.0f, 1.0f, 1.0, 1.0f));
     
     InitializeRenderingPrimitive();
-    CompileShaders();
+    CompileAllShaders();
     
     return true;
 }
@@ -149,10 +152,9 @@ void CoreRenderingService::GameLoop(std::function<void(const float)> clientUpdat
         clientUpdateMethod(dt);
         
         auto& resourceManager = mServiceLocator.ResolveService<ResourceManager>();
-        auto& resource = static_cast<TextureResource&>(resourceManager.GetResource("jungle-sky.png"));
-        
-        
-        GL_CHECK(glUseProgram(mDefaultShaderId));
+        auto& resource = resourceManager.GetResource<TextureResource>("jungle-sky.png");
+                
+        GL_CHECK(glUseProgram(mShaders["basic"]));		
         GL_CHECK(glBindVertexArray(mVAO));
         GL_CHECK(glBindTexture(GL_TEXTURE_2D, resource.GetGLTextureId()));
         GL_CHECK(glDrawArrays(GL_TRIANGLE_FAN, 0, 4));
@@ -193,89 +195,109 @@ void CoreRenderingService::InitializeRenderingPrimitive()
     GL_CHECK(glEnableVertexAttribArray(1));
 }
 
-void CoreRenderingService::CompileShaders()
-{
-    
-    // Compile vertex shader
-    GLuint vertexShader = GL_NO_CHECK(glCreateShader(GL_VERTEX_SHADER));
-    
-    auto& resourceManager = mServiceLocator.ResolveService<ResourceManager>();
-    const auto vertexShaderFileResourceId = resourceManager.LoadResource("shaders/basic.vs");
-    const auto& vertexShaderFileResource = static_cast<TextFileResource&>(resourceManager.GetResource(vertexShaderFileResourceId));
-    
-    const char* vertexShaderFileContents = vertexShaderFileResource.GetContents().c_str();
-    GL_CHECK(glShaderSource(vertexShader, 1, &vertexShaderFileContents, NULL));
-    GL_CHECK(glCompileShader(vertexShader));
-    
-    GLint status;
-    GL_CHECK(glGetShaderiv(vertexShader, GL_COMPILE_STATUS, &status));
-    
-    std::string infoLog;
-    GLint infoLogLength;
-    GL_CHECK(glGetShaderiv(vertexShader, GL_INFO_LOG_LENGTH, &infoLogLength));
-    if (infoLogLength > 0)
-    {
-        infoLog.clear();
-        infoLog.reserve(infoLogLength);
-        GL_CHECK(glGetShaderInfoLog(vertexShader, infoLogLength, NULL, &infoLog[0]));
-        Log(LogType::INFO, "While compiling vertex shader:\n%s", infoLog.c_str());
-    }
-    
-    // Compile fragment shader
-    GLuint fragmentShader = GL_NO_CHECK(glCreateShader(GL_FRAGMENT_SHADER));
-    const auto fragmentShaderFileResourceId = resourceManager.LoadResource("shaders/basic.fs");
-    const auto& fragmentShaderFileResource = static_cast<TextFileResource&>(resourceManager.GetResource(fragmentShaderFileResourceId));
-    
-    const char* fragmentShaderFileContents = fragmentShaderFileResource.GetContents().c_str();
-    GL_CHECK(glShaderSource(fragmentShader, 1, &fragmentShaderFileContents, NULL));
-    GL_CHECK(glCompileShader(fragmentShader));
-    GL_CHECK(glGetShaderiv(fragmentShader, GL_COMPILE_STATUS, &status));
-    
-    GL_CHECK(glGetShaderiv(fragmentShader, GL_INFO_LOG_LENGTH, &infoLogLength));
-    if (infoLogLength > 0)
-    {
-        infoLog.clear();
-        infoLog.reserve(infoLogLength);
-        GL_CHECK(glGetShaderInfoLog(fragmentShader, infoLogLength, NULL, &infoLog[0]));
-        Log(LogType::INFO, "While compiling fragment shader:\n%s", infoLog.c_str());
-    }
-    
-    // Link shader program
-    mDefaultShaderId = GL_NO_CHECK(glCreateProgram());
-    GL_CHECK(glAttachShader(mDefaultShaderId, vertexShader));
-    GL_CHECK(glAttachShader(mDefaultShaderId, fragmentShader));
-    GL_CHECK(glLinkProgram(mDefaultShaderId));
-    
-#ifndef _WIN32
-	GL_CHECK(glGetProgramiv(mDefaultShaderId, GL_LINK_STATUS, &status));
-    
-    glGetProgramiv(mDefaultShaderId, GL_INFO_LOG_LENGTH, &infoLogLength);
-    if (infoLogLength > 0)
-    {
-        infoLog.clear();
-        infoLog.reserve(infoLogLength);
-        GL_CHECK(glGetProgramInfoLog(mDefaultShaderId, infoLogLength, NULL, &infoLog[0]));
-        Log(LogType::INFO, "While linking shader:\n%s", infoLog.c_str());
-    }
-#endif
+void CoreRenderingService::CompileAllShaders()
+{	
+	auto& resourceManager = mServiceLocator.ResolveService<ResourceManager>();
 
-    GL_CHECK(glValidateProgram(mDefaultShaderId));
+	auto currentVertexShaderId = 0;
+	auto currentFragmentShaderId = 0;
+	auto currentProgramId = 0;
+
+	ApplyFunctionToEachFileRecursively(resourceManager.GetRootResourceDirectory() + SHADER_DIRECTORY, [this, &resourceManager, &currentVertexShaderId, &currentFragmentShaderId, &currentProgramId](const dir_iter_entry& fileEntry) 
+	{			
+		const auto filePath = fileEntry.path().string();
+		const auto fileName = GetFileName(filePath);
+
+		if (GetFileExtension(fileName) == "vs")
+		{
+			// Generate vertex shader id
+			currentVertexShaderId = GL_NO_CHECK(glCreateShader(GL_VERTEX_SHADER));
+
+			// Get vertex shader contents
+			const auto vertexShaderFileResourceId = resourceManager.LoadResource(SHADER_DIRECTORY + fileName);
+			const auto& vertexShaderFileResource = resourceManager.GetResource<TextFileResource&>(vertexShaderFileResourceId);
+			const char* vertexShaderFileContents = vertexShaderFileResource.GetContents().c_str();
+
+			// Compile vertex shader
+			GL_CHECK(glShaderSource(currentVertexShaderId, 1, &vertexShaderFileContents, NULL));
+			GL_CHECK(glCompileShader(currentVertexShaderId));
+
+			// Check vertex shader compilation
+			std::string infoLog;
+			GLint infoLogLength;
+			GL_CHECK(glGetShaderiv(currentVertexShaderId, GL_INFO_LOG_LENGTH, &infoLogLength));
+			if (infoLogLength > 0)
+			{
+				infoLog.clear();
+				infoLog.reserve(infoLogLength);
+				GL_CHECK(glGetShaderInfoLog(currentVertexShaderId, infoLogLength, NULL, &infoLog[0]));
+				Log(LogType::INFO, "While compiling vertex shader:\n%s", infoLog.c_str());
+			}
+
+			// Link shader program
+			currentProgramId = GL_NO_CHECK(glCreateProgram());
+			GL_CHECK(glAttachShader(currentProgramId, currentVertexShaderId));
+			GL_CHECK(glAttachShader(currentProgramId, currentFragmentShaderId));
+			GL_CHECK(glLinkProgram(currentProgramId));
 
 #ifndef _WIN32
-    GL_CHECK(glGetProgramiv(mDefaultShaderId, GL_VALIDATE_STATUS, &status));    
-    glGetProgramiv(mDefaultShaderId, GL_INFO_LOG_LENGTH, &infoLogLength);
-    if (infoLogLength > 0)
-    {
-        infoLog.clear();
-        infoLog.reserve(infoLogLength);
-        GL_CHECK(glGetProgramInfoLog(mDefaultShaderId, infoLogLength, NULL, &infoLog[0]));
-        Log(LogType::INFO, "While validating shader:\n%s", infoLog.c_str());
-    }
+			glGetProgramiv(currentProgramId, GL_INFO_LOG_LENGTH, &infoLogLength);
+			if (infoLogLength > 0)
+			{
+				infoLog.clear();
+				infoLog.reserve(infoLogLength);
+				GL_CHECK(glGetProgramInfoLog(currentProgramId, infoLogLength, NULL, &infoLog[0]));
+				Log(LogType::INFO, "While linking shader:\n%s", infoLog.c_str());
+			}
 #endif
 
-    // Destroy intermediate compiled shaders
-    GL_CHECK(glDetachShader(mDefaultShaderId, vertexShader));
-    GL_CHECK(glDetachShader(mDefaultShaderId, fragmentShader));
-    GL_CHECK(glDeleteShader(vertexShader));
-    GL_CHECK(glDeleteShader(fragmentShader));
+			GL_CHECK(glValidateProgram(currentProgramId));
+
+#ifndef _WIN32
+			GL_CHECK(glGetProgramiv(currentProgramId, GL_VALIDATE_STATUS, &status));
+			glGetProgramiv(currentProgramId, GL_INFO_LOG_LENGTH, &infoLogLength);
+			if (infoLogLength > 0)
+			{
+				infoLog.clear();
+				infoLog.reserve(infoLogLength);
+				GL_CHECK(glGetProgramInfoLog(currentProgramId, infoLogLength, NULL, &infoLog[0]));
+				Log(LogType::INFO, "While validating shader:\n%s", infoLog.c_str());
+			}
+#endif
+
+			// Destroy intermediate compiled shaders
+			GL_CHECK(glDetachShader(currentProgramId, currentVertexShaderId));
+			GL_CHECK(glDetachShader(currentProgramId, currentFragmentShaderId));
+			GL_CHECK(glDeleteShader(currentVertexShaderId));
+			GL_CHECK(glDeleteShader(currentFragmentShaderId));
+
+			// Save program id
+			const auto programName = GetFileNameWithoutExtension(fileName);
+			mShaders[programName] = currentProgramId;
+		}
+		else
+		{
+			// Generate fragment shader id
+			currentFragmentShaderId = GL_NO_CHECK(glCreateShader(GL_FRAGMENT_SHADER));
+
+			// Get fragment shader contents			
+			const auto fragmentShaderFileResourceId = resourceManager.LoadResource(SHADER_DIRECTORY + fileName);
+			const auto& fragmentShaderFileResource = resourceManager.GetResource<TextFileResource&>(fragmentShaderFileResourceId);
+			const char* fragmentShaderFileContents = fragmentShaderFileResource.GetContents().c_str();
+			
+			GL_CHECK(glShaderSource(currentFragmentShaderId, 1, &fragmentShaderFileContents, NULL));
+			GL_CHECK(glCompileShader(currentFragmentShaderId));
+
+			std::string infoLog;
+			GLint infoLogLength;
+			GL_CHECK(glGetShaderiv(currentFragmentShaderId, GL_INFO_LOG_LENGTH, &infoLogLength));
+			if (infoLogLength > 0)
+			{
+				infoLog.clear();
+				infoLog.reserve(infoLogLength);
+				GL_CHECK(glGetShaderInfoLog(currentFragmentShaderId, infoLogLength, NULL, &infoLog[0]));
+				Log(LogType::INFO, "While compiling fragment shader:\n%s", infoLog.c_str());
+			}
+		}		
+	});
 }

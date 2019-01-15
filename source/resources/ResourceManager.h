@@ -27,6 +27,8 @@ public:
     
     bool InitializeResourceLoaders();
     
+	const std::string& GetRootResourceDirectory() const;
+
     ResourceId LoadResource(const std::string& resourceRelativePath, const bool async = false);
     void LoadResources(const std::vector<std::string>& resourceRelativePaths, const bool async = false);
     
@@ -34,8 +36,20 @@ public:
     void UnloadResource(const ResourceId resourceId);
     
     IResource& GetResource(const std::string& resourceRelativePath);
-    IResource& GetResource(const ResourceId resourceId);
+    IResource& GetResource(const ResourceId resourceId);	
     
+	template<class ResourceType>
+	inline ResourceType& GetResource(const std::string& resourceRelativePath)
+	{
+		return static_cast<ResourceType&>(GetResource(resourceRelativePath));
+	}
+
+	template<class ResourceType>
+	inline ResourceType& GetResource(const ResourceId resourceId)
+	{
+		return static_cast<ResourceType&>(GetResource(resourceId));
+	}
+
 private:
     ResourceManager(const std::string& rootResourceDirectory);
     

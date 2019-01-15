@@ -11,7 +11,7 @@
 #include "IResource.h"
 #include "../util/TypeTraits.h"
 #include "../util/Logging.h"
-#include "../util/StringUtils.h"
+#include "../util/FileUtils.h"
 #include "../util/SDLMessageBoxUtils.h"
 
 #include <map>
@@ -36,6 +36,11 @@ bool ResourceManager::InitializeResourceLoaders()
     if (!mTextureLoader->Initialize()) return false;
     if (!mTextFileLoader->Initialize()) return false;
     return true;
+}
+
+const std::string& ResourceManager::GetRootResourceDirectory() const
+{
+	return mRootResourceDirectory;
 }
 
 ResourceId ResourceManager::LoadResource(const std::string& resourceRelativePath, const bool /* false */)

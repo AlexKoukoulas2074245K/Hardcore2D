@@ -11,6 +11,7 @@
 #include "../IService.h"
 
 #include <functional>
+#include <map>
 
 struct SDL_Window;
 struct SDL_Context;
@@ -21,6 +22,11 @@ class CoreRenderingService final: public IService
 {
     friend class App;
 public:
+	enum class ShaderType
+	{
+
+	};
+
     ~CoreRenderingService();
     
     bool InitializeEngine();
@@ -36,7 +42,7 @@ private:
     CoreRenderingService(const ServiceLocator&);
     
     void InitializeRenderingPrimitive();
-    void CompileShaders();
+    void CompileAllShaders();
     
     const ServiceLocator& mServiceLocator;
     SDL_Window* mSdlWindow;
@@ -49,7 +55,8 @@ private:
     
     GLuint mVAO;
     GLuint mVBO;
-    GLuint mDefaultShaderId;
+
+	std::map<std::string, GLuint> mShaders;
 };
 
 
