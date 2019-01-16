@@ -6,7 +6,9 @@
 //
 
 #include "CoreRenderingService.h"
+#include "Shader.h"
 #include "../ServiceLocator.h"
+#include "../util/StringUtils.h"
 #include "../util/FileUtils.h"
 #include "../util/Logging.h"
 #include "../util/SDLMessageBoxUtils.h"
@@ -17,6 +19,8 @@
 
 #include <string>
 #include <vector>
+#include <glm/mat4x4.hpp>
+#include <glm/gtc/matrix_transform.hpp>
 
 static const char* SHADER_DIRECTORY = "shaders/";
 
@@ -27,6 +31,23 @@ static const GLfloat QUAD_VERTICES[] =
      1.0f,  1.0f, 0.0f, 1.0f, 1.0f,
     -1.0f,  1.0f, 0.0f, 0.0f, 1.0f
 };
+
+static std::vector<std::string> GetUniformNames(const std::string& shaderContents)
+{
+    const auto shaderContentsSplitByNewLine = StringSplit(shaderContents, '\n');
+    
+    std::vector<std::string> uniformNames;
+    for (const auto line: shaderContentsSplitByNewLine)
+    {
+        if (StringStartsWith(line, "uniform"))
+        {
+            const auto lineSplitBySpace = StringSplit(line, ' ');
+            const auto uniformNameIncludingSemicolumn = lineSplitBySpace[lineSplitBySpace.size() - 1];
+            uniformNames.emplace_back(uniformNameIncludingSemicolumn.begin(), uniformNameIncludingSemicolumn.end() - 1);
+        }
+    }
+    return uniformNames;
+}
 
 CoreRenderingService::CoreRenderingService(const ServiceLocator& serviceLocator)
     : mServiceLocator(serviceLocator)
@@ -52,6 +73,75 @@ CoreRenderingService::~CoreRenderingService()
 }
 
 bool CoreRenderingService::InitializeEngine()
+{
+    if (!InitializeContext()) return false;
+    InitializeRenderingPrimitive();
+    CompileAllShaders();
+    
+    return true;
+}
+
+void CoreRenderingService::GameLoop(std::function<void(const float)> clientUpdateMethod)
+{
+    SDL_Event event;
+    float elapsedTicks = 0.0f;
+    mRunning = true;
+    
+    while(mRunning)
+    {
+        // Clear viewport
+        GL_CHECK(glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT));
+        
+        // Poll events
+        while (SDL_PollEvent(&event))
+        {
+            switch (event.type)
+            {
+                case SDL_QUIT: mRunning = false; break;
+            }
+        }
+        
+        // Calculate frame delta
+        const auto currentTicks = static_cast<float>(SDL_GetTicks());
+        auto lastFrameTicks = currentTicks - elapsedTicks;
+        elapsedTicks = currentTicks;
+        const auto dt = lastFrameTicks * 0.001f;
+        
+        clientUpdateMethod(dt);
+        
+        auto& resourceManager = mServiceLocator.ResolveService<ResourceManager>();
+        auto& resource = resourceManager.GetResource<TextureResource>("jungle-sky.png");
+        auto& resource2 = resourceManager.GetResource<TextureResource>("ninja.png");
+        
+        auto& shader = mShaders["basic"];
+        GL_CHECK(glUseProgram(shader->GetShaderId()));
+        
+        glm::mat4 worldMatrix(1.0f);
+        worldMatrix = glm::scale(worldMatrix, glm::vec3(0.5f, 0.5f, 1.0f));
+        GL_CHECK(glUniformMatrix4fv(shader->GetUniformNamesToLocations().at("world"), 1, GL_FALSE, (GLfloat*) &worldMatrix));
+        
+        GL_CHECK(glBindVertexArray(mVAO));
+        GL_CHECK(glBindTexture(GL_TEXTURE_2D, resource.GetGLTextureId()));
+        GL_CHECK(glDrawArrays(GL_TRIANGLE_FAN, 0, 4));
+        
+        GL_CHECK(glBindTexture(GL_TEXTURE_2D, resource2.GetGLTextureId()));
+        GL_CHECK(glDrawArrays(GL_TRIANGLE_FAN, 0, 4));
+        
+        SDL_GL_SwapWindow(mSdlWindow);
+    }
+}
+
+int CoreRenderingService::GetRenderableWidth() const
+{
+    return mRenderableAreaWidth;
+}
+
+int CoreRenderingService::GetRenderableHeight() const
+{
+    return mRenderableAreaHeight;
+}
+
+bool CoreRenderingService::InitializeContext()
 {
     // Initialize SDL
     if (SDL_Init(SDL_INIT_VIDEO|SDL_INIT_AUDIO) < 0)
@@ -116,61 +206,10 @@ bool CoreRenderingService::InitializeEngine()
     Log(LogType::INFO, "Version    : %s", GL_NO_CHECK(glGetString(GL_VERSION)));
     
     GL_CHECK(glClearColor(1.0f, 1.0f, 1.0, 1.0f));
-    
-    InitializeRenderingPrimitive();
-    CompileAllShaders();
+    GL_CHECK(glEnable(GL_BLEND));
+    GL_CHECK(glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA));
     
     return true;
-}
-
-void CoreRenderingService::GameLoop(std::function<void(const float)> clientUpdateMethod)
-{
-    SDL_Event event;
-    float elapsedTicks = 0.0f;
-    mRunning = true;
-    
-    while(mRunning)
-    {
-        // Clear viewport
-        GL_CHECK(glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT));
-        
-        // Poll events
-        while (SDL_PollEvent(&event))
-        {
-            switch (event.type)
-            {
-                case SDL_QUIT: mRunning = false; break;
-            }
-        }
-        
-        // Calculate frame delta
-        const auto currentTicks = static_cast<float>(SDL_GetTicks());
-        auto lastFrameTicks = currentTicks - elapsedTicks;
-        elapsedTicks = currentTicks;
-        const auto dt = lastFrameTicks * 0.001f;
-        
-        clientUpdateMethod(dt);
-        
-        auto& resourceManager = mServiceLocator.ResolveService<ResourceManager>();
-        auto& resource = resourceManager.GetResource<TextureResource>("jungle-sky.png");
-                
-        GL_CHECK(glUseProgram(mShaders["basic"]));		
-        GL_CHECK(glBindVertexArray(mVAO));
-        GL_CHECK(glBindTexture(GL_TEXTURE_2D, resource.GetGLTextureId()));
-        GL_CHECK(glDrawArrays(GL_TRIANGLE_FAN, 0, 4));
-        
-        SDL_GL_SwapWindow(mSdlWindow);
-    }
-}
-
-int CoreRenderingService::GetRenderableWidth() const
-{
-    return mRenderableAreaWidth;
-}
-
-int CoreRenderingService::GetRenderableHeight() const
-{
-    return mRenderableAreaHeight;
 }
 
 void CoreRenderingService::InitializeRenderingPrimitive()
@@ -202,7 +241,8 @@ void CoreRenderingService::CompileAllShaders()
 	auto currentVertexShaderId = 0;
 	auto currentFragmentShaderId = 0;
 	auto currentProgramId = 0;
-
+    std::vector<std::string> shaderUniformNames;
+    
     const auto shaderFileNames = GetAllFilenamesInDirectory(resourceManager.GetRootResourceDirectory() + SHADER_DIRECTORY);
     
     for (const auto fileName: shaderFileNames)
@@ -216,7 +256,7 @@ void CoreRenderingService::CompileAllShaders()
 			const auto vertexShaderFileResourceId = resourceManager.LoadResource(SHADER_DIRECTORY + fileName);
 			const auto& vertexShaderFileResource = resourceManager.GetResource<TextFileResource&>(vertexShaderFileResourceId);
 			const char* vertexShaderFileContents = vertexShaderFileResource.GetContents().c_str();
-
+            
 			// Compile vertex shader
 			GL_CHECK(glShaderSource(currentVertexShaderId, 1, &vertexShaderFileContents, NULL));
 			GL_CHECK(glCompileShader(currentVertexShaderId));
@@ -270,10 +310,25 @@ void CoreRenderingService::CompileAllShaders()
 			GL_CHECK(glDetachShader(currentProgramId, currentFragmentShaderId));
 			GL_CHECK(glDeleteShader(currentVertexShaderId));
 			GL_CHECK(glDeleteShader(currentFragmentShaderId));
-
-			// Save program id
+            
+            // Extract vertex shader uniform names
+            const auto uniformNames = GetUniformNames(vertexShaderFileResource.GetContents());
+            shaderUniformNames.insert(shaderUniformNames.end(), uniformNames.begin(), uniformNames.end());
+            
+            
+            // Extract uniform locations
+            std::map<std::string, GLuint> shaderUniformNamesToLocations;
+            for (const auto uniformName: shaderUniformNames)
+            {
+                shaderUniformNamesToLocations[uniformName] = GL_NO_CHECK(glGetUniformLocation(currentProgramId, uniformName.c_str()));
+            }
+            
+			// Create shader object
 			const auto programName = GetFileNameWithoutExtension(fileName);
-			mShaders[programName] = currentProgramId;
+            
+            // Save shader
+            mShaders[programName] = std::make_unique<Shader>(currentProgramId, shaderUniformNamesToLocations);
+                            
 		}
 		else
 		{
@@ -298,6 +353,13 @@ void CoreRenderingService::CompileAllShaders()
 				GL_CHECK(glGetShaderInfoLog(currentFragmentShaderId, infoLogLength, NULL, &infoLog[0]));
 				Log(LogType::INFO, "While compiling fragment shader:\n%s", infoLog.c_str());
 			}
+            
+            // Extract fragment shader uniform names
+            shaderUniformNames.clear();
+            const auto uniformNames = GetUniformNames(fragmentShaderFileResource.GetContents());
+            shaderUniformNames.insert(shaderUniformNames.end(), uniformNames.begin(), uniformNames.end());
+            
+            
 		}		
 	}
 }

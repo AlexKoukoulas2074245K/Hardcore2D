@@ -37,7 +37,6 @@ inline std::string GetFileName(const std::string& filePath)
 	std::string fileName;
 
 	auto reverseIter = filePath.rbegin();
-
 	while (reverseIter != filePath.rend() && (*reverseIter != '\\' && *reverseIter != '/'))
 	{
 		fileName = *reverseIter + fileName;
@@ -53,7 +52,6 @@ inline std::string GetFileNameWithoutExtension(const std::string& filePath)
 
 	auto isRecordingFileName = false;
 	auto reverseIter = filePath.rbegin();
-		
 	while (reverseIter != filePath.rend() && (*reverseIter != '\\' && *reverseIter != '/'))
 	{
 
@@ -93,8 +91,6 @@ inline std::vector<std::string> GetAllFilenamesInDirectory(const std::string& di
         }
     }
 #else
-	
-
 	for (const auto& entry : std::experimental::filesystem::v1::directory_iterator(directory))
 	{
 		fileNames.push_back(GetFileName(entry.path().string()));

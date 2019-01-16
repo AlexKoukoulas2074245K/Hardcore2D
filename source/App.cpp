@@ -62,5 +62,6 @@ bool App::Initialize()
     
     
     mResourceManager->LoadResource("jungle-sky.png");
+    mResourceManager->LoadResource("ninja.png");
     return true;
 }

@@ -11,12 +11,16 @@
 #include "../IService.h"
 
 #include <functional>
+#include <vector>
+#include <string>
 #include <map>
+#include <memory>
 
 struct SDL_Window;
 struct SDL_Context;
 
 class ServiceLocator;
+class Shader;
 
 class CoreRenderingService final: public IService
 {
@@ -41,6 +45,7 @@ private:
     
     CoreRenderingService(const ServiceLocator&);
     
+    bool InitializeContext();
     void InitializeRenderingPrimitive();
     void CompileAllShaders();
     
@@ -56,7 +61,7 @@ private:
     GLuint mVAO;
     GLuint mVBO;
 
-	std::map<std::string, GLuint> mShaders;
+    std::map<std::string, std::unique_ptr<Shader>> mShaders;
 };
 
 

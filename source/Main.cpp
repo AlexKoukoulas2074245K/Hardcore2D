@@ -76,6 +76,7 @@ int main(int, char**)
 
 int main(int, char**)
 {
+    
     App app;
     
     if (app.Initialize())
