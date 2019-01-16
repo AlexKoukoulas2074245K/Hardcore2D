@@ -43,4 +43,5 @@ GL_FUNC(void, glGenVertexArrays, (GLsizei, GLuint*))
 GL_FUNC(void, glGetProgramInfoLog, (GLuint, GLsizei, GLsizei*, GLchar*))
 GL_FUNC(const GLubyte*, glGetString, (GLenum))
 GL_FUNC(void, glTexImage2D, (GLenum target, GLint, GLint, GLsizei, GLsizei, GLint, GLenum, GLenum, const GLvoid*))
-GL_FUNC(void, glTexParameteri, (GLenum, GLenum, GLint));
+GL_FUNC(void, glTexParameteri, (GLenum, GLenum, GLint))
+GL_FUNC(void, glBlendFunc, (GLenum, GLenum))

@@ -13,6 +13,10 @@
 
 #pragma once
 
+#ifdef _WIN32
+#pragma warning(disable : 4201)
+#endif
+
 // Dependency:
 #include "../detail/type_mat3x3.hpp"
 #include "../detail/type_mat4x4.hpp"
