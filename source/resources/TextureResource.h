@@ -15,7 +15,6 @@
 struct SDL_Surface;
 class TextureResource final: public IResource
 {
-    using GLuint = unsigned int;
     friend class TextureLoader;
 public:
     ~TextureResource();
@@ -23,7 +22,7 @@ public:
     GLuint GetGLTextureId() const;
     
 private:
-    TextureResource(const ResourceId, SDL_Surface*, GLuint);
+    TextureResource(SDL_Surface*, GLuint);
     
     SDL_Surface* mSdlSurface;
     GLuint mGLTextureId;

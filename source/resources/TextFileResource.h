@@ -19,7 +19,7 @@ public:
     const std::string& GetContents() const;
     
 private:
-    TextFileResource(const std::string& contents, const ResourceId);
+    TextFileResource(const std::string& contents);
     
     const std::string mContents;
 };

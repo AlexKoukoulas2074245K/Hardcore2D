@@ -38,7 +38,7 @@ bool TextureLoader::Initialize()
     return true;
 }
 
-std::unique_ptr<IResource> TextureLoader::VCreateAndLoadResource(const std::string& resourcePath, const ResourceId id)
+std::unique_ptr<IResource> TextureLoader::VCreateAndLoadResource(const std::string& resourcePath)
 {
     auto* sdlSurface = IMG_Load(resourcePath.c_str());
     if (!sdlSurface)
@@ -76,5 +76,5 @@ std::unique_ptr<IResource> TextureLoader::VCreateAndLoadResource(const std::stri
     GL_CHECK(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR));
     GL_CHECK(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR));
     
-    return std::unique_ptr<IResource>(new TextureResource(id, sdlSurface, glTextureId));
+    return std::unique_ptr<IResource>(new TextureResource(sdlSurface, glTextureId));
 }

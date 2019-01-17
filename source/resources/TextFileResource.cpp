@@ -7,9 +7,8 @@
 
 #include "TextFileResource.h"
 
-TextFileResource::TextFileResource(const std::string& contents, const ResourceId resourceId)
-    : IResource(resourceId)
-    , mContents(contents)
+TextFileResource::TextFileResource(const std::string& contents)
+    : mContents(contents)
 {
     
 }

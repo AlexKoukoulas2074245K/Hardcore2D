@@ -8,12 +8,13 @@
 #ifndef Shader_h
 #define Shader_h
 
+#include "../util/TypeTraits.h"
+
 #include <string>
 #include <map>
 
 class Shader final
 {
-    using GLuint = unsigned int;
 public:
     Shader(const GLuint shaderId, const std::map<std::string, GLuint> uniformNamesToLocations);
     

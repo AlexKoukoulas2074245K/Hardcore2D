@@ -17,13 +17,8 @@ public:
     IResource(const IResource&) = delete;
     const IResource& operator = (const IResource&) = delete;
     
-    ResourceId GetId() const { return mId; }
-    
 protected:
-    IResource(const ResourceId resourceId): mId(resourceId){}
-    
-private:
-    const ResourceId mId;
+    IResource(){};
 };
 
 #endif /* IResource_h */

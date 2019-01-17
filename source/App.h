@@ -8,6 +8,8 @@
 #ifndef App_h
 #define App_h
 
+#include "util/TypeTraits.h"
+
 #include <memory>
 
 class ServiceLocator;
@@ -33,6 +35,9 @@ private:
     std::unique_ptr<EventCommunicationService> mEventCommunicationService;
     std::unique_ptr<CoreRenderingService> mCoreRenderingService;
     std::unique_ptr<ResourceManager> mResourceManager;
+    
+    EntityId mNinjaId;
+    EntityId mBackgroundId;
 };
 
 #endif /* App_h */

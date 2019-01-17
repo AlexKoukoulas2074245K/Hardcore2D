@@ -15,7 +15,7 @@ class TextFileLoader final: public IResourceLoader
     friend class ResourceManager;
 public:
     bool Initialize() override;
-    std::unique_ptr<IResource> VCreateAndLoadResource(const std::string& path, const ResourceId id) override;
+    std::unique_ptr<IResource> VCreateAndLoadResource(const std::string& path) override;
     
 private:
     TextFileLoader() = default;

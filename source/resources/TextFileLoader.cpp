@@ -18,7 +18,7 @@ bool TextFileLoader::Initialize()
     return true;
 }
 
-std::unique_ptr<IResource> TextFileLoader::VCreateAndLoadResource(const std::string& resourcePath, const ResourceId id)
+std::unique_ptr<IResource> TextFileLoader::VCreateAndLoadResource(const std::string& resourcePath)
 {
     std::ifstream file(resourcePath);
     
@@ -37,5 +37,5 @@ std::unique_ptr<IResource> TextFileLoader::VCreateAndLoadResource(const std::str
     str.assign((std::istreambuf_iterator<char>(file)),
                std::istreambuf_iterator<char>());
     
-    return std::unique_ptr<IResource>(new TextFileResource(str, id));
+    return std::unique_ptr<IResource>(new TextFileResource(str));
 }

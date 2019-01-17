@@ -9,11 +9,16 @@
 #include "Shader.h"
 #include "../ServiceLocator.h"
 #include "../util/StringUtils.h"
+#include "../util/ShaderUtils.h"
 #include "../util/FileUtils.h"
 #include "../util/Logging.h"
 #include "../util/SDLMessageBoxUtils.h"
 #include "../gl/Context.h"
 #include "../resources/ResourceManager.h"
+#include "../components/TransformationComponent.h"
+#include "../components/EntityComponentManager.h"
+#include "../components/AnimationComponent.h"
+#include "../components/ShaderComponent.h"
 #include "../resources/TextureResource.h"
 #include "../resources/TextFileResource.h"
 
@@ -32,23 +37,6 @@ static const GLfloat QUAD_VERTICES[] =
     -1.0f,  1.0f, 0.0f, 0.0f, 1.0f
 };
 
-static std::vector<std::string> GetUniformNames(const std::string& shaderContents)
-{
-    const auto shaderContentsSplitByNewLine = StringSplit(shaderContents, '\n');
-    
-    std::vector<std::string> uniformNames;
-    for (const auto line: shaderContentsSplitByNewLine)
-    {
-        if (StringStartsWith(line, "uniform"))
-        {
-            const auto lineSplitBySpace = StringSplit(line, ' ');
-            const auto uniformNameIncludingSemicolumn = lineSplitBySpace[lineSplitBySpace.size() - 1];
-            uniformNames.emplace_back(uniformNameIncludingSemicolumn.begin(), uniformNameIncludingSemicolumn.end() - 1);
-        }
-    }
-    return uniformNames;
-}
-
 CoreRenderingService::CoreRenderingService(const ServiceLocator& serviceLocator)
     : mServiceLocator(serviceLocator)
     , mSdlWindow(nullptr)
@@ -56,7 +44,8 @@ CoreRenderingService::CoreRenderingService(const ServiceLocator& serviceLocator)
     , mRenderableAreaWidth(0)
     , mRenderableAreaHeight(0)
     , mVAO(0U)
-    , mVBO(0U)    
+    , mVBO(0U)
+    , mCurrentShaderUsed("basic")
 {
     
 }
@@ -91,6 +80,7 @@ void CoreRenderingService::GameLoop(std::function<void(const float)> clientUpdat
     {
         // Clear viewport
         GL_CHECK(glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT));
+        GL_CHECK(glBindVertexArray(mVAO));
         
         // Poll events
         while (SDL_PollEvent(&event))
@@ -107,28 +97,47 @@ void CoreRenderingService::GameLoop(std::function<void(const float)> clientUpdat
         elapsedTicks = currentTicks;
         const auto dt = lastFrameTicks * 0.001f;
         
+        // Update client
         clientUpdateMethod(dt);
-        
-        auto& resourceManager = mServiceLocator.ResolveService<ResourceManager>();
-        auto& resource = resourceManager.GetResource<TextureResource>("jungle-sky.png");
-        auto& resource2 = resourceManager.GetResource<TextureResource>("ninja.png");
-        
-        auto& shader = mShaders["basic"];
-        GL_CHECK(glUseProgram(shader->GetShaderId()));
-        
-        glm::mat4 worldMatrix(1.0f);
-        worldMatrix = glm::scale(worldMatrix, glm::vec3(0.5f, 0.5f, 1.0f));
-        GL_CHECK(glUniformMatrix4fv(shader->GetUniformNamesToLocations().at("world"), 1, GL_FALSE, (GLfloat*) &worldMatrix));
-        
-        GL_CHECK(glBindVertexArray(mVAO));
-        GL_CHECK(glBindTexture(GL_TEXTURE_2D, resource.GetGLTextureId()));
-        GL_CHECK(glDrawArrays(GL_TRIANGLE_FAN, 0, 4));
-        
-        GL_CHECK(glBindTexture(GL_TEXTURE_2D, resource2.GetGLTextureId()));
-        GL_CHECK(glDrawArrays(GL_TRIANGLE_FAN, 0, 4));
-        
+       
+        // Swap window buffers
         SDL_GL_SwapWindow(mSdlWindow);
     }
+}
+
+void CoreRenderingService::RenderEntity(const EntityId entityId)
+{
+    auto& entityComponentManager = mServiceLocator.ResolveService<EntityComponentManager>();
+    
+    if (entityComponentManager.HasComponent<ShaderComponent>(entityId))
+    {
+        const auto& shaderComponent = entityComponentManager.GetComponent<ShaderComponent>(entityId);
+        mCurrentShaderUsed = shaderComponent.GetShaderName();
+        GL_CHECK(glUseProgram(mShaders[mCurrentShaderUsed]->GetShaderId()));
+    }
+    
+    if (entityComponentManager.HasComponent<AnimationComponent>(entityId))
+    {
+        const auto& animationComponent = entityComponentManager.GetComponent<AnimationComponent>(entityId);
+        GL_CHECK(glBindTexture(GL_TEXTURE_2D, animationComponent.GetCurrentFrameResourceId()));
+    }
+    
+    if (entityComponentManager.HasComponent<TransformationComponent>(entityId))
+    {
+        const auto& transformationComponent = entityComponentManager.GetComponent<TransformationComponent>(entityId);
+        
+        // Todo move world matrix construction elsewhere
+        glm::mat4 worldMatrix(1.0f);
+        //worldMatrix = glm::translate(worldMatrix, transformationComponent.mTranslation);
+        worldMatrix = glm::rotate(worldMatrix, transformationComponent.mRotation.x, glm::vec3(1.0f, 0.0f, 0.0f));
+        worldMatrix = glm::rotate(worldMatrix, transformationComponent.mRotation.y, glm::vec3(0.0f, 1.0f, 0.0f));
+        worldMatrix = glm::rotate(worldMatrix, transformationComponent.mRotation.z, glm::vec3(0.0f, 0.0f, 1.0f));
+        worldMatrix = glm::scale(worldMatrix, transformationComponent.mScale);
+        
+        GL_CHECK(glUniformMatrix4fv(mShaders[mCurrentShaderUsed]->GetUniformNamesToLocations().at("world"), 1, GL_FALSE, (GLfloat*) &worldMatrix));
+    }
+    
+    GL_CHECK(glDrawArrays(GL_TRIANGLE_FAN, 0, 4));
 }
 
 int CoreRenderingService::GetRenderableWidth() const
@@ -315,7 +324,6 @@ void CoreRenderingService::CompileAllShaders()
             const auto uniformNames = GetUniformNames(vertexShaderFileResource.GetContents());
             shaderUniformNames.insert(shaderUniformNames.end(), uniformNames.begin(), uniformNames.end());
             
-            
             // Extract uniform locations
             std::map<std::string, GLuint> shaderUniformNamesToLocations;
             for (const auto uniformName: shaderUniformNames)
@@ -328,7 +336,6 @@ void CoreRenderingService::CompileAllShaders()
             
             // Save shader
             mShaders[programName] = std::make_unique<Shader>(currentProgramId, shaderUniformNamesToLocations);
-                            
 		}
 		else
 		{
@@ -358,8 +365,6 @@ void CoreRenderingService::CompileAllShaders()
             shaderUniformNames.clear();
             const auto uniformNames = GetUniformNames(fragmentShaderFileResource.GetContents());
             shaderUniformNames.insert(shaderUniformNames.end(), uniformNames.begin(), uniformNames.end());
-            
-            
 		}		
 	}
 }

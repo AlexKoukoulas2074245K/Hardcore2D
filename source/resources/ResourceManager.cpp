@@ -67,9 +67,10 @@ void ResourceManager::LoadResources(const std::vector<std::string>& resourceRela
     }
 }
 
-void ResourceManager::UnloadResource(const IResource& IResource)
+void ResourceManager::UnloadResource(const std::string& resourceRelativePath)
 {
-    mResourceMap.erase(IResource.GetId());
+    const auto resourceId = GetTypeHash(resourceRelativePath);
+    mResourceMap.erase(resourceId);
 }
 
 void ResourceManager::UnloadResource(const ResourceId resourceId)
@@ -79,8 +80,8 @@ void ResourceManager::UnloadResource(const ResourceId resourceId)
 
 IResource& ResourceManager::GetResource(const std::string& resourceRelativePath)
 {
-    const auto resourceHash = GetTypeHash(resourceRelativePath);
-    return GetResource(resourceHash);
+    const auto resourceId = GetTypeHash(resourceRelativePath);
+    return GetResource(resourceId);
 }
 
 IResource& ResourceManager::GetResource(const ResourceId resourceId)
@@ -107,7 +108,7 @@ void ResourceManager::LoadResourceInternal(const std::string& resourceRelativePa
 {
     const auto resourceFileExtension = GetFileExtension(resourceRelativePath);
     
-    auto loadedResource = mResourceExtensionsToLoadersMap[resourceFileExtension]->VCreateAndLoadResource(mRootResourceDirectory + resourceRelativePath, resourceId);
+    auto loadedResource = mResourceExtensionsToLoadersMap[resourceFileExtension]->VCreateAndLoadResource(mRootResourceDirectory + resourceRelativePath);
     
     mResourceMap[resourceId] = std::move(loadedResource);
 }

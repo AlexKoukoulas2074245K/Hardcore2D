@@ -23,7 +23,7 @@ public:
     
     virtual bool Initialize() = 0;
     
-    virtual std::unique_ptr<IResource> VCreateAndLoadResource(const std::string& path, const ResourceId id) = 0;
+    virtual std::unique_ptr<IResource> VCreateAndLoadResource(const std::string& path) = 0;
 
 protected:
     IResourceLoader() = default;

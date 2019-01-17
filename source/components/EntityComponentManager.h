@@ -20,7 +20,7 @@ class EntityComponentManager final: public IService
 {
     friend class App;
 public:
-    using EntityComponentMap = std::unordered_map<EntityId, std::unique_ptr<IComponent>>;
+    using ComponentTypeToImplementationMap = std::unordered_map<ComponentTypeId, std::unique_ptr<IComponent>>;
     
     EntityId GenerateEntity()
     {
@@ -28,62 +28,72 @@ public:
     }
 
     template<class ComponentType>
-    inline bool HasComponent(const EntityId eId) const
+    inline bool HasComponent(const EntityId entityId) const
     {
         const auto componentTypeId = GetTypeHash<ComponentType>();
-        return mComponentMap.at(componentTypeId).count(eId) == 1;
+        return mEntityComponentMap.at(entityId).count(componentTypeId) == 1;
     }
     
     template<class ComponentType>
-    inline IComponent& GetComponent(const EntityId eId)
+    inline ComponentType& GetComponent(const EntityId entityId)
     {
-        if (!HasComponent<ComponentType>(eId))
+        if (!HasComponent<ComponentType>(entityId))
         {
             assert(false);
         }
         
         const auto componentTypeId = GetTypeHash<ComponentType>();
-        return *(mComponentMap.at(componentTypeId).contains(eId));
+        return static_cast<ComponentType&>(*(mEntityComponentMap.at(entityId).at(componentTypeId)));
     }
 
     template<class ComponentType>
-    inline const IComponent& GetComponent(const EntityId eId) const
+    inline const ComponentType& GetComponent(const EntityId entityId) const
     {
-        return GetComponent<ComponentType>(eId);
+        return GetComponent<ComponentType>(entityId);
     }
     
     template<class ComponentType>
-    inline void AddComponent(const EntityId eId, std::unique_ptr<IComponent> component)
+    inline void AddComponent(const EntityId entityId, std::unique_ptr<IComponent> component)
     {
         const auto componentTypeId = GetTypeHash<ComponentType>();
-        mComponentMap[componentTypeId][eId] = std::move(component);
+        mEntityComponentMap[entityId][componentTypeId] = std::move(component);
     }
     
     template<class ComponentType>
-    inline void RemoveComponent(const EntityId eId)
+    inline void RemoveComponent(const EntityId entityId)
     {
         const auto componentTypeId = GetTypeHash<ComponentType>();
-        mComponentMap[componentTypeId].erase(eId);
+        mEntityComponentMap[entityId].erase(componentTypeId);
     }
     
     template<class ComponentType>
-    inline EntityComponentMap& GetAllComponents()
+    inline std::unordered_map<EntityId, IComponent*> GetAllComponents()
     {
         const auto componentTypeId = GetTypeHash<ComponentType>();
-        return mComponentMap.at(componentTypeId);
+        std::unordered_map<EntityId, IComponent*> result;
+        
+        for (const auto entry: mEntityComponentMap)
+        {
+            if (entry.second.count(componentTypeId) != 0)
+            {
+                result[entry.first] = entry.second.at(componentTypeId).get();
+            }
+        }
+        
+        return result;
     }
     
-    template<class ComponentType>
-    inline const EntityComponentMap& GetAllComponents() const
+    inline const ComponentTypeToImplementationMap& GetAllEntityComponents(const EntityId entityId)
     {
-        return GetAllComponents<ComponentType>();
+        return mEntityComponentMap.at(entityId);
     }
+    
     
 private:
     EntityComponentManager() = default;
     
     EntityId mEntityCounter = 0;
-    std::unordered_map<ComponentTypeId, EntityComponentMap> mComponentMap;
+    std::unordered_map<EntityId, ComponentTypeToImplementationMap> mEntityComponentMap;
     
 };
 

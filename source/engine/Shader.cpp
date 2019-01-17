@@ -14,12 +14,12 @@ Shader::Shader(const GLuint shaderId, const std::map<std::string, GLuint> unifor
     
 }
 
-Shader::GLuint Shader::GetShaderId() const
+GLuint Shader::GetShaderId() const
 {
     return mShaderId;
 }
 
-const std::map<std::string, Shader::GLuint>& Shader::GetUniformNamesToLocations() const
+const std::map<std::string, GLuint>& Shader::GetUniformNamesToLocations() const
 {
     return mShaderUniformNamesToLocations;
 }

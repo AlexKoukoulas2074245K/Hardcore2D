@@ -32,7 +32,7 @@ public:
     ResourceId LoadResource(const std::string& resourceRelativePath, const bool async = false);
     void LoadResources(const std::vector<std::string>& resourceRelativePaths, const bool async = false);
     
-    void UnloadResource(const IResource& IResource);
+    void UnloadResource(const std::string& resourceRelativePath);
     void UnloadResource(const ResourceId resourceId);
     
     IResource& GetResource(const std::string& resourceRelativePath);

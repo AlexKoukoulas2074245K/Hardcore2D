@@ -10,9 +10,8 @@
 
 #include <SDL.h>
 
-TextureResource::TextureResource(const ResourceId resourceId, SDL_Surface* sdlSurface, GLuint glTextureId)
-    : IResource(resourceId)
-    , mSdlSurface(sdlSurface)
+TextureResource::TextureResource(SDL_Surface* sdlSurface, GLuint glTextureId)
+    : mSdlSurface(sdlSurface)
     , mGLTextureId(glTextureId)
 {
     

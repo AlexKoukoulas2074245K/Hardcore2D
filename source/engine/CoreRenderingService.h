@@ -9,6 +9,7 @@
 #define CoreRenderingService_h
 
 #include "../IService.h"
+#include "../util/TypeTraits.h"
 
 #include <functional>
 #include <vector>
@@ -26,22 +27,19 @@ class CoreRenderingService final: public IService
 {
     friend class App;
 public:
-	enum class ShaderType
-	{
-
-	};
-
+    
     ~CoreRenderingService();
     
     bool InitializeEngine();
     void GameLoop(std::function<void(const float)> clientUpdateMethod);
+    void RenderEntity(const EntityId);
     
     int GetRenderableWidth() const;
     int GetRenderableHeight() const;
     
 private:
     using SDL_GLContext = void*;
-    using GLuint = unsigned int;
+  
     
     CoreRenderingService(const ServiceLocator&);
     
@@ -62,6 +60,7 @@ private:
     GLuint mVBO;
 
     std::map<std::string, std::unique_ptr<Shader>> mShaders;
+    std::string mCurrentShaderUsed;
 };
 
 

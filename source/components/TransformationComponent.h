@@ -10,4 +10,17 @@
 
 #include "IComponent.h"
 
+#include <glm/vec3.hpp>
+
+class TransformationComponent final: public IComponent
+{
+public:
+    TransformationComponent();
+    
+    std::string VSerializeToString() const override;
+    bool VInitializeFromString(const std::string&) override;
+    
+    glm::vec3 mTranslation, mRotation, mScale;
+};
+
 #endif /* TransformationComponent_h */
