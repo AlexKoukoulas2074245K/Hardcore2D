@@ -11,7 +11,7 @@
 #include "components/AnimationComponent.h"
 #include "components/ShaderComponent.h"
 #include "events/EventCommunicationService.h"
-#include "engine/CoreRenderingService.h"
+#include "rendering/CoreRenderingService.h"
 #include "ServiceLocator.h"
 #include "resources/ResourceManager.h"
 #include "util/Logging.h"
@@ -37,7 +37,7 @@ App::~App()
 
 void App::Run()
 {
-    mCoreRenderingService->GameLoop([this](const float dt){ Update(dt); });
+	mCoreRenderingService->GameLoop([this](const float dt) { Update(dt); }, [this](const SDL_Event& event) { HandleInput(event); });
 }
 
 void App::Update(const float dt)
@@ -49,6 +49,11 @@ void App::Update(const float dt)
 	Log(LogType::INFO, "%.2f", dt);
     mCoreRenderingService->RenderEntity(mBackgroundId);
     mCoreRenderingService->RenderEntity(mPlayerId);
+}
+
+void App::HandleInput(const SDL_Event&)
+{
+
 }
 
 bool App::Initialize()
@@ -67,25 +72,23 @@ bool App::Initialize()
     if (!mCoreRenderingService->InitializeEngine()) return false;
     if (!mResourceManager->InitializeResourceLoaders()) return false;
     
-    auto playerTextureResourceId = mResourceManager->LoadResource("ninja.png");
+    auto playerTextureResourceId = mResourceManager->LoadResource("player.png");
     auto backgroundTextureResourceId = mResourceManager->LoadResource("jungle-sky.png");
     
     auto playerTextureId = mResourceManager->GetResource<TextureResource>(playerTextureResourceId).GetGLTextureId();
-    auto backgroundTextureId = mResourceManager->GetResource<TextureResource>(backgroundTextureResourceId).GetGLTextureId();
-    
+    auto backgroundTextureId = mResourceManager->GetResource<TextureResource>(backgroundTextureResourceId).GetGLTextureId();    
     
     mPlayerId = mEntityComponentManager->GenerateEntity();
     
     auto playerTransformComponent = std::make_unique<TransformationComponent>();
-    playerTransformComponent->mScale = glm::vec3(0.5f, 0.5f, 1.0f);	
+    playerTransformComponent->mScale = glm::vec3(80.0f, 80.0f, 1.0f);
+	playerTransformComponent->mTranslation = glm::vec3(640.0f, 360.0f, 10.0f);
     auto playerAnimationComponent = std::make_unique<AnimationComponent>(std::vector<GLuint>{playerTextureId});
     auto playerShaderComponent = std::make_unique<ShaderComponent>("basic");
-
     
     mEntityComponentManager->AddComponent<TransformationComponent>(mPlayerId, std::move(playerTransformComponent));
     mEntityComponentManager->AddComponent<AnimationComponent>(mPlayerId, std::move(playerAnimationComponent));
-    mEntityComponentManager->AddComponent<ShaderComponent>(mPlayerId, std::move(playerShaderComponent));
-    
+    mEntityComponentManager->AddComponent<ShaderComponent>(mPlayerId, std::move(playerShaderComponent));    
 
     mBackgroundId = mEntityComponentManager->GenerateEntity();
     
@@ -99,3 +102,5 @@ bool App::Initialize()
     
     return true;
 }
+
+

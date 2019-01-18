@@ -85,11 +85,13 @@ namespace glm
 	template<typename T>
 	GLM_FUNC_QUALIFIER mat<4, 4, T, defaultp> orthoLH(T left, T right, T bottom, T top, T zNear, T zFar)
 	{
+		__pragma(warning(push))
+		__pragma(warning(disable:4127))							
 		if(GLM_CONFIG_CLIP_CONTROL & GLM_CLIP_CONTROL_ZO_BIT)
 			return orthoLH_ZO(left, right, bottom, top, zNear, zFar);
 		else
 			return orthoLH_NO(left, right, bottom, top, zNear, zFar);
-
+		__pragma(warning(pop))
 	}
 
 	template<typename T>
@@ -111,7 +113,7 @@ namespace glm
 		else if(GLM_CONFIG_CLIP_CONTROL == GLM_CLIP_CONTROL_RH_ZO)
 			return orthoRH_ZO(left, right, bottom, top, zNear, zFar);
 		else if(GLM_CONFIG_CLIP_CONTROL == GLM_CLIP_CONTROL_RH_NO)
-			return orthoRH_NO(left, right, bottom, top, zNear, zFar);
+			return orthoRH_NO(left, right, bottom, top, zNear, zFar);		
 	}
 
 	template<typename T>

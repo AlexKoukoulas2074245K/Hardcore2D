@@ -19,6 +19,7 @@
 
 struct SDL_Window;
 struct SDL_Context;
+union SDL_Event;
 
 class ServiceLocator;
 class Shader;
@@ -31,7 +32,7 @@ public:
     ~CoreRenderingService();
     
     bool InitializeEngine();
-    void GameLoop(std::function<void(const float)> clientUpdateMethod);
+    void GameLoop(std::function<void(const float)> appUpdateMethod, std::function<void(const SDL_Event&)> appInputHandlingMethod);
     void RenderEntity(const EntityId);
     
     float GetRenderableWidth() const;
@@ -56,7 +57,8 @@ private:
     
     float mRenderableAreaWidth;
     float mRenderableAreaHeight;
-    
+	float mAspectRatio;
+
     GLuint mVAO;
     GLuint mVBO;
 

@@ -18,6 +18,8 @@ class EventCommunicationService;
 class CoreRenderingService;
 class ResourceManager;
 
+union SDL_Event;
+
 class App final
 {
 public:
@@ -29,14 +31,15 @@ public:
     
 private:
     void Update(const float dt);
-    
+	void HandleInput(const SDL_Event&);
+
     std::unique_ptr<ServiceLocator> mServiceLocator;
     std::unique_ptr<EntityComponentManager> mEntityComponentManager;
     std::unique_ptr<EventCommunicationService> mEventCommunicationService;
     std::unique_ptr<CoreRenderingService> mCoreRenderingService;
     std::unique_ptr<ResourceManager> mResourceManager;
     
-    EntityId mPlayerId;
+    EntityId mPlayerId;	
     EntityId mBackgroundId;
 };
 

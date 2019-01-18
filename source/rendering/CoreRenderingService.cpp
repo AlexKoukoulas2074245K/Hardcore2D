@@ -28,6 +28,10 @@
 #include <glm/gtc/matrix_transform.hpp>
 
 static const char* SHADER_DIRECTORY = "shaders/";
+static int tileRows = 18;
+static int tileCols = 32;
+static int tileSize = 40;
+
 
 static const GLfloat QUAD_VERTICES[] =
 {
@@ -46,6 +50,7 @@ CoreRenderingService::CoreRenderingService(const ServiceLocator& serviceLocator)
     , mVAO(0U)
     , mVBO(0U)
     , mCurrentShaderUsed("basic")
+	, mAspectRatio(0.0f)
 {
     
 }
@@ -70,7 +75,7 @@ bool CoreRenderingService::InitializeEngine()
     return true;
 }
 
-void CoreRenderingService::GameLoop(std::function<void(const float)> clientUpdateMethod)
+void CoreRenderingService::GameLoop(std::function<void(const float)> appUpdateMethod, std::function<void(const SDL_Event&)> appInputHandlingMethod)
 {
     SDL_Event event;
     float elapsedTicks = 0.0f;
@@ -89,6 +94,8 @@ void CoreRenderingService::GameLoop(std::function<void(const float)> clientUpdat
             {
                 case SDL_QUIT: mRunning = false; break;
             }
+	
+			appInputHandlingMethod(event);
         }
         
         // Calculate frame delta
@@ -98,7 +105,7 @@ void CoreRenderingService::GameLoop(std::function<void(const float)> clientUpdat
         const auto dt = lastFrameTicks * 0.001f;
 		
         // Update client
-        clientUpdateMethod(dt);
+        appUpdateMethod(dt);
        
         // Swap window buffers
         SDL_GL_SwapWindow(mSdlWindow);
@@ -175,11 +182,13 @@ bool CoreRenderingService::InitializeContext()
     SDL_DisplayMode displayMode;
     SDL_GetCurrentDisplayMode(0, &displayMode);
     
-    const auto defaultWindowWidth = static_cast<int>(displayMode.w * 0.66f);
-    const auto defaultWindowHeight = static_cast<int>(displayMode.h * 0.66f);
-    
+    //const auto defaultWindowWidth = static_cast<int>(displayMode.w * 0.66f);
+    //const auto defaultWindowHeight = static_cast<int>(displayMode.h * 0.66f);
+	const auto defaultWindowWidth = 1280;
+	const auto defaultWindowHeight = 720;
+
     // Create SDL window
-    mSdlWindow = SDL_CreateWindow("CMakeDemo", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, defaultWindowWidth, defaultWindowHeight, SDL_WINDOW_OPENGL);
+    mSdlWindow = SDL_CreateWindow("Hardcore2D", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, defaultWindowWidth, defaultWindowHeight, SDL_WINDOW_OPENGL);
     
     if (mSdlWindow == nullptr)
     {
@@ -214,6 +223,7 @@ bool CoreRenderingService::InitializeContext()
     SDL_GL_GetDrawableSize(mSdlWindow, &rendWidth, &rendHeight);
 	mRenderableAreaWidth = static_cast<float>(rendWidth);
 	mRenderableAreaHeight = static_cast<float>(rendHeight);
+	mAspectRatio = mRenderableAreaWidth/mRenderableAreaHeight;
 
     // Log GL driver info
     Log(LogType::INFO, "Vendor     : %s", GL_NO_CHECK(glGetString(GL_VENDOR)));
@@ -384,5 +394,11 @@ void CoreRenderingService::SetCommonShaderUniformsForEntity(const EntityId)
 	{		
 		glm::mat4 viewMatrix = glm::lookAtLH(glm::vec3(0.0f, 0.0f, -1.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
 		GL_CHECK(glUniformMatrix4fv(mShaders[mCurrentShaderUsed]->GetUniformNamesToLocations().at("view"), 1, GL_FALSE, (GLfloat*)&viewMatrix));
-	}	
+	}
+
+	if (shaderUniforms.count("proj") != 0)
+	{
+		glm::mat4 projMatrix = glm::orthoLH(0.0f, mRenderableAreaWidth, 0.0f, mRenderableAreaHeight, 0.001f, 100.0f);
+		GL_CHECK(glUniformMatrix4fv(mShaders[mCurrentShaderUsed]->GetUniformNamesToLocations().at("proj"), 1, GL_FALSE, (GLfloat*)&projMatrix));
+	}
 }
