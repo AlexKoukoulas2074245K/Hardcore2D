@@ -85,7 +85,7 @@ namespace glm
 	template<typename T>
 	GLM_FUNC_QUALIFIER mat<4, 4, T, defaultp> orthoLH(T left, T right, T bottom, T top, T zNear, T zFar)
 	{
-#ifdef __WIN32
+#ifdef _WIN32
 		__pragma(warning(push))
 		__pragma(warning(disable:4127))
 #endif
@@ -94,7 +94,7 @@ namespace glm
 		else
 			return orthoLH_NO(left, right, bottom, top, zNear, zFar);
         
-#ifdef __WIN32
+#ifdef _WIN32
 		__pragma(warning(pop))
 #endif
 	}
