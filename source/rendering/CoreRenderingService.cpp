@@ -28,9 +28,6 @@
 #include <glm/gtc/matrix_transform.hpp>
 
 static const char* SHADER_DIRECTORY = "shaders/";
-static int tileRows = 18;
-static int tileCols = 32;
-static int tileSize = 40;
 
 
 static const GLfloat QUAD_VERTICES[] =
@@ -47,10 +44,11 @@ CoreRenderingService::CoreRenderingService(const ServiceLocator& serviceLocator)
     , mSdlGLContext(nullptr)
     , mRenderableAreaWidth(0.0f)
     , mRenderableAreaHeight(0.0f)
+    , mAspectRatio(0.0f)
     , mVAO(0U)
     , mVBO(0U)
     , mCurrentShaderUsed("basic")
-	, mAspectRatio(0.0f)
+
 {
     
 }
