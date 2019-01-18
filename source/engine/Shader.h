@@ -1,6 +1,6 @@
 //
 //  Shader.h
-//  Ninja
+//  Hardcore2D
 //
 //  Created by Alex Koukoulas on 15/01/2019.
 //

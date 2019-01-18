@@ -1,6 +1,6 @@
 //
 //  TextFileResource.h
-//  Ninja
+//  Hardcore2D
 //
 //  Created by Alex Koukoulas on 14/01/2019.
 //

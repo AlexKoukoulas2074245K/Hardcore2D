@@ -1,6 +1,6 @@
 //
 //  IEvent.h
-//  Ninja
+//  Hardcore2D
 //
 //  Created by Alex Koukoulas on 07/01/2019.
 //

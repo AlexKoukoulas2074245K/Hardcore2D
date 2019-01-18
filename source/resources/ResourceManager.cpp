@@ -1,6 +1,6 @@
 //
 //  ResourceManager.cpp
-//  Ninja
+//  Hardcore2D
 //
 //  Created by Alex Koukoulas on 10/01/2019.
 //

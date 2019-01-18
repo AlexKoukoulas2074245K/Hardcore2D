@@ -1,6 +1,6 @@
 //
 //  ShaderComponent.cpp
-//  Ninja
+//  Hardcore2D
 //
 //  Created by Alex Koukoulas on 16/01/2019.
 //

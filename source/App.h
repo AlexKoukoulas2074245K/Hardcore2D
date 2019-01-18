@@ -1,6 +1,6 @@
 //
 //  App.h
-//  Ninja
+//  Hardcore2D
 //
 //  Created by Alex Koukoulas on 10/01/2019.
 //
@@ -36,7 +36,7 @@ private:
     std::unique_ptr<CoreRenderingService> mCoreRenderingService;
     std::unique_ptr<ResourceManager> mResourceManager;
     
-    EntityId mNinjaId;
+    EntityId mPlayerId;
     EntityId mBackgroundId;
 };
 

@@ -1,6 +1,6 @@
 //
 //  TextureResource.cpp
-//  Ninja
+//  Hardcore2D
 //
 //  Created by Alex Koukoulas on 13/01/2019.
 //
