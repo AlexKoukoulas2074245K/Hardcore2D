@@ -34,8 +34,8 @@ public:
     void GameLoop(std::function<void(const float)> clientUpdateMethod);
     void RenderEntity(const EntityId);
     
-    int GetRenderableWidth() const;
-    int GetRenderableHeight() const;
+    float GetRenderableWidth() const;
+    float GetRenderableHeight() const;
     
 private:
     using SDL_GLContext = void*;
@@ -46,15 +46,16 @@ private:
     bool InitializeContext();
     void InitializeRenderingPrimitive();
     void CompileAllShaders();
-    
+	void SetCommonShaderUniformsForEntity(const EntityId);
+
     const ServiceLocator& mServiceLocator;
     SDL_Window* mSdlWindow;
     SDL_GLContext mSdlGLContext;
     
     bool mRunning;
     
-    int mRenderableAreaWidth;
-    int mRenderableAreaHeight;
+    float mRenderableAreaWidth;
+    float mRenderableAreaHeight;
     
     GLuint mVAO;
     GLuint mVBO;

@@ -42,11 +42,11 @@ void App::Run()
 
 void App::Update(const float dt)
 {
-    //mEntityComponentManager->GetComponent<TransformationComponent>(mPlayerId).mTranslation.x += 0.2 * dt;
+    //mEntityComponentManager->GetComponent<TransformationComponent>(mPlayerId).mTranslation.x += 0.2f * dt;
     //mEntityComponentManager->GetComponent<TransformationComponent>(mPlayerId).mRotation.z += 0.2 * dt;
-    mEntityComponentManager->GetComponent<TransformationComponent>(mPlayerId).mScale.x += 0.02f * dt;
-    mEntityComponentManager->GetComponent<TransformationComponent>(mPlayerId).mScale.y += 0.02f * dt;
-    
+    //mEntityComponentManager->GetComponent<TransformationComponent>(mPlayerId).mScale.x += 0.02f * dt;
+    //mEntityComponentManager->GetComponent<TransformationComponent>(mPlayerId).mScale.y += 0.02f * dt;	
+	Log(LogType::INFO, "%.2f", dt);
     mCoreRenderingService->RenderEntity(mBackgroundId);
     mCoreRenderingService->RenderEntity(mPlayerId);
 }
@@ -77,7 +77,7 @@ bool App::Initialize()
     mPlayerId = mEntityComponentManager->GenerateEntity();
     
     auto playerTransformComponent = std::make_unique<TransformationComponent>();
-    playerTransformComponent->mScale = glm::vec3(0.5f, 0.5f, 1.0f);
+    playerTransformComponent->mScale = glm::vec3(0.5f, 0.5f, 1.0f);	
     auto playerAnimationComponent = std::make_unique<AnimationComponent>(std::vector<GLuint>{playerTextureId});
     auto playerShaderComponent = std::make_unique<ShaderComponent>("basic");
 
@@ -86,11 +86,12 @@ bool App::Initialize()
     mEntityComponentManager->AddComponent<AnimationComponent>(mPlayerId, std::move(playerAnimationComponent));
     mEntityComponentManager->AddComponent<ShaderComponent>(mPlayerId, std::move(playerShaderComponent));
     
+
     mBackgroundId = mEntityComponentManager->GenerateEntity();
     
     auto backgroundTransformComponent = std::make_unique<TransformationComponent>();
     auto backgroundAnimationComponent = std::make_unique<AnimationComponent>(std::vector<GLuint>{backgroundTextureId});
-    auto backgroundShaderComponent = std::make_unique<ShaderComponent>("basic");
+    auto backgroundShaderComponent = std::make_unique<ShaderComponent>("background");
     
     mEntityComponentManager->AddComponent<TransformationComponent>(mBackgroundId, std::move(backgroundTransformComponent));
     mEntityComponentManager->AddComponent<AnimationComponent>(mBackgroundId, std::move(backgroundAnimationComponent));

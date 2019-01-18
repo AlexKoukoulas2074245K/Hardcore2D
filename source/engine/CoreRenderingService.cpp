@@ -41,8 +41,8 @@ CoreRenderingService::CoreRenderingService(const ServiceLocator& serviceLocator)
     : mServiceLocator(serviceLocator)
     , mSdlWindow(nullptr)
     , mSdlGLContext(nullptr)
-    , mRenderableAreaWidth(0)
-    , mRenderableAreaHeight(0)
+    , mRenderableAreaWidth(0.0f)
+    , mRenderableAreaHeight(0.0f)
     , mVAO(0U)
     , mVBO(0U)
     , mCurrentShaderUsed("basic")
@@ -96,7 +96,7 @@ void CoreRenderingService::GameLoop(std::function<void(const float)> clientUpdat
         auto lastFrameTicks = currentTicks - elapsedTicks;
         elapsedTicks = currentTicks;
         const auto dt = lastFrameTicks * 0.001f;
-        
+		
         // Update client
         clientUpdateMethod(dt);
        
@@ -128,24 +128,26 @@ void CoreRenderingService::RenderEntity(const EntityId entityId)
         
         // Todo move world matrix construction elsewhere
         glm::mat4 worldMatrix(1.0f);
-        //worldMatrix = glm::translate(worldMatrix, transformationComponent.mTranslation);
+        worldMatrix = glm::translate(worldMatrix, transformationComponent.mTranslation);
         worldMatrix = glm::rotate(worldMatrix, transformationComponent.mRotation.x, glm::vec3(1.0f, 0.0f, 0.0f));
         worldMatrix = glm::rotate(worldMatrix, transformationComponent.mRotation.y, glm::vec3(0.0f, 1.0f, 0.0f));
         worldMatrix = glm::rotate(worldMatrix, transformationComponent.mRotation.z, glm::vec3(0.0f, 0.0f, 1.0f));
-        worldMatrix = glm::scale(worldMatrix, transformationComponent.mScale);
-        
-        GL_CHECK(glUniformMatrix4fv(mShaders[mCurrentShaderUsed]->GetUniformNamesToLocations().at("world"), 1, GL_FALSE, (GLfloat*) &worldMatrix));
+        worldMatrix = glm::scale(worldMatrix, transformationComponent.mScale);       		
+		
+        GL_CHECK(glUniformMatrix4fv(mShaders[mCurrentShaderUsed]->GetUniformNamesToLocations().at("world"), 1, GL_FALSE, (GLfloat*) &worldMatrix));		
     }
     
+	SetCommonShaderUniformsForEntity(entityId);
+
     GL_CHECK(glDrawArrays(GL_TRIANGLE_FAN, 0, 4));
 }
 
-int CoreRenderingService::GetRenderableWidth() const
+float CoreRenderingService::GetRenderableWidth() const
 {
     return mRenderableAreaWidth;
 }
 
-int CoreRenderingService::GetRenderableHeight() const
+float CoreRenderingService::GetRenderableHeight() const
 {
     return mRenderableAreaHeight;
 }
@@ -207,8 +209,12 @@ bool CoreRenderingService::InitializeContext()
 #endif
     
     // Get render buffer width/height
-    SDL_GL_GetDrawableSize(mSdlWindow, &mRenderableAreaWidth, &mRenderableAreaHeight);
-    
+	int rendWidth = 0;
+	int rendHeight = 0;
+    SDL_GL_GetDrawableSize(mSdlWindow, &rendWidth, &rendHeight);
+	mRenderableAreaWidth = static_cast<float>(rendWidth);
+	mRenderableAreaHeight = static_cast<float>(rendHeight);
+
     // Log GL driver info
     Log(LogType::INFO, "Vendor     : %s", GL_NO_CHECK(glGetString(GL_VENDOR)));
     Log(LogType::INFO, "Renderer   : %s", GL_NO_CHECK(glGetString(GL_RENDERER)));
@@ -367,4 +373,16 @@ void CoreRenderingService::CompileAllShaders()
             shaderUniformNames.insert(shaderUniformNames.end(), uniformNames.begin(), uniformNames.end());
 		}		
 	}
+}
+
+void CoreRenderingService::SetCommonShaderUniformsForEntity(const EntityId)
+{
+	//auto& entityComponentManager = mServiceLocator.ResolveService<EntityComponentManager>();
+	const auto& shaderUniforms = mShaders[mCurrentShaderUsed]->GetUniformNamesToLocations();
+
+	if (shaderUniforms.count("view") != 0)
+	{		
+		glm::mat4 viewMatrix = glm::lookAtLH(glm::vec3(0.0f, 0.0f, -1.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+		GL_CHECK(glUniformMatrix4fv(mShaders[mCurrentShaderUsed]->GetUniformNamesToLocations().at("view"), 1, GL_FALSE, (GLfloat*)&viewMatrix));
+	}	
 }
