@@ -73,7 +73,7 @@ bool CoreRenderingService::InitializeEngine()
     return true;
 }
 
-void CoreRenderingService::GameLoop(std::function<void(const float)> appUpdateMethod, std::function<void(const SDL_Event&)> appInputHandlingMethod)
+void CoreRenderingService::GameLoop(std::function<void(const float)> appUpdateMethod)
 {
     SDL_Event event;
     float elapsedTicks = 0.0f;
@@ -92,8 +92,6 @@ void CoreRenderingService::GameLoop(std::function<void(const float)> appUpdateMe
             {
                 case SDL_QUIT: mRunning = false; break;
             }
-	
-			appInputHandlingMethod(event);
         }
         
         // Calculate frame delta
@@ -110,41 +108,44 @@ void CoreRenderingService::GameLoop(std::function<void(const float)> appUpdateMe
     }
 }
 
-void CoreRenderingService::RenderEntity(const EntityId entityId)
+void CoreRenderingService::RenderEntities(const std::vector<EntityId>& entityIds)
 {
-    auto& entityComponentManager = mServiceLocator.ResolveService<EntityComponentManager>();
-    
-    if (entityComponentManager.HasComponent<ShaderComponent>(entityId))
+    for (const auto entityId: entityIds)
     {
-        const auto& shaderComponent = entityComponentManager.GetComponent<ShaderComponent>(entityId);
-        mCurrentShaderUsed = shaderComponent.GetShaderName();
-        GL_CHECK(glUseProgram(mShaders[mCurrentShaderUsed]->GetShaderId()));
-    }
-    
-    if (entityComponentManager.HasComponent<AnimationComponent>(entityId))
-    {
-        const auto& animationComponent = entityComponentManager.GetComponent<AnimationComponent>(entityId);
-        GL_CHECK(glBindTexture(GL_TEXTURE_2D, animationComponent.GetCurrentFrameResourceId()));
-    }
-    
-    if (entityComponentManager.HasComponent<TransformationComponent>(entityId))
-    {
-        const auto& transformationComponent = entityComponentManager.GetComponent<TransformationComponent>(entityId);
+        auto& entityComponentManager = mServiceLocator.ResolveService<EntityComponentManager>();
         
-        // Todo move world matrix construction elsewhere
-        glm::mat4 worldMatrix(1.0f);
-        worldMatrix = glm::translate(worldMatrix, transformationComponent.mTranslation);
-        worldMatrix = glm::rotate(worldMatrix, transformationComponent.mRotation.x, glm::vec3(1.0f, 0.0f, 0.0f));
-        worldMatrix = glm::rotate(worldMatrix, transformationComponent.mRotation.y, glm::vec3(0.0f, 1.0f, 0.0f));
-        worldMatrix = glm::rotate(worldMatrix, transformationComponent.mRotation.z, glm::vec3(0.0f, 0.0f, 1.0f));
-        worldMatrix = glm::scale(worldMatrix, transformationComponent.mScale);       		
-		
-        GL_CHECK(glUniformMatrix4fv(mShaders[mCurrentShaderUsed]->GetUniformNamesToLocations().at("world"), 1, GL_FALSE, (GLfloat*) &worldMatrix));		
+        if (entityComponentManager.HasComponent<ShaderComponent>(entityId))
+        {
+            const auto& shaderComponent = entityComponentManager.GetComponent<ShaderComponent>(entityId);
+            mCurrentShaderUsed = shaderComponent.GetShaderName();
+            GL_CHECK(glUseProgram(mShaders[mCurrentShaderUsed]->GetShaderId()));
+        }
+        
+        if (entityComponentManager.HasComponent<AnimationComponent>(entityId))
+        {
+            const auto& animationComponent = entityComponentManager.GetComponent<AnimationComponent>(entityId);
+            GL_CHECK(glBindTexture(GL_TEXTURE_2D, animationComponent.GetCurrentFrameResourceId()));
+        }
+        
+        if (entityComponentManager.HasComponent<TransformationComponent>(entityId))
+        {
+            const auto& transformationComponent = entityComponentManager.GetComponent<TransformationComponent>(entityId);
+            
+            // Todo move world matrix construction elsewhere
+            glm::mat4 worldMatrix(1.0f);
+            worldMatrix = glm::translate(worldMatrix, transformationComponent.GetTranslation());
+            worldMatrix = glm::rotate(worldMatrix, transformationComponent.GetRotation().x, glm::vec3(1.0f, 0.0f, 0.0f));
+            worldMatrix = glm::rotate(worldMatrix, transformationComponent.GetRotation().y, glm::vec3(0.0f, 1.0f, 0.0f));
+            worldMatrix = glm::rotate(worldMatrix, transformationComponent.GetRotation().z, glm::vec3(0.0f, 0.0f, 1.0f));
+            worldMatrix = glm::scale(worldMatrix, transformationComponent.GetScale());
+            
+            GL_CHECK(glUniformMatrix4fv(mShaders[mCurrentShaderUsed]->GetUniformNamesToLocations().at("world"), 1, GL_FALSE, (GLfloat*) &worldMatrix));
+        }
+        
+        SetCommonShaderUniformsForEntity(entityId);
+        
+        GL_CHECK(glDrawArrays(GL_TRIANGLE_FAN, 0, 4));
     }
-    
-	SetCommonShaderUniformsForEntity(entityId);
-
-    GL_CHECK(glDrawArrays(GL_TRIANGLE_FAN, 0, 4));
 }
 
 float CoreRenderingService::GetRenderableWidth() const

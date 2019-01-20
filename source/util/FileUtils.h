@@ -10,6 +10,7 @@
 
 #include <vector>
 #include <string>
+#include <algorithm>
 
 #ifndef _WIN32
 #include <dirent.h>
@@ -97,7 +98,7 @@ inline std::vector<std::string> GetAllFilenamesInDirectory(const std::string& di
 	}
 #endif
 
-    
+    std::sort(fileNames.begin(), fileNames.end());
     return fileNames;
 }
 

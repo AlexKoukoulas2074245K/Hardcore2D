@@ -32,8 +32,8 @@ public:
     ~CoreRenderingService();
     
     bool InitializeEngine();
-    void GameLoop(std::function<void(const float)> appUpdateMethod, std::function<void(const SDL_Event&)> appInputHandlingMethod);
-    void RenderEntity(const EntityId);
+    void GameLoop(std::function<void(const float)> appUpdateMethod);
+    void RenderEntities(const std::vector<EntityId>& entityIds);
     
     float GetRenderableWidth() const;
     float GetRenderableHeight() const;

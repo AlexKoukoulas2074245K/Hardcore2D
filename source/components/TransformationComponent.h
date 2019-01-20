@@ -20,6 +20,15 @@ public:
     std::string VSerializeToString() const override;
     bool VInitializeFromString(const std::string&) override;
     
+    glm::vec3& GetTranslation();
+    glm::vec3& GetRotation();
+    glm::vec3& GetScale();
+    
+    const glm::vec3& GetTranslation() const;
+    const glm::vec3& GetRotation() const;
+    const glm::vec3& GetScale() const;
+    
+private:
     glm::vec3 mTranslation, mRotation, mScale;
 };
 

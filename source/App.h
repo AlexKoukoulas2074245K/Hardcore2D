@@ -11,12 +11,16 @@
 #include "util/TypeTraits.h"
 
 #include <memory>
+#include <vector>
 
 class ServiceLocator;
 class EntityComponentManager;
 class EventCommunicationService;
 class CoreRenderingService;
 class ResourceManager;
+class PhysicsSystem;
+class InputHandler;
+class PlayerInputController;
 
 union SDL_Event;
 
@@ -31,16 +35,18 @@ public:
     
 private:
     void Update(const float dt);
-	void HandleInput(const SDL_Event&);
+	void HandleInput();
 
     std::unique_ptr<ServiceLocator> mServiceLocator;
     std::unique_ptr<EntityComponentManager> mEntityComponentManager;
     std::unique_ptr<EventCommunicationService> mEventCommunicationService;
     std::unique_ptr<CoreRenderingService> mCoreRenderingService;
     std::unique_ptr<ResourceManager> mResourceManager;
+    std::unique_ptr<InputHandler> mInputHandler;
+    std::unique_ptr<PhysicsSystem> mPhysicsSystem;
+    std::unique_ptr<PlayerInputController> mPlayerInputController;
     
-    EntityId mPlayerId;	
-    EntityId mBackgroundId;
+    std::vector<EntityId> mActiveEntityIds;
 };
 
 #endif /* App_h */

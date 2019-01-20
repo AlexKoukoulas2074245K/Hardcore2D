@@ -24,3 +24,33 @@ bool TransformationComponent::VInitializeFromString(const std::string&)
 {
     return true;
 }
+
+glm::vec3& TransformationComponent::GetTranslation()
+{
+    return mTranslation;
+}
+
+glm::vec3& TransformationComponent::GetRotation()
+{
+    return mRotation;
+}
+
+glm::vec3& TransformationComponent::GetScale()
+{
+    return mScale;
+}
+
+const glm::vec3& TransformationComponent::GetTranslation() const
+{
+    return mTranslation;
+}
+
+const glm::vec3& TransformationComponent::GetRotation() const
+{
+    return mRotation;
+}
+
+const glm::vec3& TransformationComponent::GetScale() const
+{
+    return mScale;
+}
