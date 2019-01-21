@@ -30,31 +30,27 @@ bool PlayerInputController::ConsumeInputAction(const InputHandler::InputAction& 
     {
         case InputHandler::ActionType::MOVE_LEFT:
         {
-            auto& entityPhysicsComponent = mEntityComponentManager.GetComponent<PhysicsComponent>(mEntityId);
-            auto targetXVelocity = 0.0f;
+            auto& entityPhysicsComponent = mEntityComponentManager.GetComponent<PhysicsComponent>(mEntityId);            
             
             switch (inputAction.second)
             {
                 case InputHandler::ActionState::START:
-                case InputHandler::ActionState::CONTINUE: targetXVelocity = -MOVE_X_VELOCITY; break;
-                case InputHandler::ActionState::STOP: break;
+				case InputHandler::ActionState::CONTINUE: if (entityPhysicsComponent.GetVelocity().x > -MOVE_X_VELOCITY) entityPhysicsComponent.GetVelocity().x -= MOVE_X_VELOCITY; break;
+                case InputHandler::ActionState::STOP: entityPhysicsComponent.GetVelocity().x = 0.0f; break;
             }
-            
-            entityPhysicsComponent.GetVelocity().x = targetXVelocity;
+                        
         } break;
         case InputHandler::ActionType::MOVE_RIGHT:
         {
-            auto& entityPhysicsComponent = mEntityComponentManager.GetComponent<PhysicsComponent>(mEntityId);
-            auto targetXVelocity = 0.0f;
+            auto& entityPhysicsComponent = mEntityComponentManager.GetComponent<PhysicsComponent>(mEntityId);            
             
             switch (inputAction.second)
             {
                 case InputHandler::ActionState::START:
-                case InputHandler::ActionState::CONTINUE: targetXVelocity = MOVE_X_VELOCITY; break;
-                case InputHandler::ActionState::STOP: break;
+				case InputHandler::ActionState::CONTINUE: if (entityPhysicsComponent.GetVelocity().x < MOVE_X_VELOCITY) entityPhysicsComponent.GetVelocity().x += MOVE_X_VELOCITY; break;
+				case InputHandler::ActionState::STOP: entityPhysicsComponent.GetVelocity().x = 0.0f; break;
             }
-            
-            entityPhysicsComponent.GetVelocity().x = targetXVelocity;
+                        
         } break;
         case InputHandler::ActionType::JUMP:
         {
