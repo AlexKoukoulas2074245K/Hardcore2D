@@ -14,9 +14,8 @@
 
 #include <glm/glm.hpp>
 
-static const float MOVE_X_VELOCITY = 240.0f;
-static const float JUMP_HEIGHT = 80.0f;
-static const float JUMP_LENGTH = 160.0f;
+static const float HORIZONTAL_SPEED = 240.0f;
+static const float JUMP_START_SPEED = 480.0f;
 
 PlayerController::PlayerController(EntityComponentManager& entityComponentManager, const EntityId entityId)
     : mEntityComponentManager(entityComponentManager)
@@ -37,7 +36,7 @@ bool PlayerController::ConsumeInputAction(const InputHandler::InputAction& input
                 case InputHandler::ActionState::START:
 				case InputHandler::ActionState::CONTINUE:
                 {
-                    MoveEntityByCustomVelocityCommand(mEntityComponentManager, mEntityId, glm::vec3(-MOVE_X_VELOCITY, 0.0f, 0.0f)).Execute();
+                    MoveEntityByCustomVelocityCommand(mEntityComponentManager, mEntityId, glm::vec3(-HORIZONTAL_SPEED, 0.0f, 0.0f)).Execute();
                 } break;
                 case InputHandler::ActionState::STOP:
                 {
@@ -53,7 +52,7 @@ bool PlayerController::ConsumeInputAction(const InputHandler::InputAction& input
                 case InputHandler::ActionState::START:
                 case InputHandler::ActionState::CONTINUE:
                 {
-                    MoveEntityByCustomVelocityCommand(mEntityComponentManager, mEntityId, glm::vec3(MOVE_X_VELOCITY, 0.0f, 0.0f)).Execute();
+                    MoveEntityByCustomVelocityCommand(mEntityComponentManager, mEntityId, glm::vec3(HORIZONTAL_SPEED, 0.0f, 0.0f)).Execute();
                 } break;
                 case InputHandler::ActionState::STOP:
                 {
@@ -67,9 +66,8 @@ bool PlayerController::ConsumeInputAction(const InputHandler::InputAction& input
             switch (inputAction.second)
             {
                 case InputHandler::ActionState::START:
-                {
-                    const auto targetJumpVelocity = (2.0f * JUMP_HEIGHT * MOVE_X_VELOCITY)/(0.5f * JUMP_LENGTH);
-                    MoveEntityByCustomVelocityCommand(mEntityComponentManager, mEntityId, glm::vec3(0.0f, targetJumpVelocity, 0.0f)).Execute();
+                {   
+                    SetEntityCustomVelocityCommand(mEntityComponentManager, mEntityId, glm::vec3(entityPhysicsComponent.GetVelocity().x, JUMP_START_SPEED, entityPhysicsComponent.GetVelocity().z)).Execute();                   
                 } break;
                 case InputHandler::ActionState::CONTINUE:
                 case InputHandler::ActionState::STOP: break;

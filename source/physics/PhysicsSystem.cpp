@@ -34,7 +34,7 @@ void PhysicsSystem::UpdateEntities(const std::vector<EntityId>& entityIds, const
             physicsComponent.GetVelocity() = ClampToMax(physicsComponent.GetVelocity(), physicsComponent.GetMaxVelocity());
             physicsComponent.GetVelocity() = ClampToMin(physicsComponent.GetVelocity(), physicsComponent.GetMinVelocity());
             
-            transformationComponent.GetTranslation() += physicsComponent.GetVelocity() * dt + 0.5f * physicsComponent.GetGravity() * dt * dt;
+            transformationComponent.GetTranslation() += physicsComponent.GetVelocity() * dt;
             physicsComponent.GetVelocity() += physicsComponent.GetGravity() * dt;
             
             if (physicsComponent.GetBodyType() == PhysicsComponent::BodyType::DYNAMIC)

@@ -92,8 +92,8 @@ bool App::Initialize()
     playerTransformComponent->GetScale() = glm::vec3(80.0f, 80.0f, 1.0f);
 	playerTransformComponent->GetTranslation() = glm::vec3(640.0f, 360.0f, 10.0f);
     playerPhysicsComponent->GetGravity() = glm::vec3(0.0f, -1680.0f, 0.0f);
-    playerPhysicsComponent->GetMinVelocity() = glm::vec3(-240.0f, -2000000.0f, 0.0f);
-    playerPhysicsComponent->GetMaxVelocity() = glm::vec3(240.0f, 2000000.0f, 0.0f);
+    playerPhysicsComponent->GetMinVelocity() = glm::vec3(-240.0f, -480.0f, 0.0f);
+    playerPhysicsComponent->GetMaxVelocity() = glm::vec3(240.0f, 480.0f, 0.0f);
                                                                      
     mEntityComponentManager->AddComponent<TransformationComponent>(mActiveEntityIds[1], std::move(playerTransformComponent));
     mEntityComponentManager->AddComponent<AnimationComponent>(mActiveEntityIds[1], std::move(playerAnimationComponent));
