@@ -10,7 +10,6 @@
 #include "../components/EntityComponentManager.h"
 #include "../components/PhysicsComponent.h"
 
-
 const StringId SetEntityCustomVelocityCommand::COMMAND_CLASS_ID("SetEntityCustomVelocityCommand");
 
 SetEntityCustomVelocityCommand::SetEntityCustomVelocityCommand(EntityComponentManager& entityComponentManager, const EntityId entityId, const glm::vec3& velocity)
@@ -22,7 +21,7 @@ SetEntityCustomVelocityCommand::SetEntityCustomVelocityCommand(EntityComponentMa
 }
 
 void SetEntityCustomVelocityCommand::Execute()
-{
+{    
     mEntityComponentManager.GetComponent<PhysicsComponent>(mEntityId).GetVelocity() = mVelocity;
 }
 

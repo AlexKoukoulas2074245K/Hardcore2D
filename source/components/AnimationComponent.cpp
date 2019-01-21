@@ -7,9 +7,10 @@
 
 #include "AnimationComponent.h"
 
-AnimationComponent::AnimationComponent(const std::vector<GLuint>& frameTextureIds)
-    : mFrameTextureIds(frameTextureIds)
+AnimationComponent::AnimationComponent(const std::map<StringId, std::vector<GLuint>>& animations)
+    : mAnimations(animations)
     , mCurrentFrameIndex(0)
+    , mCurrentAnimation(animations.begin()->first)
 {
 }
 
@@ -25,10 +26,15 @@ bool AnimationComponent::VInitializeFromString(const std::string&)
 
 GLuint AnimationComponent::GetCurrentFrameResourceId() const
 {
-    return mFrameTextureIds[mCurrentFrameIndex];
+    return mAnimations.at(mCurrentAnimation)[mCurrentFrameIndex];
+}
+
+void AnimationComponent::SetCurrentAnimation(const StringId animation)
+{
+    mCurrentAnimation = animation;
 }
 
 void AnimationComponent::AdvanceFrame()
 {
-    mCurrentFrameIndex = (mCurrentFrameIndex + 1) % mFrameTextureIds.size();
+    mCurrentFrameIndex = (mCurrentFrameIndex + 1) % mAnimations.at(mCurrentAnimation).size();
 }

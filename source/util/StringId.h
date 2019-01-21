@@ -28,8 +28,13 @@ public:
 	size_t GetStringId() const { return mStringId; }
 
 private:
-	const std::string mString;
-	const size_t mStringId;
+	std::string mString;
+	size_t mStringId;
 };
+
+inline bool operator < (const StringId& lhs, const StringId& rhs)
+{
+    return lhs.GetStringId() < rhs.GetStringId();
+}
 
 #endif /* StringId_h */

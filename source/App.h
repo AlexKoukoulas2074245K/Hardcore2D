@@ -17,6 +17,7 @@ class ServiceLocator;
 class EntityComponentManager;
 class EventCommunicationService;
 class CoreRenderingService;
+class AnimationService;
 class ResourceManager;
 class PhysicsSystem;
 class InputHandler;
@@ -41,6 +42,7 @@ private:
     std::unique_ptr<EntityComponentManager> mEntityComponentManager;
     std::unique_ptr<EventCommunicationService> mEventCommunicationService;
     std::unique_ptr<CoreRenderingService> mCoreRenderingService;
+    std::unique_ptr<AnimationService> mAnimationService;
     std::unique_ptr<ResourceManager> mResourceManager;
     std::unique_ptr<InputHandler> mInputHandler;
     std::unique_ptr<PhysicsSystem> mPhysicsSystem;
