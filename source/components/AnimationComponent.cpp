@@ -9,8 +9,8 @@
 
 AnimationComponent::AnimationComponent(const std::map<StringId, std::vector<GLuint>>& animations)
     : mAnimations(animations)
-    , mCurrentFrameIndex(0)
     , mCurrentAnimation(animations.begin()->first)
+    , mCurrentFrameIndex(0)
 {
 }
 
