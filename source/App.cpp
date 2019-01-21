@@ -20,7 +20,7 @@
 #include "util/Logging.h"
 #include "gl/Context.h"
 #include "resources/TextureResource.h"
-#include "InputHandler.h"
+#include "input/InputHandler.h"
 
 #include <vector>
 

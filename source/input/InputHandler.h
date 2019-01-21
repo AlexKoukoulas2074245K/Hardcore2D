@@ -8,7 +8,7 @@
 #ifndef InputHandler_h
 #define InputHandler_h
 
-#include "IService.h"
+#include "../IService.h"
 
 #include <vector>
 #include <utility>

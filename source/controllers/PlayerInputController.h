@@ -8,7 +8,7 @@
 #ifndef PlayerInputController_h
 #define PlayerInputController_h
 
-#include "../InputHandler.h"
+#include "../input/InputHandler.h"
 #include "../util/TypeTraits.h"
 
 class EntityComponentManager;

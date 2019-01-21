@@ -8,7 +8,7 @@
 #include "PlayerInputController.h"
 #include "../components/PhysicsComponent.h"
 #include "../components/EntityComponentManager.h"
-#include "../commands/SetEntityVelocityCommand.h"
+#include "../commands/SetEntityMovementVelocityCommand.h"
 #include "../util/Logging.h"
 
 #include <glm/glm.hpp>
