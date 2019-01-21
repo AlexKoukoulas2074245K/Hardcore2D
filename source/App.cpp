@@ -6,7 +6,7 @@
 //
 
 #include "App.h"
-#include "controllers/PlayerInputController.h"
+#include "controllers/PlayerController.h"
 #include "components/EntityComponentManager.h"
 #include "components/TransformationComponent.h"
 #include "components/AnimationComponent.h"
@@ -92,13 +92,15 @@ bool App::Initialize()
     playerTransformComponent->GetScale() = glm::vec3(80.0f, 80.0f, 1.0f);
 	playerTransformComponent->GetTranslation() = glm::vec3(640.0f, 360.0f, 10.0f);
     playerPhysicsComponent->GetGravity() = glm::vec3(0.0f, -1680.0f, 0.0f);
+    playerPhysicsComponent->GetMinVelocity() = glm::vec3(-240.0f, -2000000.0f, 0.0f);
+    playerPhysicsComponent->GetMaxVelocity() = glm::vec3(240.0f, 2000000.0f, 0.0f);
                                                                      
     mEntityComponentManager->AddComponent<TransformationComponent>(mActiveEntityIds[1], std::move(playerTransformComponent));
     mEntityComponentManager->AddComponent<AnimationComponent>(mActiveEntityIds[1], std::move(playerAnimationComponent));
     mEntityComponentManager->AddComponent<ShaderComponent>(mActiveEntityIds[1], std::move(playerShaderComponent));
     mEntityComponentManager->AddComponent<PhysicsComponent>(mActiveEntityIds[1], std::move(playerPhysicsComponent));
     
-    mPlayerInputController = std::make_unique<PlayerInputController>(*mEntityComponentManager, mActiveEntityIds[1]);
+    mPlayerController = std::make_unique<PlayerController>(*mEntityComponentManager, mActiveEntityIds[1]);
     
     for (int i = 0; i < 10; ++i)
     {
@@ -132,7 +134,7 @@ void App::HandleInput()
     const auto inputActions = mInputHandler->TranslateInputToActions();
     for (const auto inputAction: inputActions)
     {
-        mPlayerInputController->ConsumeInputAction(inputAction);
+        mPlayerController->ConsumeInputAction(inputAction);
     }
 }
 

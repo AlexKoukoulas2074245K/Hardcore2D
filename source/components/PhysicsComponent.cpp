@@ -11,6 +11,8 @@ PhysicsComponent::PhysicsComponent(const BodyType bodyType)
     : mBodyType(bodyType)
     , mVelocity(0.0f, 0.0f, 0.0f)
     , mGravity(0.0f, 0.0f, 0.0f)
+    , mMaxVelocity(0.0f, 0.0f, 0.0f)
+    , mMinVelocity(0.0f, 0.0f, 0.0f)
 {
     
 }
@@ -45,6 +47,16 @@ glm::vec3& PhysicsComponent::GetGravity()
     return mGravity;
 }
 
+glm::vec3& PhysicsComponent::GetMaxVelocity()
+{
+    return mMaxVelocity;
+}
+
+glm::vec3& PhysicsComponent::GetMinVelocity()
+{
+    return mMinVelocity;
+}
+
 const glm::vec3& PhysicsComponent::GetVelocity() const
 {
     return mVelocity;
@@ -54,4 +66,13 @@ const glm::vec3& PhysicsComponent::GetGravity() const
     return mGravity;
 }
 
+const glm::vec3& PhysicsComponent::GetMaxVelocity() const
+{
+    return mMaxVelocity;
+}
+
+const glm::vec3& PhysicsComponent::GetMinVelocity() const
+{
+    return mMinVelocity;
+}
 

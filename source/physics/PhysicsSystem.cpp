@@ -6,6 +6,8 @@
 //
 
 #include "PhysicsSystem.h"
+#include "../util/MathUtils.h"
+#include "../util/Logging.h"
 #include "../ServiceLocator.h"
 #include "../components/EntityComponentManager.h"
 #include "../components/PhysicsComponent.h"
@@ -25,8 +27,12 @@ void PhysicsSystem::UpdateEntities(const std::vector<EntityId>& entityIds, const
     {
         if (entityComponentManager.HasComponent<PhysicsComponent>(entityId))
         {
+            
             auto& transformationComponent = entityComponentManager.GetComponent<TransformationComponent>(entityId);
             auto& physicsComponent = entityComponentManager.GetComponent<PhysicsComponent>(entityId);
+            
+            physicsComponent.GetVelocity() = ClampToMax(physicsComponent.GetVelocity(), physicsComponent.GetMaxVelocity());
+            physicsComponent.GetVelocity() = ClampToMin(physicsComponent.GetVelocity(), physicsComponent.GetMinVelocity());
             
             transformationComponent.GetTranslation() += physicsComponent.GetVelocity() * dt + 0.5f * physicsComponent.GetGravity() * dt * dt;
             physicsComponent.GetVelocity() += physicsComponent.GetGravity() * dt;

@@ -1,22 +1,22 @@
 //
-//  PlayerInputController.h
+//  PlayerController.h
 //  Hardcore2D
 //
 //  Created by Alex Koukoulas on 18/01/2019.
 //
 
-#ifndef PlayerInputController_h
-#define PlayerInputController_h
+#ifndef PlayerController_h
+#define PlayerController_h
 
 #include "../input/InputHandler.h"
 #include "../util/TypeTraits.h"
 
 class EntityComponentManager;
 
-class PlayerInputController final
+class PlayerController final
 {
 public:
-    PlayerInputController(EntityComponentManager&, const EntityId);
+    PlayerController(EntityComponentManager&, const EntityId);
     
     bool ConsumeInputAction(const InputHandler::InputAction&);
     
@@ -25,4 +25,4 @@ private:
     EntityId mEntityId;
 };
 
-#endif /* PlayerInputController_h */
+#endif /* PlayerController_h */

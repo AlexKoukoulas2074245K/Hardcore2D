@@ -29,14 +29,20 @@ public:
     
     glm::vec3& GetVelocity();
     glm::vec3& GetGravity();
+    glm::vec3& GetMaxVelocity();
+    glm::vec3& GetMinVelocity();
     
     const glm::vec3& GetVelocity() const;
     const glm::vec3& GetGravity() const;
+    const glm::vec3& GetMaxVelocity() const;
+    const glm::vec3& GetMinVelocity() const;
     
 private:
     BodyType mBodyType;
     glm::vec3 mVelocity;
     glm::vec3 mGravity;
+    glm::vec3 mMaxVelocity;
+    glm::vec3 mMinVelocity;
 };
 
 #endif /* PhysicsComponent_h */

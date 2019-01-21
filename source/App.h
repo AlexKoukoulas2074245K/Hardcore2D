@@ -20,7 +20,7 @@ class CoreRenderingService;
 class ResourceManager;
 class PhysicsSystem;
 class InputHandler;
-class PlayerInputController;
+class PlayerController;
 
 union SDL_Event;
 
@@ -44,7 +44,7 @@ private:
     std::unique_ptr<ResourceManager> mResourceManager;
     std::unique_ptr<InputHandler> mInputHandler;
     std::unique_ptr<PhysicsSystem> mPhysicsSystem;
-    std::unique_ptr<PlayerInputController> mPlayerInputController;
+    std::unique_ptr<PlayerController> mPlayerController;
     
     std::vector<EntityId> mActiveEntityIds;
 };
