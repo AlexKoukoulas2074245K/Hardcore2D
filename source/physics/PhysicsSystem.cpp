@@ -28,7 +28,8 @@ void PhysicsSystem::UpdateEntities(const std::vector<EntityId>& entityIds, const
 {
     for (const auto entityId: entityIds)
     {
-        if (mEntityComponentManager->HasComponent<PhysicsComponent>(entityId))
+        if (mEntityComponentManager->HasComponent<PhysicsComponent>(entityId) && 
+            mEntityComponentManager->GetComponent<PhysicsComponent>(entityId).GetBodyType() != PhysicsComponent::BodyType::STATIC)
         {
             
             auto& transformationComponent = mEntityComponentManager->GetComponent<TransformationComponent>(entityId);
@@ -41,12 +42,15 @@ void PhysicsSystem::UpdateEntities(const std::vector<EntityId>& entityIds, const
             
             transformationComponent.GetTranslation() += physicsComponent.GetVelocity() * dt;
             
-            CheckForCollisions(entityId, entityIds);
+            if (CheckForCollisions(entityId, entityIds))
+            {
+                transformationComponent.GetTranslation() -= physicsComponent.GetVelocity() * dt;
+            }            
         }
     }
 }
 
-void PhysicsSystem::CheckForCollisions(const EntityId referenceId, const std::vector<EntityId>& entityIds)
+bool PhysicsSystem::CheckForCollisions(const EntityId referenceId, const std::vector<EntityId>& entityIds)
 {
     for (const EntityId otherEntityId: entityIds)
     {
@@ -55,16 +59,29 @@ void PhysicsSystem::CheckForCollisions(const EntityId referenceId, const std::ve
             const auto& transfA = mEntityComponentManager->GetComponent<TransformationComponent>(referenceId);
             const auto& transfB = mEntityComponentManager->GetComponent<TransformationComponent>(otherEntityId);
             
-            auto& physicsA = mEntityComponentManager->GetComponent<PhysicsComponent>(referenceId);
-            //const auto& physicsB = mEntityComponentManager->GetComponent<PhysicsComponent>(otherEntityId);
+            //auto& physicsA = mEntityComponentManager->GetComponent<PhysicsComponent>(referenceId);
+            //const auto& physicsB = mEntityComponentManager->GetComponent<PhysicsComponent>(otherEntityId);                        
+
+            const auto rectAX = transfA.GetTranslation().x;
+            const auto rectAY = transfA.GetTranslation().y;
             
-            if (transfA.GetTranslation().x + transfA.GetScale().x > transfB.GetTranslation().x &&
-                transfA.GetTranslation().y + transfA.GetScale().y > transfB.GetTranslation().y &&
-                transfB.GetTranslation().x + transfB.GetScale().x > transfA.GetTranslation().x &&
-                transfB.GetTranslation().y + transfB.GetScale().y > transfB.GetTranslation().y)
-            {
-                physicsA.GetVelocity() = glm::vec3(0.0f, 0.0f, 0.0f);
+            const auto rectBX = transfB.GetTranslation().x;
+            const auto rectBY = transfB.GetTranslation().y;
+
+            const auto rectAWidth = transfA.GetScale().x;
+            const auto rectBWidth = transfB.GetScale().x;
+
+            const auto rectAHeight = transfA.GetScale().y;
+            const auto rectBHeight = transfB.GetScale().y;
+
+            if (Abs(rectAX - rectBX) * 2.0f < (rectAWidth + rectBWidth) &&
+                Abs(rectAY - rectBY) * 2.0f < (rectAHeight + rectBHeight))
+            {        
+                Log(LogType::INFO, "Deltas in: %.2f, %.2f", ((rectAWidth + rectBWidth) - Abs(rectAX - rectBX) * 2.0f), ((rectAHeight + rectBHeight) - Abs(rectAY - rectBY) * 2.0f));
+                return true;
             }
         }
     }
+    
+    return false;
 }

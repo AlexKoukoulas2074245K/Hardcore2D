@@ -10,6 +10,7 @@
 
 #include "IComponent.h"
 #include <glm/vec3.hpp>
+#include <glm/vec2.hpp>
 
 class PhysicsComponent final: public IComponent
 {
@@ -19,30 +20,47 @@ public:
         STATIC, KINEMATIC, DYNAMIC
     };
     
-    PhysicsComponent(const BodyType);
+    struct Hitbox
+    {
+        Hitbox(const glm::vec2& centerPoint, const glm::vec2& dimensions)
+            : mCenterPoint(centerPoint)
+            , mDimensions(dimensions)
+        {
+        }
+
+        glm::vec2 mCenterPoint;
+        glm::vec2 mDimensions;
+    };
+
+    PhysicsComponent(const BodyType, const Hitbox&);
     
     std::string VSerializeToString() const override;
     bool VInitializeFromString(const std::string&) override;
-    
-    BodyType GetBodyType() const;
+        
     void SetBodyType(const BodyType);
-    
+    void SetGrounded(const bool isGrounded);
+
     glm::vec3& GetVelocity();
     glm::vec3& GetGravity();
     glm::vec3& GetMaxVelocity();
     glm::vec3& GetMinVelocity();
-    
+        
     const glm::vec3& GetVelocity() const;
     const glm::vec3& GetGravity() const;
     const glm::vec3& GetMaxVelocity() const;
     const glm::vec3& GetMinVelocity() const;
-    
+    const Hitbox& GetHitBox() const;
+    BodyType GetBodyType() const;
+    bool IsGrounded() const;
+
 private:
     BodyType mBodyType;
+    Hitbox mHitBox;
     glm::vec3 mVelocity;
     glm::vec3 mGravity;
     glm::vec3 mMaxVelocity;
-    glm::vec3 mMinVelocity;
+    glm::vec3 mMinVelocity;    
+    bool mIsGrounded;    
 };
 
 #endif /* PhysicsComponent_h */

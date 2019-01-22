@@ -143,7 +143,7 @@ void CoreRenderingService::RenderEntities(const std::vector<EntityId>& entityIds
             worldMatrix = glm::rotate(worldMatrix, transformationComponent.GetRotation().x, glm::vec3(1.0f, 0.0f, 0.0f));
             worldMatrix = glm::rotate(worldMatrix, transformationComponent.GetRotation().y, glm::vec3(0.0f, 1.0f, 0.0f));
             worldMatrix = glm::rotate(worldMatrix, transformationComponent.GetRotation().z, glm::vec3(0.0f, 0.0f, 1.0f));
-            worldMatrix = glm::scale(worldMatrix, transformationComponent.GetScale());
+            worldMatrix = glm::scale(worldMatrix, transformationComponent.GetScale() * 0.5f);
             
             GL_CHECK(glUniformMatrix4fv(mShaders[mCurrentShaderUsed]->GetUniformNamesToLocations().at("world"), 1, GL_FALSE, (GLfloat*) &worldMatrix));
         }
