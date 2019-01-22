@@ -14,16 +14,22 @@
 #include <vector>
 
 class ServiceLocator;
+class EntityComponentManager;
+
 class PhysicsSystem final: public IService
 {
     friend class App;
 public:
+    void Initialize();
     void UpdateEntities(const std::vector<EntityId>& entityIds, const float dt);
     
 private:
     PhysicsSystem(const ServiceLocator&);
     
+    void CheckForCollisions(const EntityId, const std::vector<EntityId>&);
+    
     const ServiceLocator& mServiceLocator;
+    EntityComponentManager* mEntityComponentManager;
 };
 
 #endif /* PhysicsSystem_h */

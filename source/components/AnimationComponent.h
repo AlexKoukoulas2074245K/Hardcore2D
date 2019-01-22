@@ -18,19 +18,34 @@
 class AnimationComponent final: public IComponent
 {
 public:
-    AnimationComponent(const std::map<StringId, std::vector<GLuint>>& animations);
+    enum class FacingDirection
+    {
+        LEFT, RIGHT
+    };
+    
+    AnimationComponent(const std::map<StringId, std::vector<GLuint>>& animations, const float animationDuration);
     
     std::string VSerializeToString() const override;
     bool VInitializeFromString(const std::string&) override;
     
+    FacingDirection GetCurrentFacingDirection() const;
+    StringId GetCurrentAnimation() const;
     GLuint GetCurrentFrameResourceId() const;
-    void SetCurrentAnimation(const StringId animation);
+    float GetAnimationDuration() const;
+    float GetAnimationTimer() const;
+    
+    void SetFacingDirection(const FacingDirection);
+    void ChangeAnimation(const StringId newAnimation);
+    void SetAnimationTimer(const float animationTimer);
     void AdvanceFrame();
     
 private:
     const std::map<StringId, std::vector<GLuint>> mAnimations;
+    FacingDirection mFacingDirection;
     StringId mCurrentAnimation;
     int mCurrentFrameIndex;
+    float mAnimationDuration;
+    float mAnimationTimer;
 };
 
 #endif /* AnimationComponent_h */

@@ -24,8 +24,7 @@ public:
 private:
     AnimationService(const ServiceLocator&);
 
-    const ServiceLocator& mServiceLocator;    
-    float mAnimationTimer;
+    const ServiceLocator& mServiceLocator;
 };
 
 #endif

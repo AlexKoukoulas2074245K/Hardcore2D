@@ -125,6 +125,12 @@ void CoreRenderingService::RenderEntities(const std::vector<EntityId>& entityIds
         {
             const auto& animationComponent = entityComponentManager.GetComponent<AnimationComponent>(entityId);
             GL_CHECK(glBindTexture(GL_TEXTURE_2D, animationComponent.GetCurrentFrameResourceId()));
+            
+            if (mCurrentShaderUsed == "basic")
+            {
+                const auto textureFlip = animationComponent.GetCurrentFacingDirection() == AnimationComponent::FacingDirection::LEFT ? 1 : 0;
+                GL_CHECK(glUniform1i(mShaders[mCurrentShaderUsed]->GetUniformNamesToLocations().at("flip_tex_hor"), textureFlip));
+            }
         }
         
         if (entityComponentManager.HasComponent<TransformationComponent>(entityId))
@@ -271,7 +277,8 @@ void CoreRenderingService::CompileAllShaders()
     
     for (const auto fileName: shaderFileNames)
 	{
-		if (GetFileExtension(fileName) == "vs")
+        const auto fileExtension = GetFileExtension(fileName);
+		if (fileExtension == "vs")
 		{
 			// Generate vertex shader id
 			currentVertexShaderId = GL_NO_CHECK(glCreateShader(GL_VERTEX_SHADER));
@@ -352,7 +359,7 @@ void CoreRenderingService::CompileAllShaders()
             // Save shader
             mShaders[programName] = std::make_unique<Shader>(currentProgramId, shaderUniformNamesToLocations);
 		}
-		else
+		else if (fileExtension == "fs")
 		{
 			// Generate fragment shader id
 			currentFragmentShaderId = GL_NO_CHECK(glCreateShader(GL_FRAGMENT_SHADER));

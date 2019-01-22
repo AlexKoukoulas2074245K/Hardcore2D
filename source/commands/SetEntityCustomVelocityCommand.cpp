@@ -9,6 +9,8 @@
 
 #include "../components/EntityComponentManager.h"
 #include "../components/PhysicsComponent.h"
+#include "../components/AnimationComponent.h"
+#include "../util/MathUtils.h"
 
 const StringId SetEntityCustomVelocityCommand::COMMAND_CLASS_ID("SetEntityCustomVelocityCommand");
 
@@ -21,7 +23,15 @@ SetEntityCustomVelocityCommand::SetEntityCustomVelocityCommand(EntityComponentMa
 }
 
 void SetEntityCustomVelocityCommand::Execute()
-{    
+{
+    if (mEntityComponentManager.HasComponent<AnimationComponent>(mEntityId))
+    {
+        auto& animationComponent = mEntityComponentManager.GetComponent<AnimationComponent>(mEntityId);
+        if (Abs(mVelocity.x) < 1.0f && animationComponent.GetCurrentAnimation() != StringId("idle"))
+        {
+            animationComponent.ChangeAnimation(StringId("idle"));
+        }
+    }
     mEntityComponentManager.GetComponent<PhysicsComponent>(mEntityId).GetVelocity() = mVelocity;
 }
 

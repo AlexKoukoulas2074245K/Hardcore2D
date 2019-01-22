@@ -12,25 +12,25 @@
 #include "../components/PhysicsComponent.h"
 
 AnimationService::AnimationService(const ServiceLocator& serviceLocator)
-    : mServiceLocator(serviceLocator)    
-    , mAnimationTimer(0.0f)
+    : mServiceLocator(serviceLocator)
 {
 }
 
 void AnimationService::UpdateAnimations(const std::vector<EntityId>& entityIds, const  float dt)
 {
     auto& entityComponentManager = mServiceLocator.ResolveService<EntityComponentManager>();
-    mAnimationTimer += dt;
     
-    if (mAnimationTimer > 0.05f)
+    for (const auto entityId : entityIds)
     {
-        for (const auto entityId : entityIds)
+        if (entityComponentManager.HasComponent<AnimationComponent>(entityId))
         {
-            if (entityComponentManager.HasComponent<AnimationComponent>(entityId))
+            auto& animationComponent = entityComponentManager.GetComponent<AnimationComponent>(entityId);
+            animationComponent.SetAnimationTimer(animationComponent.GetAnimationTimer() + dt);
+            if (animationComponent.GetAnimationTimer() > animationComponent.GetAnimationDuration())
             {
-                entityComponentManager.GetComponent<AnimationComponent>(entityId).AdvanceFrame();
-            }            
+                animationComponent.SetAnimationTimer(0.0f);
+                animationComponent.AdvanceFrame();
+            }
         }
-        mAnimationTimer = 0.0f;
-    }        
+    }
 }

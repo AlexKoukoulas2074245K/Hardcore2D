@@ -64,14 +64,19 @@ bool App::Initialize()
     mServiceLocator->RegisterService<ResourceManager>(mResourceManager.get());
     mServiceLocator->RegisterService<InputHandler>(mInputHandler.get());
     
+    mPhysicsSystem->Initialize();
     if (!mCoreRenderingService->InitializeEngine()) return false;
     if (!mResourceManager->InitializeResourceLoaders()) return false;
         
     auto backgroundTextureResourceId = mResourceManager->LoadResource("jungle-sky.png");    
     auto groundTextureResourceId = mResourceManager->LoadResource("environments/jungle_tiles/ground_top_middle.png");
+    auto groundLeftTextureResourceId = mResourceManager->LoadResource("environments/jungle_tiles/ground_top_edge_left_side.png");
+    auto groundRightTextureResourceId = mResourceManager->LoadResource("environments/jungle_tiles/ground_top_edge_right_side.png");
         
-    auto backgroundTextureId = mResourceManager->GetResource<TextureResource>(backgroundTextureResourceId).GetGLTextureId();    
+    auto backgroundTextureId = mResourceManager->GetResource<TextureResource>(backgroundTextureResourceId).GetGLTextureId();
     auto groundTextureId = mResourceManager->GetResource<TextureResource>(groundTextureResourceId).GetGLTextureId();
+    auto groundLeftTextureId = mResourceManager->GetResource<TextureResource>(groundLeftTextureResourceId).GetGLTextureId();
+    auto groundRightTextureId = mResourceManager->GetResource<TextureResource>(groundRightTextureResourceId).GetGLTextureId();
                                                          
     mActiveEntityIds.push_back(mEntityComponentManager->GenerateEntity());
     
@@ -79,7 +84,7 @@ bool App::Initialize()
     auto backgroundShaderComponent = std::make_unique<ShaderComponent>("background");    
     mEntityComponentManager->AddComponent<TransformationComponent>(mActiveEntityIds[0], std::move(backgroundTransformComponent));
     std::map<StringId, std::vector<GLuint>> backgroundAnimations = { { StringId("background"),{ backgroundTextureId } } };
-    auto backgroundAnimationComponent = std::make_unique<AnimationComponent>(backgroundAnimations);
+    auto backgroundAnimationComponent = std::make_unique<AnimationComponent>(backgroundAnimations, 100.0f);
     mEntityComponentManager->AddComponent<AnimationComponent>(mActiveEntityIds[0], std::move(backgroundAnimationComponent));
     mEntityComponentManager->AddComponent<ShaderComponent>(mActiveEntityIds[0], std::move(backgroundShaderComponent));
     
@@ -88,28 +93,28 @@ bool App::Initialize()
     auto playerTransformComponent = std::make_unique<TransformationComponent>();
     std::map<StringId, std::vector<GLuint>> playerAnimations;
     
-    auto idleAnimationFileNames = GetAllFilenamesInDirectory(mResourceManager->GetRootResourceDirectory() + "characters/player/idle_nosword");
+    auto idleAnimationFileNames = GetAllFilenamesInDirectory(mResourceManager->GetRootResourceDirectory() + "characters/player/idle");
     for (const auto fileName : idleAnimationFileNames)
     {
-        auto resourceId = mResourceManager->LoadResource("characters/player/idle_nosword/" + fileName);
-        playerAnimations[StringId("idle_nosword")].push_back(mResourceManager->GetResource<TextureResource>(resourceId).GetGLTextureId());
+        auto resourceId = mResourceManager->LoadResource("characters/player/idle/" + fileName);
+        playerAnimations[StringId("idle")].push_back(mResourceManager->GetResource<TextureResource>(resourceId).GetGLTextureId());
     }
 
-    auto runAnimationFileNames = GetAllFilenamesInDirectory(mResourceManager->GetRootResourceDirectory() + "characters/player/run");
+    auto runAnimationFileNames = GetAllFilenamesInDirectory(mResourceManager->GetRootResourceDirectory() + "characters/player/running");
     for (const auto fileName : runAnimationFileNames)
     {
-        auto resourceId = mResourceManager->LoadResource("characters/player/run/" + fileName);
-        playerAnimations[StringId("run")].push_back(mResourceManager->GetResource<TextureResource>(resourceId).GetGLTextureId());
+        auto resourceId = mResourceManager->LoadResource("characters/player/running/" + fileName);
+        playerAnimations[StringId("running")].push_back(mResourceManager->GetResource<TextureResource>(resourceId).GetGLTextureId());
     }    
   
-    auto playerAnimationComponent = std::make_unique<AnimationComponent>(playerAnimations);
-    playerAnimationComponent->SetCurrentAnimation(StringId("idle_nosword"));
+    auto playerAnimationComponent = std::make_unique<AnimationComponent>(playerAnimations, 0.05f);
+    playerAnimationComponent->ChangeAnimation(StringId("idle"));
 
     auto playerShaderComponent = std::make_unique<ShaderComponent>("basic");
     auto playerPhysicsComponent = std::make_unique<PhysicsComponent>(PhysicsComponent::BodyType::DYNAMIC);
     
     playerTransformComponent->GetScale() = glm::vec3(80.0f, 80.0f, 1.0f);
-	playerTransformComponent->GetTranslation() = glm::vec3(640.0f, 360.0f, 10.0f);
+	playerTransformComponent->GetTranslation() = glm::vec3(640.0f, 800.0f, 10.0f);
     playerPhysicsComponent->GetGravity() = glm::vec3(0.0f, -1680.0f, 0.0f);
     playerPhysicsComponent->GetMinVelocity() = glm::vec3(-240.0f, -480.0f, 0.0f);
     playerPhysicsComponent->GetMaxVelocity() = glm::vec3(240.0f, 480.0f, 0.0f);
@@ -121,17 +126,53 @@ bool App::Initialize()
     
     mPlayerController = std::make_unique<PlayerController>(*mEntityComponentManager, mActiveEntityIds[1]);
     
-    for (int i = 0; i < 10; ++i)
+    for (int i = 1; i < 2; ++i)
     {
         mActiveEntityIds.push_back(mEntityComponentManager->GenerateEntity());
         auto transformationComponent = std::make_unique<TransformationComponent>();
-        transformationComponent->GetScale() = glm::vec3(80.0f, 80.0f, 1.0f);
+        transformationComponent->GetScale() = glm::vec3(40.0f, 40.0f, 1.0f);
+        transformationComponent->GetTranslation() = glm::vec3(100.0f, 40.0f, 1.0f);
+        auto shaderComponent = std::make_unique<ShaderComponent>("basic");
+        auto physicsComponent = std::make_unique<PhysicsComponent>(PhysicsComponent::BodyType::STATIC);
+        
+        std::map<StringId, std::vector<GLuint>> groundTextureAnimations = {{ StringId("ground_left"), {groundLeftTextureId} }};
+        auto animationComponent = std::make_unique<AnimationComponent>(groundTextureAnimations, 100.0f);
+        
+        mEntityComponentManager->AddComponent<TransformationComponent>(mActiveEntityIds.back(), std::move(transformationComponent));
+        mEntityComponentManager->AddComponent<AnimationComponent>(mActiveEntityIds.back(), std::move(animationComponent));
+        mEntityComponentManager->AddComponent<PhysicsComponent>(mActiveEntityIds.back(), std::move(physicsComponent));
+        mEntityComponentManager->AddComponent<ShaderComponent>(mActiveEntityIds.back(), std::move(shaderComponent));
+    }
+   
+    for (int i = 1; i < 10; ++i)
+    {
+        mActiveEntityIds.push_back(mEntityComponentManager->GenerateEntity());
+        auto transformationComponent = std::make_unique<TransformationComponent>();
+        transformationComponent->GetScale() = glm::vec3(40.0f, 40.0f, 1.0f);
         transformationComponent->GetTranslation() = glm::vec3(40.0f + static_cast<float>(i) * 80.0f, 40.0f, 1.0f);
         auto shaderComponent = std::make_unique<ShaderComponent>("basic");
         auto physicsComponent = std::make_unique<PhysicsComponent>(PhysicsComponent::BodyType::STATIC);
 
         std::map<StringId, std::vector<GLuint>> groundTextureAnimations = {{ StringId("ground"), {groundTextureId} }};
-        auto animationComponent = std::make_unique<AnimationComponent>(groundTextureAnimations);
+        auto animationComponent = std::make_unique<AnimationComponent>(groundTextureAnimations, 100.0f);
+        
+        mEntityComponentManager->AddComponent<TransformationComponent>(mActiveEntityIds.back(), std::move(transformationComponent));
+        mEntityComponentManager->AddComponent<AnimationComponent>(mActiveEntityIds.back(), std::move(animationComponent));
+        mEntityComponentManager->AddComponent<PhysicsComponent>(mActiveEntityIds.back(), std::move(physicsComponent));
+        mEntityComponentManager->AddComponent<ShaderComponent>(mActiveEntityIds.back(), std::move(shaderComponent));
+    }
+    
+    for (int i = 1; i < 2; ++i)
+    {
+        mActiveEntityIds.push_back(mEntityComponentManager->GenerateEntity());
+        auto transformationComponent = std::make_unique<TransformationComponent>();
+        transformationComponent->GetScale() = glm::vec3(40.0f, 40.0f, 1.0f);
+        transformationComponent->GetTranslation() = glm::vec3(840.0f, 40.0f, 1.0f);
+        auto shaderComponent = std::make_unique<ShaderComponent>("basic");
+        auto physicsComponent = std::make_unique<PhysicsComponent>(PhysicsComponent::BodyType::STATIC);
+        
+        std::map<StringId, std::vector<GLuint>> groundTextureAnimations = {{ StringId("ground_right"), {groundRightTextureId} }};
+        auto animationComponent = std::make_unique<AnimationComponent>(groundTextureAnimations, 100.0f);
         
         mEntityComponentManager->AddComponent<TransformationComponent>(mActiveEntityIds.back(), std::move(transformationComponent));
         mEntityComponentManager->AddComponent<AnimationComponent>(mActiveEntityIds.back(), std::move(animationComponent));

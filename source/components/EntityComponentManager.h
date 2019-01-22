@@ -31,6 +31,10 @@ public:
     inline bool HasComponent(const EntityId entityId) const
     {
         const auto componentTypeId = GetTypeHash<ComponentType>();
+        if (mEntityComponentMap.count(entityId) == 0)
+        {
+            assert(false);
+        }
         return mEntityComponentMap.at(entityId).count(componentTypeId) == 1;
     }
     

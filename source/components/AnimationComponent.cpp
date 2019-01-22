@@ -6,11 +6,15 @@
 //
 
 #include "AnimationComponent.h"
+#include "../util/Logging.h"
 
-AnimationComponent::AnimationComponent(const std::map<StringId, std::vector<GLuint>>& animations)
+AnimationComponent::AnimationComponent(const std::map<StringId, std::vector<GLuint>>& animations, const float animationDuration)
     : mAnimations(animations)
+    , mFacingDirection(FacingDirection::RIGHT)
     , mCurrentAnimation(animations.begin()->first)
     , mCurrentFrameIndex(0)
+    , mAnimationDuration(animationDuration)
+    , mAnimationTimer(0.0f)
 {
 }
 
@@ -24,14 +28,45 @@ bool AnimationComponent::VInitializeFromString(const std::string&)
     return true;
 }
 
+AnimationComponent::FacingDirection AnimationComponent::GetCurrentFacingDirection() const
+{
+    return mFacingDirection;
+}
+
+StringId AnimationComponent::GetCurrentAnimation() const
+{
+    return mCurrentAnimation;
+}
+
 GLuint AnimationComponent::GetCurrentFrameResourceId() const
 {
     return mAnimations.at(mCurrentAnimation)[mCurrentFrameIndex];
 }
 
-void AnimationComponent::SetCurrentAnimation(const StringId animation)
+float AnimationComponent::GetAnimationDuration() const
 {
-    mCurrentAnimation = animation;
+    return mAnimationDuration;
+}
+
+float AnimationComponent::GetAnimationTimer() const
+{
+    return mAnimationTimer;
+}
+
+void AnimationComponent::SetFacingDirection(const FacingDirection facingDirection)
+{
+    mFacingDirection = facingDirection;
+}
+
+void AnimationComponent::ChangeAnimation(const StringId newAnimation)
+{
+    mCurrentAnimation = newAnimation;
+    mCurrentFrameIndex = 0;
+}
+
+void AnimationComponent::SetAnimationTimer(const float animationTimer)
+{
+    mAnimationTimer = animationTimer;
 }
 
 void AnimationComponent::AdvanceFrame()

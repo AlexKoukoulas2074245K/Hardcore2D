@@ -85,7 +85,7 @@ inline std::vector<std::string> GetAllFilenamesInDirectory(const std::string& di
         {
             const std::string fileName(ent->d_name);
             
-            if (fileName != "." && fileName != "..")
+            if (fileName[0] != '.')
             {
                 fileNames.push_back(fileName);
             }
