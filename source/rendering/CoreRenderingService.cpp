@@ -387,7 +387,7 @@ void CoreRenderingService::RenderEntity(const EntityId entityId)
     {
         const auto& animationComponent = mEntityComponentManager->GetComponent<AnimationComponent>(entityId);
         
-        GL_CHECK(glBindTexture(GL_TEXTURE_2D, mDebugHitboxDisplay ? mResourceManager->GetResource<TextureResource>("debug/debug_square.png").GetGLTextureId() : animationComponent.GetCurrentFrameResourceId()));
+        GL_CHECK(glBindTexture(GL_TEXTURE_2D, animationComponent.GetCurrentFrameResourceId()));
 
         if (mCurrentShaderUsed == "basic")
         {
@@ -405,17 +405,8 @@ void CoreRenderingService::RenderEntity(const EntityId entityId)
         worldMatrix = glm::translate(worldMatrix, transformationComponent.GetTranslation());
         worldMatrix = glm::rotate(worldMatrix, transformationComponent.GetRotation().x, glm::vec3(1.0f, 0.0f, 0.0f));
         worldMatrix = glm::rotate(worldMatrix, transformationComponent.GetRotation().y, glm::vec3(0.0f, 1.0f, 0.0f));
-        worldMatrix = glm::rotate(worldMatrix, transformationComponent.GetRotation().z, glm::vec3(0.0f, 0.0f, 1.0f));
-
-        if (mDebugHitboxDisplay && mEntityComponentManager->HasComponent<PhysicsComponent>(entityId))
-        {
-            const auto& physicsComponent = mEntityComponentManager->GetComponent<PhysicsComponent>(entityId);
-            worldMatrix = glm::scale(worldMatrix,  glm::vec3(physicsComponent.GetHitBox().mDimensions.x * 0.5f, physicsComponent.GetHitBox().mDimensions.y * 0.5f, 1.0));
-        }
-        else
-        {
-            worldMatrix = glm::scale(worldMatrix, transformationComponent.GetScale() * 0.5f);
-        }
+        worldMatrix = glm::rotate(worldMatrix, transformationComponent.GetRotation().z, glm::vec3(0.0f, 0.0f, 1.0f));        
+        worldMatrix = glm::scale(worldMatrix, transformationComponent.GetScale() * 0.5f);
 
         GL_CHECK(glUniformMatrix4fv(mShaders[mCurrentShaderUsed]->GetUniformNamesToLocations().at("world"), 1, GL_FALSE, (GLfloat*)&worldMatrix));
     }
@@ -423,6 +414,29 @@ void CoreRenderingService::RenderEntity(const EntityId entityId)
     PrepareSpecificShaderUniformsForEntityRendering(entityId);
 
     GL_CHECK(glDrawArrays(GL_TRIANGLE_FAN, 0, 4));
+ 
+
+    if (mDebugHitboxDisplay && mEntityComponentManager->HasComponent<PhysicsComponent>(entityId))
+    {                
+        const auto& physicsComponent = mEntityComponentManager->GetComponent<PhysicsComponent>(entityId);
+        const auto& transformationComponent = mEntityComponentManager->GetComponent<TransformationComponent>(entityId);
+        glm::mat4 worldMatrix(1.0f);
+        worldMatrix = glm::translate(worldMatrix, transformationComponent.GetTranslation());
+        worldMatrix = glm::rotate(worldMatrix, transformationComponent.GetRotation().x, glm::vec3(1.0f, 0.0f, 0.0f));
+        worldMatrix = glm::rotate(worldMatrix, transformationComponent.GetRotation().y, glm::vec3(0.0f, 1.0f, 0.0f));
+        worldMatrix = glm::rotate(worldMatrix, transformationComponent.GetRotation().z, glm::vec3(0.0f, 0.0f, 1.0f));        
+        worldMatrix = glm::scale(worldMatrix, glm::vec3(physicsComponent.GetHitBox().mDimensions.x * 0.5f, physicsComponent.GetHitBox().mDimensions.y * 0.5f, 1.0));
+
+        mCurrentShaderUsed = "debug_rect";
+        GL_CHECK(glUseProgram(mShaders[mCurrentShaderUsed]->GetShaderId()));
+        GL_CHECK(glUniformMatrix4fv(mShaders[mCurrentShaderUsed]->GetUniformNamesToLocations().at("world"), 1, GL_FALSE, (GLfloat*)&worldMatrix));
+        GL_CHECK(glBindTexture(GL_TEXTURE_2D, mResourceManager->GetResource<TextureResource>("debug/debug_square.png").GetGLTextureId()));
+
+        PrepareSpecificShaderUniformsForEntityRendering(entityId);
+
+        GL_CHECK(glDrawArrays(GL_TRIANGLE_FAN, 0, 4));
+    }
+    
 }
 
 void CoreRenderingService::PrepareSpecificShaderUniformsForEntityRendering(const EntityId)

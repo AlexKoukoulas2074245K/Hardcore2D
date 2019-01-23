@@ -30,8 +30,7 @@ void PhysicsSystem::UpdateEntities(const std::vector<EntityId>& entityIds, const
     {
         if (mEntityComponentManager->HasComponent<PhysicsComponent>(entityId) && 
             mEntityComponentManager->GetComponent<PhysicsComponent>(entityId).GetBodyType() != PhysicsComponent::BodyType::STATIC)
-        {
-            
+        {            
             auto& thisEntityTransformationComponent = mEntityComponentManager->GetComponent<TransformationComponent>(entityId);
             auto& thisEntityPhysicsComponent = mEntityComponentManager->GetComponent<PhysicsComponent>(entityId);
             
@@ -49,7 +48,8 @@ void PhysicsSystem::UpdateEntities(const std::vector<EntityId>& entityIds, const
             auto collisionCheckEntityId = CheckAndGetCollidedEntity(entityId, entityIds);            
 
             // If any were found, push the current entity outside of them
-            if (collisionCheckEntityId != entityId)
+            if (collisionCheckEntityId != entityId &&                 
+                mEntityComponentManager->GetComponent<PhysicsComponent>(collisionCheckEntityId).GetBodyType() != PhysicsComponent::BodyType::DYNAMIC)
             {
                 PushEntityOutsideOtherEntityInAxis(entityId, collisionCheckEntityId, Axis::X_AXIS);
             }
@@ -61,7 +61,8 @@ void PhysicsSystem::UpdateEntities(const std::vector<EntityId>& entityIds, const
             collisionCheckEntityId = CheckAndGetCollidedEntity(entityId, entityIds);            
 
             // If any were found, push the current entity outside of them
-            if (collisionCheckEntityId != entityId)
+            if (collisionCheckEntityId != entityId &&
+                mEntityComponentManager->GetComponent<PhysicsComponent>(collisionCheckEntityId).GetBodyType() != PhysicsComponent::BodyType::DYNAMIC)
             {
                 PushEntityOutsideOtherEntityInAxis(entityId, collisionCheckEntityId, Axis::Y_AXIS);
             }
