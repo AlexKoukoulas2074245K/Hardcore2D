@@ -18,7 +18,7 @@
 #include <functional>
 
 class IEvent;
-class BaseEventCommunicator;
+class EventCommunicator;
 class EventCommunicationService final: public IService
 {
     friend class App;
@@ -26,21 +26,21 @@ public:
     using EventCallback = std::function<void(const IEvent&)>;
     
     template <class EventType>
-    inline void RegisterEventCallback(BaseEventCommunicator* listener, EventCallback eventCallback)
+    inline void RegisterEventCallback(EventCommunicator* listener, EventCallback eventCallback)
     {
         const auto eventTypeHash = GetTypeHash<EventType>();
         mEventCallbackRegistry[eventTypeHash].push_back(std::make_pair(listener, eventCallback));
     }
     
-    void DispatchEvent(BaseEventCommunicator* dispatcher, std::unique_ptr<IEvent> evt);
+    void DispatchEvent(EventCommunicator* dispatcher, std::unique_ptr<IEvent> evt);
     
-    void UnregisterAllCallbacksForListener(BaseEventCommunicator* listener);
+    void UnregisterAllCallbacksForListener(EventCommunicator* listener);
     
 private:
     EventCommunicationService() = default;
     
-    std::unordered_map<size_t, std::vector<std::pair<BaseEventCommunicator*, EventCallback>>> mEventCallbackRegistry;
-    std::vector<std::pair<std::string, BaseEventCommunicator*>> mEventDispatchingHistory;
+    std::unordered_map<size_t, std::vector<std::pair<EventCommunicator*, EventCallback>>> mEventCallbackRegistry;
+    std::vector<std::pair<std::string, EventCommunicator*>> mEventDispatchingHistory;
 };
 
 #endif /* EventCommunicationService_h */

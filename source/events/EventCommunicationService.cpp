@@ -8,7 +8,7 @@
 #include "EventCommunicationService.h"
 #include "../util/Logging.h"
 
-void EventCommunicationService::DispatchEvent(BaseEventCommunicator* dispatcher, std::unique_ptr<IEvent> evt)
+void EventCommunicationService::DispatchEvent(EventCommunicator* dispatcher, std::unique_ptr<IEvent> evt)
 {
     auto event = std::move(evt);
     auto& eventImpl = *(event.get());
@@ -29,7 +29,7 @@ void EventCommunicationService::DispatchEvent(BaseEventCommunicator* dispatcher,
     }
 }
 
-void EventCommunicationService::UnregisterAllCallbacksForListener(BaseEventCommunicator* listener)
+void EventCommunicationService::UnregisterAllCallbacksForListener(EventCommunicator* listener)
 {
     for (auto& eventTypeCallbackVecPair: mEventCallbackRegistry)
     {

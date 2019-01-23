@@ -8,7 +8,7 @@
 /*
 #include "components/DummyComponent.h"
 #include "services/ServiceLocator.h"
-#include "events/BaseEventCommunicator.h"
+#include "events/EventCommunicator.h"
 #include "components/EntityComponentManager.h"
 #include "events/EventCommunicationService.h"
 #include "util/SDLCommonUtils.h"

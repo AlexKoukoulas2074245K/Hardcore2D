@@ -29,17 +29,17 @@ std::vector<InputAction> InputHandler::TranslateInputToActions()
         // Key down this frame but not last frame (tap)
         if (keyboardState[entry.first] && !mPreviousKeyboardState[entry.first])
         {
-            inputActions.emplace_back(std::make_pair(entry.second, ActionState::START));
+            inputActions.emplace_back(InputAction(entry.second, InputAction::ActionState::START));
         }
         // Key down this frame and last frame (continuation)
         else if (keyboardState[entry.first] && mPreviousKeyboardState[entry.first])
         {
-            inputActions.emplace_back(std::make_pair(entry.second, ActionState::CONTINUE));
+            inputActions.emplace_back(InputAction(entry.second, InputAction::ActionState::CONTINUE));
         }
         // Key up this frame, but down last frame
         else if (!keyboardState[entry.first] && mPreviousKeyboardState[entry.first])
         {
-            inputActions.emplace_back(std::make_pair(entry.second, ActionState::STOP));
+            inputActions.emplace_back(InputAction(entry.second, InputAction::ActionState::STOP));
         }
     }
     
@@ -49,8 +49,9 @@ std::vector<InputAction> InputHandler::TranslateInputToActions()
 
 void InputHandler::SetDefaultKeybindings()
 {
-    mKeybindingsToActions[SDL_SCANCODE_LEFT] = ActionType::MOVE_LEFT;
-    mKeybindingsToActions[SDL_SCANCODE_RIGHT] = ActionType::MOVE_RIGHT;
-    mKeybindingsToActions[SDL_SCANCODE_Z] = ActionType::JUMP;
-    mKeybindingsToActions[SDL_SCANCODE_X] = ActionType::ATTACK;
+    mKeybindingsToActions[SDL_SCANCODE_LEFT] = InputAction::ActionType::MOVE_LEFT;
+    mKeybindingsToActions[SDL_SCANCODE_RIGHT] = InputAction::ActionType::MOVE_RIGHT;
+    mKeybindingsToActions[SDL_SCANCODE_Z] = InputAction::ActionType::JUMP;
+    mKeybindingsToActions[SDL_SCANCODE_X] = InputAction::ActionType::ATTACK;
+    mKeybindingsToActions[SDL_SCANCODE_H] = InputAction::ActionType::DEBUG_TOGGLE_HITBOX_DISPLAY;
 }

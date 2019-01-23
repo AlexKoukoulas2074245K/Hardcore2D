@@ -10,16 +10,26 @@
 
 #include <utility>
 
-enum class ActionType
+struct InputAction
 {
-    MOVE_LEFT, MOVE_RIGHT, JUMP, ATTACK
-};
+    enum class ActionType
+    {
+        MOVE_LEFT, MOVE_RIGHT, JUMP, ATTACK, DEBUG_TOGGLE_HITBOX_DISPLAY
+    };
 
-enum class ActionState
-{
-    START, CONTINUE, STOP
-};
+    enum class ActionState
+    {
+        START, CONTINUE, STOP
+    };
 
-using InputAction = std::pair<ActionType, ActionState>;
+    InputAction(const ActionType actionType, const ActionState actionState)
+        : mActionType(actionType)
+        , mActionState(actionState)
+    {
+    }
+
+    const ActionType mActionType;
+    const ActionState mActionState;
+};
 
 #endif /* InputActions_h */

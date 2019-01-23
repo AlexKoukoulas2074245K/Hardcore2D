@@ -26,7 +26,7 @@ private:
     
     void SetDefaultKeybindings();
     
-    std::unordered_map<SDL_Scancode, ActionType> mKeybindingsToActions;
+    std::unordered_map<SDL_Scancode, InputAction::ActionType> mKeybindingsToActions;
     std::vector<unsigned char> mPreviousKeyboardState;
 };
 

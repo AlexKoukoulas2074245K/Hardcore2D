@@ -13,7 +13,8 @@
 class DebugInputActionConsumer final: public IInputActionConsumer
 {
 public:
-    
+
+    virtual bool VConsumeInputAction(const InputAction&) const;
 };
 
 #endif /* DebugInputActionConsumer_h */

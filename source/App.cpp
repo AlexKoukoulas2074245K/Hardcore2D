@@ -7,6 +7,7 @@
 
 #include "App.h"
 #include "input/PlayerInputActionConsumer.h"
+#include "input/DebugInputActionConsumer.h"
 #include "components/EntityComponentManager.h"
 #include "components/TransformationComponent.h"
 #include "components/AnimationComponent.h"
