@@ -17,7 +17,7 @@ InputHandler::InputHandler()
     SetDefaultKeybindings();
 }
 
-std::vector<InputHandler::InputAction> InputHandler::TranslateInputToActions()
+std::vector<InputAction> InputHandler::TranslateInputToActions()
 {
     std::vector<InputAction> inputActions;
     

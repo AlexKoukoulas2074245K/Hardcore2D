@@ -13,6 +13,10 @@
 #include "../components/PhysicsComponent.h"
 #include "../components/TransformationComponent.h"
 
+static unsigned char NO_COLLISION = 0x0;
+static unsigned char COLLISION_DIRECTION_HORIZONTAL = 0x1;
+static unsigned char COLLISION_DIRECTION_VERTICAL = 0x2;
+
 PhysicsSystem::PhysicsSystem(const ServiceLocator& serviceLocator)
     : mServiceLocator(serviceLocator)
 {
@@ -42,46 +46,56 @@ void PhysicsSystem::UpdateEntities(const std::vector<EntityId>& entityIds, const
             
             transformationComponent.GetTranslation() += physicsComponent.GetVelocity() * dt;
             
-            if (CheckForCollisions(entityId, entityIds))
+            const auto collisionResult = CheckCollisions(entityId, entityIds);
+            
+            if (collisionResult & COLLISION_DIRECTION_HORIZONTAL)
             {
-                transformationComponent.GetTranslation() -= physicsComponent.GetVelocity() * dt;
-            }            
+                transformationComponent.GetTranslation().x -= physicsComponent.GetVelocity().x * dt;
+            }
+            if (collisionResult & COLLISION_DIRECTION_VERTICAL)
+            {
+                transformationComponent.GetTranslation().y -= physicsComponent.GetVelocity().y * dt;
+            }
         }
     }
 }
 
-bool PhysicsSystem::CheckForCollisions(const EntityId referenceId, const std::vector<EntityId>& entityIds)
+unsigned char PhysicsSystem::CheckCollisions(const EntityId referenceId, const std::vector<EntityId>& entityIds)
 {
+    unsigned char collisionResult = NO_COLLISION;
+    
     for (const EntityId otherEntityId: entityIds)
     {
-        if (referenceId != otherEntityId)
+        if (referenceId != otherEntityId && mEntityComponentManager->HasComponent<PhysicsComponent>(otherEntityId))
         {
-            const auto& transfA = mEntityComponentManager->GetComponent<TransformationComponent>(referenceId);
-            const auto& transfB = mEntityComponentManager->GetComponent<TransformationComponent>(otherEntityId);
+            auto& transfA = mEntityComponentManager->GetComponent<TransformationComponent>(referenceId);
+            auto& transfB = mEntityComponentManager->GetComponent<TransformationComponent>(otherEntityId);
             
-            //auto& physicsA = mEntityComponentManager->GetComponent<PhysicsComponent>(referenceId);
-            //const auto& physicsB = mEntityComponentManager->GetComponent<PhysicsComponent>(otherEntityId);                        
+            const auto& hitBoxA = mEntityComponentManager->GetComponent<PhysicsComponent>(referenceId).GetHitBox();
+            const auto& hitBoxB = mEntityComponentManager->GetComponent<PhysicsComponent>(otherEntityId).GetHitBox();
 
-            const auto rectAX = transfA.GetTranslation().x;
-            const auto rectAY = transfA.GetTranslation().y;
+            const auto rectAX = transfA.GetTranslation().x + hitBoxA.mCenterPoint.x;
+            const auto rectAY = transfA.GetTranslation().y + hitBoxA.mCenterPoint.y;
             
-            const auto rectBX = transfB.GetTranslation().x;
-            const auto rectBY = transfB.GetTranslation().y;
+            const auto rectBX = transfB.GetTranslation().x + hitBoxB.mCenterPoint.x;
+            const auto rectBY = transfB.GetTranslation().y + hitBoxB.mCenterPoint.y;
 
-            const auto rectAWidth = transfA.GetScale().x;
-            const auto rectBWidth = transfB.GetScale().x;
-
-            const auto rectAHeight = transfA.GetScale().y;
-            const auto rectBHeight = transfB.GetScale().y;
-
-            if (Abs(rectAX - rectBX) * 2.0f < (rectAWidth + rectBWidth) &&
-                Abs(rectAY - rectBY) * 2.0f < (rectAHeight + rectBHeight))
-            {        
-                Log(LogType::INFO, "Deltas in: %.2f, %.2f", ((rectAWidth + rectBWidth) - Abs(rectAX - rectBX) * 2.0f), ((rectAHeight + rectBHeight) - Abs(rectAY - rectBY) * 2.0f));
-                return true;
+            const auto xAxisTest = Abs(rectAX - rectBX) * 2.0f - (hitBoxA.mDimensions.x + hitBoxB.mDimensions.x);
+            const auto yAxisTest = Abs(rectAY - rectBY) * 2.0f - (hitBoxA.mDimensions.y + hitBoxB.mDimensions.y);
+            
+            if (xAxisTest < 0 && yAxisTest < 0)
+            {
+                if (xAxisTest < -20.0f || yAxisTest < -20.0f)
+                {
+                    if (xAxisTest > yAxisTest)
+                    {
+                        Log(LogType::INFO, "%.2f, %.2f", xAxisTest, yAxisTest);
+                    }
+                    collisionResult |= (xAxisTest > yAxisTest ? COLLISION_DIRECTION_HORIZONTAL : COLLISION_DIRECTION_VERTICAL);
+                }
             }
         }
     }
     
-    return false;
+    return collisionResult;
 }

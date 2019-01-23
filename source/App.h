@@ -21,7 +21,7 @@ class AnimationService;
 class ResourceManager;
 class PhysicsSystem;
 class InputHandler;
-class PlayerController;
+class IInputActionConsumer;
 
 union SDL_Event;
 
@@ -46,7 +46,8 @@ private:
     std::unique_ptr<ResourceManager> mResourceManager;
     std::unique_ptr<InputHandler> mInputHandler;
     std::unique_ptr<PhysicsSystem> mPhysicsSystem;
-    std::unique_ptr<PlayerController> mPlayerController;
+    
+    std::vector<std::unique_ptr<IInputActionConsumer>> mInputActionConsumers;
     
     std::vector<EntityId> mActiveEntityIds;
 };

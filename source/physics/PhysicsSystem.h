@@ -26,7 +26,7 @@ public:
 private:
     PhysicsSystem(const ServiceLocator&);
     
-    bool CheckForCollisions(const EntityId, const std::vector<EntityId>&);
+    unsigned char CheckCollisions(const EntityId, const std::vector<EntityId>&);
     
     const ServiceLocator& mServiceLocator;
     EntityComponentManager* mEntityComponentManager;

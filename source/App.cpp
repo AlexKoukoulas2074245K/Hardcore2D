@@ -6,7 +6,7 @@
 //
 
 #include "App.h"
-#include "controllers/PlayerController.h"
+#include "input/PlayerInputActionConsumer.h"
 #include "components/EntityComponentManager.h"
 #include "components/TransformationComponent.h"
 #include "components/AnimationComponent.h"
@@ -115,7 +115,7 @@ bool App::Initialize()
     playerAnimationComponent->ChangeAnimation(StringId("idle"));
 
     auto playerShaderComponent = std::make_unique<ShaderComponent>("basic");
-    auto playerPhysicsComponent = std::make_unique<PhysicsComponent>(PhysicsComponent::BodyType::DYNAMIC, PhysicsComponent::Hitbox(glm::vec2(0.0f, 0.0f), glm::vec2(35.0f, 60.0f)));
+    auto playerPhysicsComponent = std::make_unique<PhysicsComponent>(PhysicsComponent::BodyType::DYNAMIC, PhysicsComponent::Hitbox(glm::vec2(0.0f, 0.0f), glm::vec2(80.0f, 80.0f)));
     
     playerTransformComponent->GetScale() = glm::vec3(160.0f, 160.0f, 1.0f);
 	playerTransformComponent->GetTranslation() = glm::vec3(640.0f, 800.0f, 1.0f);
@@ -127,8 +127,6 @@ bool App::Initialize()
     mEntityComponentManager->AddComponent<AnimationComponent>(mActiveEntityIds[1], std::move(playerAnimationComponent));
     mEntityComponentManager->AddComponent<ShaderComponent>(mActiveEntityIds[1], std::move(playerShaderComponent));
     mEntityComponentManager->AddComponent<PhysicsComponent>(mActiveEntityIds[1], std::move(playerPhysicsComponent));
-    
-    mPlayerController = std::make_unique<PlayerController>(*mEntityComponentManager, mActiveEntityIds[1]);
     
     {
     mActiveEntityIds.push_back(mEntityComponentManager->GenerateEntity());
@@ -181,6 +179,24 @@ bool App::Initialize()
         mEntityComponentManager->AddComponent<ShaderComponent>(mActiveEntityIds.back(), std::move(shaderComponent));
     }
     
+    for (int i = 0; i < 5; ++i)
+    {
+        mActiveEntityIds.push_back(mEntityComponentManager->GenerateEntity());
+        auto transformationComponent = std::make_unique<TransformationComponent>();
+        transformationComponent->GetScale() = glm::vec3(80.0f, 80.0f, 1.0f);
+        transformationComponent->GetTranslation() = glm::vec3(440, 120.0f + static_cast<float>(i) * 80.0f, 1.0f);
+        auto shaderComponent = std::make_unique<ShaderComponent>("basic");
+        auto physicsComponent = std::make_unique<PhysicsComponent>(PhysicsComponent::BodyType::STATIC, PhysicsComponent::Hitbox(glm::vec2(0.0f, 0.0f), glm::vec2(80.0f, 80.0f)));
+        
+        std::map<StringId, std::vector<GLuint>> groundTextureAnimations = {{ StringId("ground"), {groundTextureId} }};
+        auto animationComponent = std::make_unique<AnimationComponent>(groundTextureAnimations, 100.0f);
+        
+        mEntityComponentManager->AddComponent<TransformationComponent>(mActiveEntityIds.back(), std::move(transformationComponent));
+        mEntityComponentManager->AddComponent<AnimationComponent>(mActiveEntityIds.back(), std::move(animationComponent));
+        mEntityComponentManager->AddComponent<PhysicsComponent>(mActiveEntityIds.back(), std::move(physicsComponent));
+        mEntityComponentManager->AddComponent<ShaderComponent>(mActiveEntityIds.back(), std::move(shaderComponent));
+    }
+    
     /*
     for (int i = 1; i < 2; ++i)
     {
@@ -200,6 +216,11 @@ bool App::Initialize()
         mEntityComponentManager->AddComponent<ShaderComponent>(mActiveEntityIds.back(), std::move(shaderComponent));
     }
     */
+    
+    // Initialized in order of priority
+    mInputActionConsumers.push_back(std::make_unique<DebugInputActionConsumer>());
+    mInputActionConsumers.push_back(std::make_unique<PlayerInputActionConsumer>(*mEntityComponentManager, mActiveEntityIds[1]));
+    
     return true;
 }
 
@@ -218,7 +239,11 @@ void App::HandleInput()
     const auto inputActions = mInputHandler->TranslateInputToActions();
     for (const auto inputAction: inputActions)
     {
-        mPlayerController->ConsumeInputAction(inputAction);
+        for (const auto& inputActionConsumer: mInputActionConsumers)
+        {
+            if (inputActionConsumer->VConsumeInputAction(inputAction))
+                break;
+        }
     }
 }
 
