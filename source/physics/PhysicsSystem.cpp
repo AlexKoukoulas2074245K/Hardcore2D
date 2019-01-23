@@ -14,8 +14,10 @@
 #include "../components/TransformationComponent.h"
 
 static unsigned char NO_COLLISION = 0x0;
-static unsigned char COLLISION_DIRECTION_HORIZONTAL = 0x1;
-static unsigned char COLLISION_DIRECTION_VERTICAL = 0x2;
+static unsigned char COLLISION_DIRECTION_WEST = 0x1;
+static unsigned char COLLISION_DIRECTION_NORTH = 0x2;
+static unsigned char COLLISION_DIRECTION_EAST = 0x4;
+static unsigned char COLLISION_DIRECTION_SOUTH = 0x8;
 
 PhysicsSystem::PhysicsSystem(const ServiceLocator& serviceLocator)
     : mServiceLocator(serviceLocator)
@@ -44,25 +46,62 @@ void PhysicsSystem::UpdateEntities(const std::vector<EntityId>& entityIds, const
             physicsComponent.GetVelocity() = ClampToMax(physicsComponent.GetVelocity(), physicsComponent.GetMaxVelocity());
             physicsComponent.GetVelocity() = ClampToMin(physicsComponent.GetVelocity(), physicsComponent.GetMinVelocity());
             
-            transformationComponent.GetTranslation() += physicsComponent.GetVelocity() * dt;
+            transformationComponent.GetTranslation().x += physicsComponent.GetVelocity().x * dt;
             
-            const auto collisionResult = CheckCollisions(entityId, entityIds);
+            const auto collisionInfo = CheckCollisions(entityId, entityIds);
             
-            if (collisionResult & COLLISION_DIRECTION_HORIZONTAL)
+            if (collisionInfo.first != entityId)
             {
-                transformationComponent.GetTranslation().x -= physicsComponent.GetVelocity().x * dt;
+                const auto& thisHitBox = physicsComponent.GetHitBox();
+                const auto& otherEntityHitBox = mEntityComponentManager->GetComponent<PhysicsComponent>(collisionInfo.first).GetHitBox();
+                const auto& otherEntityTransf = mEntityComponentManager->GetComponent<TransformationComponent>(collisionInfo.first);
             }
-            if (collisionResult & COLLISION_DIRECTION_VERTICAL)
+
+            if (collisionInfo.first != entityId)
             {
-                transformationComponent.GetTranslation().y -= physicsComponent.GetVelocity().y * dt;
-            }
+                const auto& thisHitBox = physicsComponent.GetHitBox();
+                const auto& otherEntityHitBox = mEntityComponentManager->GetComponent<PhysicsComponent>(collisionInfo.first).GetHitBox();
+                const auto& otherEntityTransf = mEntityComponentManager->GetComponent<TransformationComponent>(collisionInfo.first);                
+                if (collisionInfo.second & COLLISION_DIRECTION_WEST)
+                {
+                    //if ((transformationComponent.GetTranslation().y < (otherEntityTransf.GetTranslation().y + thisHitBox.mDimensions.y * 0.5f)) &&
+                    //    (transformationComponent.GetTranslation().y > (otherEntityTransf.GetTranslation().y - thisHitBox.mDimensions.y * 0.5f)))
+                    //{
+                        
+                    //}                                        
+                }
+                if (collisionInfo.second & COLLISION_DIRECTION_EAST)
+                {
+                    //if ((transformationComponent.GetTranslation().y < (otherEntityTransf.GetTranslation().y + thisHitBox.mDimensions.y * 0.5f)) &&
+                    //    (transformationComponent.GetTranslation().y >(otherEntityTransf.GetTranslation().y - thisHitBox.mDimensions.y * 0.5f)))
+                    //{
+                        transformationComponent.GetTranslation().x = otherEntityTransf.GetTranslation().x - otherEntityHitBox.mDimensions.x * 0.5f - thisHitBox.mDimensions.x * 0.5f;
+                    //}
+                }
+                if (collisionInfo.second & COLLISION_DIRECTION_NORTH)
+                {
+                    //if (!((transformationComponent.GetTranslation().x > (otherEntityTransf.GetTranslation().x + thisHitBox.mDimensions.x * 0.5f)) ||
+                      //  (transformationComponent.GetTranslation().x < (otherEntityTransf.GetTranslation().x - thisHitBox.mDimensions.x * 0.5f))))
+                    //{
+                        transformationComponent.GetTranslation().y = otherEntityTransf.GetTranslation().y - otherEntityHitBox.mDimensions.y * 0.5f - thisHitBox.mDimensions.y * 0.5f;
+                    //}
+                }
+                if (collisionInfo.second & COLLISION_DIRECTION_SOUTH)
+                {
+                    //if (!((transformationComponent.GetTranslation().x >(otherEntityTransf.GetTranslation().x + thisHitBox.mDimensions.x * 0.5f)) ||
+                     //   (transformationComponent.GetTranslation().x < (otherEntityTransf.GetTranslation().x - thisHitBox.mDimensions.x * 0.5f))))
+                    //{
+                        transformationComponent.GetTranslation().y = otherEntityTransf.GetTranslation().y + otherEntityHitBox.mDimensions.y * 0.5f + thisHitBox.mDimensions.y * 0.5f;
+                    //}
+                }
+            }            
         }
     }
 }
 
-unsigned char PhysicsSystem::CheckCollisions(const EntityId referenceId, const std::vector<EntityId>& entityIds)
+PhysicsSystem::CollisionInfo PhysicsSystem::CheckCollisions(const EntityId referenceId, const std::vector<EntityId>& entityIds)
 {
-    unsigned char collisionResult = NO_COLLISION;
+    CollisionInfo collisionInfo = std::make_pair(referenceId, NO_COLLISION);
     
     for (const EntityId otherEntityId: entityIds)
     {
@@ -84,18 +123,24 @@ unsigned char PhysicsSystem::CheckCollisions(const EntityId referenceId, const s
             const auto yAxisTest = Abs(rectAY - rectBY) * 2.0f - (hitBoxA.mDimensions.y + hitBoxB.mDimensions.y);
             
             if (xAxisTest < 0 && yAxisTest < 0)
-            {
-                if (xAxisTest < -20.0f || yAxisTest < -20.0f)
+            { 
+                // Intersection on the xAxis
+                if (xAxisTest > yAxisTest)
                 {
-                    if (xAxisTest > yAxisTest)
-                    {
-                        Log(LogType::INFO, "%.2f, %.2f", xAxisTest, yAxisTest);
-                    }
-                    collisionResult |= (xAxisTest > yAxisTest ? COLLISION_DIRECTION_HORIZONTAL : COLLISION_DIRECTION_VERTICAL);
+                    Log(LogType::INFO, "%.2f, %.2f", xAxisTest, yAxisTest);
+                    collisionInfo.second |= (rectBX - rectAX > 0.0f ? COLLISION_DIRECTION_EAST : COLLISION_DIRECTION_WEST);
                 }
+                // Intersection on the yAxis
+                else
+                {
+                    Log(LogType::INFO, "%.2f, %.2f", xAxisTest, yAxisTest);
+                    collisionInfo.second |= (rectBY - rectAY > 0.0f ? COLLISION_DIRECTION_NORTH : COLLISION_DIRECTION_SOUTH);
+                }
+                
+                collisionInfo.first = otherEntityId;
             }
         }
     }
     
-    return collisionResult;
+    return collisionInfo;
 }

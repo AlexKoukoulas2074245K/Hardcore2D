@@ -121,7 +121,7 @@ bool App::Initialize()
     playerAnimationComponent->ChangeAnimation(StringId("idle"));
 
     auto playerShaderComponent = std::make_unique<ShaderComponent>("basic");
-    auto playerPhysicsComponent = std::make_unique<PhysicsComponent>(PhysicsComponent::BodyType::DYNAMIC, PhysicsComponent::Hitbox(glm::vec2(0.0f, 0.0f), glm::vec2(80.0f, 80.0f)));
+    auto playerPhysicsComponent = std::make_unique<PhysicsComponent>(PhysicsComponent::BodyType::DYNAMIC, PhysicsComponent::Hitbox(glm::vec2(0.0f, 0.0f), glm::vec2(60.0f, 90.0f)));
     
     playerTransformComponent->GetScale() = glm::vec3(160.0f, 160.0f, 1.0f);
 	playerTransformComponent->GetTranslation() = glm::vec3(640.0f, 800.0f, 1.0f);

@@ -12,6 +12,7 @@
 #include "../util/TypeTraits.h"
 
 #include <vector>
+#include <utility>
 
 class ServiceLocator;
 class EntityComponentManager;
@@ -26,7 +27,10 @@ public:
 private:
     PhysicsSystem(const ServiceLocator&);
     
-    unsigned char CheckCollisions(const EntityId, const std::vector<EntityId>&);
+    using CollisionFlags = unsigned char;
+    using CollisionInfo = std::pair<EntityId, CollisionFlags>;
+    
+    CollisionInfo CheckCollisions(const EntityId, const std::vector<EntityId>&);
     
     const ServiceLocator& mServiceLocator;
     EntityComponentManager* mEntityComponentManager;
