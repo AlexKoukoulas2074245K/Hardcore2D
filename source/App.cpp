@@ -172,6 +172,24 @@ bool App::Initialize()
         mEntityComponentManager->AddComponent<ShaderComponent>(mActiveEntityIds.back(), std::move(shaderComponent));
     }
     
+    for (int i = 5; i < 10; ++i)
+    {
+        mActiveEntityIds.push_back(mEntityComponentManager->GenerateEntity());
+        auto transformationComponent = std::make_unique<TransformationComponent>();
+        transformationComponent->GetScale() = glm::vec3(80.0f, 80.0f, 1.0f);
+        transformationComponent->GetTranslation() = glm::vec3(40.0f + static_cast<float>(i) * 80.0f, 460.0f, 1.0f);
+        auto shaderComponent = std::make_unique<ShaderComponent>("basic");
+        auto physicsComponent = std::make_unique<PhysicsComponent>(PhysicsComponent::BodyType::STATIC, PhysicsComponent::Hitbox(glm::vec2(0.0f, 0.0f), glm::vec2(80.0f, 80.0f)));
+        
+        std::map<StringId, std::vector<GLuint>> groundTextureAnimations = {{ StringId("ground"), {groundTextureId} }};
+        auto animationComponent = std::make_unique<AnimationComponent>(groundTextureAnimations, 100.0f);
+        
+        mEntityComponentManager->AddComponent<TransformationComponent>(mActiveEntityIds.back(), std::move(transformationComponent));
+        mEntityComponentManager->AddComponent<AnimationComponent>(mActiveEntityIds.back(), std::move(animationComponent));
+        mEntityComponentManager->AddComponent<PhysicsComponent>(mActiveEntityIds.back(), std::move(physicsComponent));
+        mEntityComponentManager->AddComponent<ShaderComponent>(mActiveEntityIds.back(), std::move(shaderComponent));
+    }
+    
     for (int i = 0; i < 5; ++i)
     {
         mActiveEntityIds.push_back(mEntityComponentManager->GenerateEntity());

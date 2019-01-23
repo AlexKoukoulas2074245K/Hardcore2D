@@ -27,10 +27,7 @@ public:
 private:
     PhysicsSystem(const ServiceLocator&);
     
-    using CollisionFlags = unsigned char;
-    using CollisionInfo = std::pair<EntityId, CollisionFlags>;
-    
-    CollisionInfo CheckCollisions(const EntityId, const std::vector<EntityId>&);
+    EntityId CheckCollisions(const EntityId, const std::vector<EntityId>&);
     
     const ServiceLocator& mServiceLocator;
     EntityComponentManager* mEntityComponentManager;

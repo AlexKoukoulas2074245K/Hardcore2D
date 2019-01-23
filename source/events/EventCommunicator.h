@@ -8,11 +8,12 @@
 #ifndef EventCommunicator_h
 #define EventCommunicator_h
 
+#include "EventCommunicationService.h"
+
 #include <functional>
 #include <memory>
 
 class IEvent;
-class EventCommunicationService;
 using EventCallback = std::function<void(const IEvent&)>;
 
 class EventCommunicator final
@@ -20,7 +21,7 @@ class EventCommunicator final
     friend class EventCommunicationService;
 
 public:      
-    EventCommunicator::~EventCommunicator();
+    ~EventCommunicator();
     EventCommunicator(const EventCommunicator&) = delete;
     const EventCommunicator& operator = (const EventCommunicator&) = delete;
    
