@@ -31,7 +31,9 @@ public:
         const auto eventTypeHash = GetTypeHash<EventType>();
         mEventCallbackRegistry[eventTypeHash].push_back(std::make_pair(listener, eventCallback));
     }
-    
+        
+    std::unique_ptr<EventCommunicator> CreateEventCommunicator();
+
     void DispatchEvent(EventCommunicator* dispatcher, std::unique_ptr<IEvent> evt);
     
     void UnregisterAllCallbacksForListener(EventCommunicator* listener);
@@ -40,7 +42,7 @@ private:
     EventCommunicationService() = default;
     
     std::unordered_map<size_t, std::vector<std::pair<EventCommunicator*, EventCallback>>> mEventCallbackRegistry;
-    std::vector<std::pair<std::string, EventCommunicator*>> mEventDispatchingHistory;
+    std::vector<std::pair<std::string, EventCommunicator*>> mEventDispatchingHistory;    
 };
 
 #endif /* EventCommunicationService_h */

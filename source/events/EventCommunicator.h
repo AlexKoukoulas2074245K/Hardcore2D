@@ -17,19 +17,24 @@ using EventCallback = std::function<void(const IEvent&)>;
 
 class EventCommunicator final
 {
-public:
-    EventCommunicator(EventCommunicationService&);    
-    EventCommunicator::~EventCommunicator();
+    friend class EventCommunicationService;
 
+public:      
+    EventCommunicator::~EventCommunicator();
+    EventCommunicator(const EventCommunicator&) = delete;
+    const EventCommunicator& operator = (const EventCommunicator&) = delete;
+   
     template <class EventType>
     inline void RegisterEventCallback(EventCallback eventCallback)
     {
-        mEventCommunicationService.RegisterEventCallback(this, eventCallback);
+        mEventCommunicationService.RegisterEventCallback<EventType>(this, eventCallback);
     }
 
     void DispatchEvent(std::unique_ptr<IEvent> evt);
 
 private:        
+    EventCommunicator(EventCommunicationService&);
+
     EventCommunicationService& mEventCommunicationService;
 };
 

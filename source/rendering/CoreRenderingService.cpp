@@ -19,8 +19,12 @@
 #include "../components/EntityComponentManager.h"
 #include "../components/AnimationComponent.h"
 #include "../components/ShaderComponent.h"
+#include "../components/PhysicsComponent.h"
 #include "../resources/TextureResource.h"
 #include "../resources/TextFileResource.h"
+#include "../events/EventCommunicationService.h"
+#include "../events/EventCommunicator.h"
+#include "../events/DebugToggleHitboxDisplayEvent.h"
 
 #include <string>
 #include <vector>
@@ -40,8 +44,12 @@ static const GLfloat QUAD_VERTICES[] =
 
 CoreRenderingService::CoreRenderingService(const ServiceLocator& serviceLocator)
     : mServiceLocator(serviceLocator)
+    , mEntityComponentManager(nullptr)    
+    , mEventCommunicator(nullptr)
     , mSdlWindow(nullptr)
     , mSdlGLContext(nullptr)
+    , mRunning(false)
+    , mDebugHitboxDisplay(false)
     , mRenderableAreaWidth(0.0f)
     , mRenderableAreaHeight(0.0f)
     , mAspectRatio(0.0f)
@@ -66,10 +74,15 @@ CoreRenderingService::~CoreRenderingService()
 
 bool CoreRenderingService::InitializeEngine()
 {
-    if (!InitializeContext()) return false;
+    mEntityComponentManager = &(mServiceLocator.ResolveService<EntityComponentManager>());    
+    mResourceManager = &(mServiceLocator.ResolveService<ResourceManager>());
+    mEventCommunicator = mServiceLocator.ResolveService<EventCommunicationService>().CreateEventCommunicator();
+
+    if (!InitializeContext()) return false;    
     InitializeRenderingPrimitive();
     CompileAllShaders();
-    
+    RegisterEventCallbacks();
+
     return true;
 }
 
@@ -112,45 +125,7 @@ void CoreRenderingService::RenderEntities(const std::vector<EntityId>& entityIds
 {
     for (const auto entityId: entityIds)
     {
-        auto& entityComponentManager = mServiceLocator.ResolveService<EntityComponentManager>();
-        
-        if (entityComponentManager.HasComponent<ShaderComponent>(entityId))
-        {
-            const auto& shaderComponent = entityComponentManager.GetComponent<ShaderComponent>(entityId);
-            mCurrentShaderUsed = shaderComponent.GetShaderName();
-            GL_CHECK(glUseProgram(mShaders[mCurrentShaderUsed]->GetShaderId()));
-        }
-        
-        if (entityComponentManager.HasComponent<AnimationComponent>(entityId))
-        {
-            const auto& animationComponent = entityComponentManager.GetComponent<AnimationComponent>(entityId);
-            GL_CHECK(glBindTexture(GL_TEXTURE_2D, animationComponent.GetCurrentFrameResourceId()));
-            
-            if (mCurrentShaderUsed == "basic")
-            {
-                const auto textureFlip = animationComponent.GetCurrentFacingDirection() == AnimationComponent::FacingDirection::LEFT ? 1 : 0;
-                GL_CHECK(glUniform1i(mShaders[mCurrentShaderUsed]->GetUniformNamesToLocations().at("flip_tex_hor"), textureFlip));
-            }
-        }
-        
-        if (entityComponentManager.HasComponent<TransformationComponent>(entityId))
-        {
-            const auto& transformationComponent = entityComponentManager.GetComponent<TransformationComponent>(entityId);
-            
-            // Todo move world matrix construction elsewhere
-            glm::mat4 worldMatrix(1.0f);
-            worldMatrix = glm::translate(worldMatrix, transformationComponent.GetTranslation());
-            worldMatrix = glm::rotate(worldMatrix, transformationComponent.GetRotation().x, glm::vec3(1.0f, 0.0f, 0.0f));
-            worldMatrix = glm::rotate(worldMatrix, transformationComponent.GetRotation().y, glm::vec3(0.0f, 1.0f, 0.0f));
-            worldMatrix = glm::rotate(worldMatrix, transformationComponent.GetRotation().z, glm::vec3(0.0f, 0.0f, 1.0f));
-            worldMatrix = glm::scale(worldMatrix, transformationComponent.GetScale() * 0.5f);
-            
-            GL_CHECK(glUniformMatrix4fv(mShaders[mCurrentShaderUsed]->GetUniformNamesToLocations().at("world"), 1, GL_FALSE, (GLfloat*) &worldMatrix));
-        }
-        
-        SetCommonShaderUniformsForEntity(entityId);
-        
-        GL_CHECK(glDrawArrays(GL_TRIANGLE_FAN, 0, 4));
+        RenderEntity(entityId);
     }
 }
 
@@ -391,9 +366,68 @@ void CoreRenderingService::CompileAllShaders()
 	}
 }
 
-void CoreRenderingService::SetCommonShaderUniformsForEntity(const EntityId)
+void CoreRenderingService::RegisterEventCallbacks()
 {
-	//auto& entityComponentManager = mServiceLocator.ResolveService<EntityComponentManager>();
+    mEventCommunicator->RegisterEventCallback<DebugToggleHitboxDisplayEvent>([this](const IEvent&)
+    {
+        mDebugHitboxDisplay = !mDebugHitboxDisplay;
+    });
+}
+
+void CoreRenderingService::RenderEntity(const EntityId entityId)
+{    
+    if (mEntityComponentManager->HasComponent<ShaderComponent>(entityId))
+    {
+        const auto& shaderComponent = mEntityComponentManager->GetComponent<ShaderComponent>(entityId);
+        mCurrentShaderUsed = shaderComponent.GetShaderName();
+        GL_CHECK(glUseProgram(mShaders[mCurrentShaderUsed]->GetShaderId()));
+    }
+
+    if (mEntityComponentManager->HasComponent<AnimationComponent>(entityId))
+    {
+        const auto& animationComponent = mEntityComponentManager->GetComponent<AnimationComponent>(entityId);
+        
+        GL_CHECK(glBindTexture(GL_TEXTURE_2D, mDebugHitboxDisplay ? mResourceManager->GetResource<TextureResource>("debug/debug_square.png").GetGLTextureId() : animationComponent.GetCurrentFrameResourceId()));
+
+        if (mCurrentShaderUsed == "basic")
+        {
+            const auto textureFlip = animationComponent.GetCurrentFacingDirection() == AnimationComponent::FacingDirection::LEFT ? 1 : 0;
+            GL_CHECK(glUniform1i(mShaders[mCurrentShaderUsed]->GetUniformNamesToLocations().at("flip_tex_hor"), textureFlip));
+        }
+    }
+
+    if (mEntityComponentManager->HasComponent<TransformationComponent>(entityId))
+    {
+        const auto& transformationComponent = mEntityComponentManager->GetComponent<TransformationComponent>(entityId);
+
+        // Todo move world matrix construction elsewhere
+        glm::mat4 worldMatrix(1.0f);
+        worldMatrix = glm::translate(worldMatrix, transformationComponent.GetTranslation());
+        worldMatrix = glm::rotate(worldMatrix, transformationComponent.GetRotation().x, glm::vec3(1.0f, 0.0f, 0.0f));
+        worldMatrix = glm::rotate(worldMatrix, transformationComponent.GetRotation().y, glm::vec3(0.0f, 1.0f, 0.0f));
+        worldMatrix = glm::rotate(worldMatrix, transformationComponent.GetRotation().z, glm::vec3(0.0f, 0.0f, 1.0f));
+
+        if (mDebugHitboxDisplay && mEntityComponentManager->HasComponent<PhysicsComponent>(entityId))
+        {
+            const auto& physicsComponent = mEntityComponentManager->GetComponent<PhysicsComponent>(entityId);
+            worldMatrix = glm::scale(worldMatrix,  glm::vec3(physicsComponent.GetHitBox().mDimensions.x * 0.5f, physicsComponent.GetHitBox().mDimensions.y * 0.5f, 1.0));
+        }
+        else
+        {
+            worldMatrix = glm::scale(worldMatrix, transformationComponent.GetScale() * 0.5f);
+        }
+
+        GL_CHECK(glUniformMatrix4fv(mShaders[mCurrentShaderUsed]->GetUniformNamesToLocations().at("world"), 1, GL_FALSE, (GLfloat*)&worldMatrix));
+    }
+
+    PrepareSpecificShaderUniformsForEntityRendering(entityId);
+
+    GL_CHECK(glDrawArrays(GL_TRIANGLE_FAN, 0, 4));
+}
+
+void CoreRenderingService::PrepareSpecificShaderUniformsForEntityRendering(const EntityId)
+{
+	//auto& mEntityComponentManager->= mServiceLocator.ResolveService<EntityComponentManager>();
 	const auto& shaderUniforms = mShaders[mCurrentShaderUsed]->GetUniformNamesToLocations();
 
 	if (shaderUniforms.count("view") != 0)

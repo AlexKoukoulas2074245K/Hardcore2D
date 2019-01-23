@@ -68,19 +68,22 @@ bool App::Initialize()
     mPhysicsSystem->Initialize();
     if (!mCoreRenderingService->InitializeEngine()) return false;
     if (!mResourceManager->InitializeResourceLoaders()) return false;
+    
         
     auto backgroundTextureResourceId = mResourceManager->LoadResource("jungle-sky.png");    
     auto groundTextureResourceId = mResourceManager->LoadResource("environments/jungle_tiles/ground_top_middle.png");
+    mResourceManager->LoadResource("debug/debug_square.png");
+
     //auto groundLeftTextureResourceId = mResourceManager->LoadResource("environments/jungle_tiles/ground_top_edge_left_side.png");
     //auto groundRightTextureResourceId = mResourceManager->LoadResource("environments/jungle_tiles/ground_top_edge_right_side.png");
-    auto debugSquareTextureResourceId = mResourceManager->LoadResource("debug/debug_square.png");
 
     auto backgroundTextureId = mResourceManager->GetResource<TextureResource>(backgroundTextureResourceId).GetGLTextureId();
     auto groundTextureId = mResourceManager->GetResource<TextureResource>(groundTextureResourceId).GetGLTextureId();
+    
     //auto groundLeftTextureId = mResourceManager->GetResource<TextureResource>(groundLeftTextureResourceId).GetGLTextureId();
-    //auto groundRightTextureId = mResourceManager->GetResource<TextureResource>(groundRightTextureResourceId).GetGLTextureId();
-    auto debugSquareTextureId = mResourceManager->GetResource<TextureResource>(debugSquareTextureResourceId).GetGLTextureId();
+    //auto groundRightTextureId = mResourceManager->GetResource<TextureResource>(groundRightTextureResourceId).GetGLTextureId();    
 
+    {
     mActiveEntityIds.push_back(mEntityComponentManager->GenerateEntity());
     
     auto backgroundTransformComponent = std::make_unique<TransformationComponent>();    
@@ -92,7 +95,9 @@ bool App::Initialize()
     auto backgroundAnimationComponent = std::make_unique<AnimationComponent>(backgroundAnimations, 100.0f);
     mEntityComponentManager->AddComponent<AnimationComponent>(mActiveEntityIds[0], std::move(backgroundAnimationComponent));
     mEntityComponentManager->AddComponent<ShaderComponent>(mActiveEntityIds[0], std::move(backgroundShaderComponent));
-    
+    }
+
+    {
     mActiveEntityIds.push_back(mEntityComponentManager->GenerateEntity());
     
     auto playerTransformComponent = std::make_unique<TransformationComponent>();
@@ -128,21 +133,8 @@ bool App::Initialize()
     mEntityComponentManager->AddComponent<AnimationComponent>(mActiveEntityIds[1], std::move(playerAnimationComponent));
     mEntityComponentManager->AddComponent<ShaderComponent>(mActiveEntityIds[1], std::move(playerShaderComponent));
     mEntityComponentManager->AddComponent<PhysicsComponent>(mActiveEntityIds[1], std::move(playerPhysicsComponent));
-    
-    {
-    mActiveEntityIds.push_back(mEntityComponentManager->GenerateEntity());
-    auto transformationComponent = std::make_unique<TransformationComponent>();
-    transformationComponent->GetScale() = glm::vec3(80.0f, 80.0f, 1.0f);
-    transformationComponent->GetTranslation() = glm::vec3(40.0f, 40.0f, 1.0f);
-    auto shaderComponent = std::make_unique<ShaderComponent>("basic");    
-
-    std::map<StringId, std::vector<GLuint>> groundTextureAnimations = { { StringId("debug"),{ debugSquareTextureId } } };
-    auto animationComponent = std::make_unique<AnimationComponent>(groundTextureAnimations, 100.0f);
-
-    mEntityComponentManager->AddComponent<TransformationComponent>(mActiveEntityIds.back(), std::move(transformationComponent));
-    mEntityComponentManager->AddComponent<AnimationComponent>(mActiveEntityIds.back(), std::move(animationComponent));    
-    mEntityComponentManager->AddComponent<ShaderComponent>(mActiveEntityIds.back(), std::move(shaderComponent));
     }
+   
     /*
     for (int i = 1; i < 2; ++i)
     {
@@ -219,7 +211,7 @@ bool App::Initialize()
     */
     
     // Initialized in order of priority
-    mInputActionConsumers.push_back(std::make_unique<DebugInputActionConsumer>());
+    mInputActionConsumers.push_back(std::make_unique<DebugInputActionConsumer>(*mServiceLocator));
     mInputActionConsumers.push_back(std::make_unique<PlayerInputActionConsumer>(*mEntityComponentManager, mActiveEntityIds[1]));
     
     return true;

@@ -21,8 +21,12 @@ struct SDL_Window;
 struct SDL_Context;
 union SDL_Event;
 
+class EntityComponentManager;
+class ResourceManager;
 class ServiceLocator;
 class Shader;
+class EventCommunicator;
+
 
 class CoreRenderingService final: public IService
 {
@@ -47,12 +51,20 @@ private:
     bool InitializeContext();
     void InitializeRenderingPrimitive();
     void CompileAllShaders();
-	void SetCommonShaderUniformsForEntity(const EntityId);
+    void RegisterEventCallbacks();
+
+    void RenderEntity(const EntityId);
+	void PrepareSpecificShaderUniformsForEntityRendering(const EntityId);
 
     const ServiceLocator& mServiceLocator;
+    EntityComponentManager* mEntityComponentManager;
+    ResourceManager* mResourceManager;
+
+    std::unique_ptr<EventCommunicator> mEventCommunicator;
     SDL_Window* mSdlWindow;
     SDL_GLContext mSdlGLContext;
     
+    bool mDebugHitboxDisplay;
     bool mRunning;
     
     float mRenderableAreaWidth;

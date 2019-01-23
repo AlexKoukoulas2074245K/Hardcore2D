@@ -6,7 +6,13 @@
 //
 
 #include "EventCommunicationService.h"
+#include "EventCommunicator.h"
 #include "../util/Logging.h"
+
+std::unique_ptr<EventCommunicator> EventCommunicationService::CreateEventCommunicator()
+{
+    return std::unique_ptr<EventCommunicator>(new EventCommunicator(*this));
+}
 
 void EventCommunicationService::DispatchEvent(EventCommunicator* dispatcher, std::unique_ptr<IEvent> evt)
 {
