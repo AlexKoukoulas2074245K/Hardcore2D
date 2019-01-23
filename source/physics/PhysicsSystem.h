@@ -27,8 +27,14 @@ public:
 private:
     PhysicsSystem(const ServiceLocator&);
     
-    EntityId CheckCollisions(const EntityId, const std::vector<EntityId>&);
-    
+    enum class Axis
+    {
+        X_AXIS, Y_AXIS
+    };
+
+    EntityId CheckAndGetCollidedEntity(const EntityId referenceEntityId, const std::vector<EntityId>& allConsideredEntityIds);
+    void PushEntityOutsideOtherEntityInAxis(const EntityId referenceEntityId, const EntityId collidedWithEntityId, const Axis);
+
     const ServiceLocator& mServiceLocator;
     EntityComponentManager* mEntityComponentManager;
 };
