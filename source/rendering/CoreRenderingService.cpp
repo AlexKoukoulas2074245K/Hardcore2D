@@ -13,6 +13,7 @@
 #include "../util/FileUtils.h"
 #include "../util/Logging.h"
 #include "../util/SDLMessageBoxUtils.h"
+#include "../util/MathUtils.h"
 #include "../gl/Context.h"
 #include "../resources/ResourceManager.h"
 #include "../components/TransformationComponent.h"
@@ -104,6 +105,18 @@ void CoreRenderingService::GameLoop(std::function<void(const float)> appUpdateMe
             switch (event.type)
             {
                 case SDL_QUIT: mRunning = false; break;
+                case SDL_WINDOWEVENT:
+                {
+                    switch (event.window.event)
+                    {
+                        case SDL_WINDOWEVENT_FOCUS_GAINED:
+                            Log(LogType::INFO, "Window %d gained keyboard focus", event.window.windowID);
+                        break;
+                        case SDL_WINDOWEVENT_FOCUS_LOST:
+                            Log(LogType::INFO, "Window %d lost keyboard focus", event.window.windowID);
+                        break;
+                    }                    
+                } break;                
             }
         }
         
@@ -114,7 +127,7 @@ void CoreRenderingService::GameLoop(std::function<void(const float)> appUpdateMe
         const auto dt = lastFrameTicks * 0.001f;
 		
         // Update client
-        appUpdateMethod(dt);
+        appUpdateMethod(Min(dt, 0.05f));
        
         // Swap window buffers
         SDL_GL_SwapWindow(mSdlWindow);

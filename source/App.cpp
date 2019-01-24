@@ -254,6 +254,7 @@ bool App::Initialize()
 
 void App::Update(const float dt)
 {
+    Log(LogType::INFO, "%.2f", dt);
     HandleInput();
     
     static float timeElapsed = 0.0f;

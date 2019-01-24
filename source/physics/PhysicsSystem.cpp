@@ -132,11 +132,11 @@ void PhysicsSystem::PushEntityOutsideOtherEntityInAxis(const EntityId referenceE
         // Collided with entity to the right
         if (thisEntityTransformationComponent.GetTranslation().x < otherEntityTransf.GetTranslation().x)
         {
-            if (Abs(-thisEntityTransformationComponent.GetTranslation().x + otherEntityTransf.GetTranslation().x - otherEntityHitBox.mDimensions.x * 0.5f - thisEntityHitBox.mDimensions.x * 0.5f))
-            {
+            //if (Abs(-thisEntityTransformationComponent.GetTranslation().x + otherEntityTransf.GetTranslation().x - otherEntityHitBox.mDimensions.x * 0.5f - thisEntityHitBox.mDimensions.x * 0.5f) < 15.0f)
+            //{
                 Log(LogType::INFO, "Collided with right, will be moved by %.2f", (-thisEntityTransformationComponent.GetTranslation().x + otherEntityTransf.GetTranslation().x - otherEntityHitBox.mDimensions.x * 0.5f - thisEntityHitBox.mDimensions.x * 0.5f));
                 thisEntityTransformationComponent.GetTranslation().x = otherEntityTransf.GetTranslation().x - otherEntityHitBox.mDimensions.x * 0.5f - thisEntityHitBox.mDimensions.x * 0.5f;
-            }
+            //}
         }
         // Collided with entity to the left
         else
@@ -150,18 +150,21 @@ void PhysicsSystem::PushEntityOutsideOtherEntityInAxis(const EntityId referenceE
         // Collided with entity above
         if (thisEntityTransformationComponent.GetTranslation().y < otherEntityTransf.GetTranslation().y)
         {
-            Log(LogType::INFO, "Collided with above, will be moved by %.2f", (-thisEntityTransformationComponent.GetTranslation().y + otherEntityTransf.GetTranslation().y - otherEntityHitBox.mDimensions.y * 0.5f - thisEntityHitBox.mDimensions.y * 0.5f));
-            thisEntityTransformationComponent.GetTranslation().y = otherEntityTransf.GetTranslation().y - otherEntityHitBox.mDimensions.y * 0.5f - thisEntityHitBox.mDimensions.y * 0.5f;
-            thisEntityPhysicsComponent.GetVelocity().y = 0.0f;
+            //if (Abs(-thisEntityTransformationComponent.GetTranslation().y + otherEntityTransf.GetTranslation().y - otherEntityHitBox.mDimensions.y * 0.5f - thisEntityHitBox.mDimensions.y * 0.5f) < 15.0f)
+            //{
+                Log(LogType::INFO, "Collided with above, will be moved by %.2f", (-thisEntityTransformationComponent.GetTranslation().y + otherEntityTransf.GetTranslation().y - otherEntityHitBox.mDimensions.y * 0.5f - thisEntityHitBox.mDimensions.y * 0.5f));
+                thisEntityTransformationComponent.GetTranslation().y = otherEntityTransf.GetTranslation().y - otherEntityHitBox.mDimensions.y * 0.5f - thisEntityHitBox.mDimensions.y * 0.5f;
+                thisEntityPhysicsComponent.GetVelocity().y = 0.0f;
+            //}
         }
         // Collided with entity below
         else
         {
-            if (Abs(-thisEntityTransformationComponent.GetTranslation().y + otherEntityTransf.GetTranslation().y + otherEntityHitBox.mDimensions.y * 0.5f + thisEntityHitBox.mDimensions.y * 0.5f) < 15.0f)
-            {
+            //if (Abs(-thisEntityTransformationComponent.GetTranslation().y + otherEntityTransf.GetTranslation().y + otherEntityHitBox.mDimensions.y * 0.5f + thisEntityHitBox.mDimensions.y * 0.5f) < 15.0f)
+            //{
                 Log(LogType::INFO, "Collided with below, will be moved by %.2f", (-thisEntityTransformationComponent.GetTranslation().y + otherEntityTransf.GetTranslation().y + otherEntityHitBox.mDimensions.y * 0.5f + thisEntityHitBox.mDimensions.y * 0.5f));
                 thisEntityTransformationComponent.GetTranslation().y = otherEntityTransf.GetTranslation().y + otherEntityHitBox.mDimensions.y * 0.5f + thisEntityHitBox.mDimensions.y * 0.5f;
-            }
+            //}
         }
     }
     
