@@ -33,7 +33,7 @@ private:
     };
 
     EntityId CheckAndGetCollidedEntity(const EntityId referenceEntityId, const std::vector<EntityId>& allConsideredEntityIds);
-    void PushEntityOutsideOtherEntityInAxis(const EntityId referenceEntityId, const EntityId collidedWithEntityId, const Axis);
+    void PushEntityOutsideOtherEntityInAxis(const EntityId referenceEntityId, const EntityId collidedWithEntityId, const Axis, const float dt);
 
     const ServiceLocator& mServiceLocator;
     EntityComponentManager* mEntityComponentManager;

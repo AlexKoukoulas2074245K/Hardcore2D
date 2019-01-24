@@ -48,25 +48,18 @@ void PhysicsSystem::UpdateEntities(const std::vector<EntityId>& entityIds, const
             auto collisionCheckEntityId = CheckAndGetCollidedEntity(entityId, entityIds);            
 
             // If any were found, push the current entity outside of them
-            if (collisionCheckEntityId != entityId &&                 
+            if (collisionCheckEntityId != entityId &&
                 mEntityComponentManager->GetComponent<PhysicsComponent>(collisionCheckEntityId).GetBodyType() != PhysicsComponent::BodyType::DYNAMIC)
             {
-                const auto& otherEntityTransform = mEntityComponentManager->GetComponent<TransformationComponent>(collisionCheckEntityId);
-                const auto& otherPhysicsComponent = mEntityComponentManager->GetComponent<PhysicsComponent>(collisionCheckEntityId);
-                
-                if (otherPhysicsComponent.GetBodyType() != PhysicsComponent::BodyType::KINEMATIC ||
-                    (thisEntityTransformationComponent.GetTranslation().y < otherEntityTransform.GetTranslation().y + otherPhysicsComponent.GetHitBox().mDimensions.y * 0.5f))
-                {
-                    PushEntityOutsideOtherEntityInAxis(entityId, collisionCheckEntityId, Axis::X_AXIS);
-                }
+                PushEntityOutsideOtherEntityInAxis(entityId, collisionCheckEntityId, Axis::X_AXIS, dt);
             }
             
             // Update vertical position next
             thisEntityTransformationComponent.GetTranslation().y += thisEntityPhysicsComponent.GetVelocity().y * dt;
             
             // Find any entity collided with
-            collisionCheckEntityId = CheckAndGetCollidedEntity(entityId, entityIds);            
-
+            collisionCheckEntityId = CheckAndGetCollidedEntity(entityId, entityIds);
+            
             // If any were found, push the current entity outside of them
             if (collisionCheckEntityId != entityId &&
                 mEntityComponentManager->GetComponent<PhysicsComponent>(collisionCheckEntityId).GetBodyType() != PhysicsComponent::BodyType::DYNAMIC)
@@ -74,7 +67,7 @@ void PhysicsSystem::UpdateEntities(const std::vector<EntityId>& entityIds, const
                 //const auto& otherEntityTransform = mEntityComponentManager->GetComponent<TransformationComponent>(collisionCheckEntityId);
                 const auto& otherPhysicsComponent = mEntityComponentManager->GetComponent<PhysicsComponent>(collisionCheckEntityId);
                 
-                PushEntityOutsideOtherEntityInAxis(entityId, collisionCheckEntityId, Axis::Y_AXIS);
+                PushEntityOutsideOtherEntityInAxis(entityId, collisionCheckEntityId, Axis::Y_AXIS, dt);
                 
                 if (otherPhysicsComponent.GetBodyType() == PhysicsComponent::BodyType::KINEMATIC)
                 {
@@ -117,7 +110,7 @@ EntityId PhysicsSystem::CheckAndGetCollidedEntity(const EntityId referenceEntity
     return referenceEntityId;
 }
 
-void PhysicsSystem::PushEntityOutsideOtherEntityInAxis(const EntityId referenceEntityId, const EntityId collidedWithEntityId, const PhysicsSystem::Axis axis)
+void PhysicsSystem::PushEntityOutsideOtherEntityInAxis(const EntityId referenceEntityId, const EntityId collidedWithEntityId, const PhysicsSystem::Axis axis, const float dt)
 {
     auto& thisEntityTransformationComponent = mEntityComponentManager->GetComponent<TransformationComponent>(referenceEntityId);
     auto& thisEntityPhysicsComponent = mEntityComponentManager->GetComponent<PhysicsComponent>(referenceEntityId);
@@ -132,17 +125,22 @@ void PhysicsSystem::PushEntityOutsideOtherEntityInAxis(const EntityId referenceE
         // Collided with entity to the right
         if (thisEntityTransformationComponent.GetTranslation().x < otherEntityTransf.GetTranslation().x)
         {
-            //if (Abs(-thisEntityTransformationComponent.GetTranslation().x + otherEntityTransf.GetTranslation().x - otherEntityHitBox.mDimensions.x * 0.5f - thisEntityHitBox.mDimensions.x * 0.5f) < 15.0f)
-            //{
-                Log(LogType::INFO, "Collided with right, will be moved by %.2f", (-thisEntityTransformationComponent.GetTranslation().x + otherEntityTransf.GetTranslation().x - otherEntityHitBox.mDimensions.x * 0.5f - thisEntityHitBox.mDimensions.x * 0.5f));
-                thisEntityTransformationComponent.GetTranslation().x = otherEntityTransf.GetTranslation().x - otherEntityHitBox.mDimensions.x * 0.5f - thisEntityHitBox.mDimensions.x * 0.5f;
-            //}
+            const auto horizontalPushDelta = otherEntityTransf.GetTranslation().x - otherEntityHitBox.mDimensions.x * 0.5f - thisEntityHitBox.mDimensions.x * 0.5f;
+            if (otherPhysicsComponent.GetBodyType() != PhysicsComponent::BodyType::KINEMATIC ||
+                Abs(-thisEntityTransformationComponent.GetTranslation().x + horizontalPushDelta) < 10.0f)
+            {
+                thisEntityTransformationComponent.GetTranslation().x = horizontalPushDelta;
+            }
         }
         // Collided with entity to the left
         else
         {
-            Log(LogType::INFO, "Collided with left, will be moved by %.2f", (-thisEntityTransformationComponent.GetTranslation().x + otherEntityTransf.GetTranslation().x + otherEntityHitBox.mDimensions.x * 0.5f + thisEntityHitBox.mDimensions.x * 0.5f));
-            thisEntityTransformationComponent.GetTranslation().x = otherEntityTransf.GetTranslation().x + otherEntityHitBox.mDimensions.x * 0.5f + thisEntityHitBox.mDimensions.x * 0.5f;
+            const auto horizontalPushDelta = otherEntityTransf.GetTranslation().x + otherEntityHitBox.mDimensions.x * 0.5f + thisEntityHitBox.mDimensions.x * 0.5f;
+            if (otherPhysicsComponent.GetBodyType() != PhysicsComponent::BodyType::KINEMATIC ||
+                Abs(-thisEntityTransformationComponent.GetTranslation().x + horizontalPushDelta) < 10.0f)
+            {
+                thisEntityTransformationComponent.GetTranslation().x = horizontalPushDelta;
+            }
         }
     }
     else
@@ -150,21 +148,28 @@ void PhysicsSystem::PushEntityOutsideOtherEntityInAxis(const EntityId referenceE
         // Collided with entity above
         if (thisEntityTransformationComponent.GetTranslation().y < otherEntityTransf.GetTranslation().y)
         {
-            //if (Abs(-thisEntityTransformationComponent.GetTranslation().y + otherEntityTransf.GetTranslation().y - otherEntityHitBox.mDimensions.y * 0.5f - thisEntityHitBox.mDimensions.y * 0.5f) < 15.0f)
-            //{
-                Log(LogType::INFO, "Collided with above, will be moved by %.2f", (-thisEntityTransformationComponent.GetTranslation().y + otherEntityTransf.GetTranslation().y - otherEntityHitBox.mDimensions.y * 0.5f - thisEntityHitBox.mDimensions.y * 0.5f));
+            if (otherPhysicsComponent.GetBodyType() == PhysicsComponent::BodyType::KINEMATIC)
+            {
+                thisEntityTransformationComponent.GetTranslation().y -= thisEntityPhysicsComponent.GetVelocity().y * dt;
+                thisEntityPhysicsComponent.GetVelocity().y = 0.0f;
+            }
+            else
+            {
                 thisEntityTransformationComponent.GetTranslation().y = otherEntityTransf.GetTranslation().y - otherEntityHitBox.mDimensions.y * 0.5f - thisEntityHitBox.mDimensions.y * 0.5f;
                 thisEntityPhysicsComponent.GetVelocity().y = 0.0f;
-            //}
+            }
         }
         // Collided with entity below
         else
         {
-            //if (Abs(-thisEntityTransformationComponent.GetTranslation().y + otherEntityTransf.GetTranslation().y + otherEntityHitBox.mDimensions.y * 0.5f + thisEntityHitBox.mDimensions.y * 0.5f) < 15.0f)
-            //{
-                Log(LogType::INFO, "Collided with below, will be moved by %.2f", (-thisEntityTransformationComponent.GetTranslation().y + otherEntityTransf.GetTranslation().y + otherEntityHitBox.mDimensions.y * 0.5f + thisEntityHitBox.mDimensions.y * 0.5f));
+            if (otherPhysicsComponent.GetBodyType() == PhysicsComponent::BodyType::KINEMATIC)
+            {
+                thisEntityTransformationComponent.GetTranslation().y -= thisEntityPhysicsComponent.GetVelocity().y * dt;
+            }
+            else
+            {
                 thisEntityTransformationComponent.GetTranslation().y = otherEntityTransf.GetTranslation().y + otherEntityHitBox.mDimensions.y * 0.5f + thisEntityHitBox.mDimensions.y * 0.5f;
-            //}
+            }
         }
     }
     
