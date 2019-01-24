@@ -59,7 +59,7 @@ private:
     glm::vec3 mVelocity;
     glm::vec3 mGravity;
     glm::vec3 mMaxVelocity;
-    glm::vec3 mMinVelocity;    
+    glm::vec3 mMinVelocity;
     bool mIsGrounded;    
 };
 

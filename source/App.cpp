@@ -101,11 +101,9 @@ bool App::Initialize()
     mActiveEntityIds.push_back(mEntityComponentManager->GenerateEntity());
     auto movingPlatformTransformationComponent = std::make_unique<TransformationComponent>();
     movingPlatformTransformationComponent->GetScale() = glm::vec3(80.0f, 80.0f, 1.0f);
-    movingPlatformTransformationComponent->GetTranslation() = glm::vec3(900.0f, 40.0f, 1.0f);
+    movingPlatformTransformationComponent->GetTranslation() = glm::vec3(900.0f, 100.0f, 1.0f);
     auto movingPlatformShaderComponent = std::make_unique<ShaderComponent>("basic");
     auto movingPlatformPhysicsComponent = std::make_unique<PhysicsComponent>(PhysicsComponent::BodyType::KINEMATIC, PhysicsComponent::Hitbox(glm::vec2(0.0f, 0.0f), glm::vec2(80.0f, 80.0f)));
-    movingPlatformPhysicsComponent->GetMinVelocity().x = -1000.0f;
-    movingPlatformPhysicsComponent->GetMaxVelocity().x = 1000.0f;
 
     std::map<StringId, std::vector<GLuint>> movingPlatformAnimations = { { StringId("ground"),{ groundTextureId } } };
     auto movingPlatformAnimationComponent = std::make_unique<AnimationComponent>(movingPlatformAnimations, 100.0f);
@@ -269,7 +267,8 @@ void App::Update(const float dt)
     }    
 
     auto& physicsComponent = mEntityComponentManager->GetComponent<PhysicsComponent>(mActiveEntityIds[1]);
-    physicsComponent.GetVelocity().x = goingRight ? 60.0f : -60.0f;
+    //physicsComponent.GetVelocity().x = goingRight ? 60.0f : -60.0f;
+    physicsComponent.GetVelocity().y = goingRight ? 60.0f : -60.0f;
 
     mPhysicsSystem->UpdateEntities(mActiveEntityIds, dt);
     mAnimationService->UpdateAnimations(mActiveEntityIds, dt);

@@ -7,13 +7,15 @@
 
 #include "PhysicsComponent.h"
 
+#include "../util/TypeTraits.h"
+
 PhysicsComponent::PhysicsComponent(const BodyType bodyType, const Hitbox& hitBox)
     : mBodyType(bodyType)
     , mHitBox(hitBox)
     , mVelocity(0.0f, 0.0f, 0.0f)
     , mGravity(0.0f, 0.0f, 0.0f)
-    , mMaxVelocity(0.0f, 0.0f, 0.0f)
-    , mMinVelocity(0.0f, 0.0f, 0.0f)
+    , mMaxVelocity(FLT_MAX, FLT_MAX, 0.0f)
+    , mMinVelocity(-FLT_MAX, -FLT_MAX, 0.0f)
     , mIsGrounded(false)
 {
     
