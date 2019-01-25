@@ -32,7 +32,9 @@
 #include <glm/gtc/matrix_transform.hpp>
 
 static const char* SHADER_DIRECTORY = "shaders/";
-
+GLuint frameBufferId = 0;
+GLuint renderedTexture = 0;
+GLenum DrawBuffers[1] = { GL_COLOR_ATTACHMENT0 };
 
 static const GLfloat QUAD_VERTICES[] =
 {
@@ -94,6 +96,7 @@ void CoreRenderingService::GameLoop(std::function<void(const float)> appUpdateMe
     {
         // Clear viewport
         GL_CHECK(glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT));
+        GL_CHECK(glViewport(0, 0, static_cast<GLsizei>(mRenderableDimensions.x), static_cast<GLsizei>(mRenderableDimensions.y)));
         GL_CHECK(glBindVertexArray(mVAO));
         
         // Poll events
@@ -126,6 +129,12 @@ void CoreRenderingService::GameLoop(std::function<void(const float)> appUpdateMe
         // Update client
         appUpdateMethod(Min(dt, 0.05f));
        
+        // Display 
+        GL_CHECK(glBindFramebuffer(GL_FRAMEBUFFER, 0));
+        GL_CHECK(glUseProgram(mShaders["postprocessing"]->GetShaderId()));
+        GL_CHECK(glBindTexture(GL_TEXTURE_2D, renderedTexture));
+        GL_CHECK(glDrawArrays(GL_TRIANGLE_FAN, 0, 4));
+
         // Swap window buffers
         SDL_GL_SwapWindow(mSdlWindow);
     }
@@ -231,6 +240,26 @@ bool CoreRenderingService::InitializeContext()
     GL_CHECK(glEnable(GL_BLEND));
     GL_CHECK(glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA));
     
+
+    GL_CHECK(glGenFramebuffers(1, &frameBufferId));
+    GL_CHECK(glBindFramebuffer(GL_FRAMEBUFFER, frameBufferId));
+
+
+    GL_CHECK(glGenTextures(1, &renderedTexture));
+    GL_CHECK(glBindTexture(GL_TEXTURE_2D, renderedTexture));
+    GL_CHECK(glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, static_cast<GLsizei>(mRenderableDimensions.x), static_cast<GLsizei>(mRenderableDimensions.y), 0, GL_RGBA, GL_UNSIGNED_BYTE, 0));
+    GL_CHECK(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST));
+    GL_CHECK(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST));
+
+    GL_CHECK(glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, renderedTexture, 0));
+
+    GL_CHECK(glDrawBuffers(1, DrawBuffers));
+
+    if (GL_NO_CHECK(glCheckFramebufferStatus(GL_FRAMEBUFFER)) != GL_FRAMEBUFFER_COMPLETE)
+    {
+        assert(false);
+    }
+
     return true;
 }
 
