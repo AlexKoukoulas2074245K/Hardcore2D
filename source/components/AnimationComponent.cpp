@@ -60,6 +60,8 @@ void AnimationComponent::SetFacingDirection(const FacingDirection facingDirectio
 
 void AnimationComponent::ChangeAnimation(const StringId newAnimation)
 {
+    if (mAnimations.count(newAnimation) == 0) assert(false);
+    
     mCurrentAnimation = newAnimation;
     mCurrentFrameIndex = 0;
 }

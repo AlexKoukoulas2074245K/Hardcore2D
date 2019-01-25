@@ -9,8 +9,11 @@
 #define CoreRenderingService_h
 
 #include "../IService.h"
+#include "Camera.h"
 #include "../util/TypeTraits.h"
 
+#include <glm/vec2.hpp>
+#include <glm/mat4x4.hpp>
 #include <functional>
 #include <vector>
 #include <string>
@@ -38,6 +41,7 @@ public:
     bool InitializeEngine();
     void GameLoop(std::function<void(const float)> appUpdateMethod);
     void RenderEntities(const std::vector<EntityId>& entityIds);
+    void UpdateCamera(const EntityId focusedEntity);
     
     float GetRenderableWidth() const;
     float GetRenderableHeight() const;
@@ -53,7 +57,7 @@ private:
     void CompileAllShaders();
     void RegisterEventCallbacks();
 
-    void RenderEntity(const EntityId);
+    void RenderEntityInternal(const EntityId);
 	void PrepareSpecificShaderUniformsForEntityRendering(const EntityId);
 
     const ServiceLocator& mServiceLocator;
@@ -67,10 +71,10 @@ private:
     bool mDebugHitboxDisplay;
     bool mRunning;
     
-    float mRenderableAreaWidth;
-    float mRenderableAreaHeight;
-	float mAspectRatio;
-
+    glm::vec2 mRenderableDimensions;
+    glm::mat4 mProjectionMatrix;
+    Camera mCamera;
+    
     GLuint mVAO;
     GLuint mVBO;
 

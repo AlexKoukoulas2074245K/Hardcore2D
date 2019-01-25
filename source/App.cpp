@@ -151,7 +151,7 @@ bool App::Initialize()
         playerAnimations[StringId("running")].push_back(mResourceManager->GetResource<TextureResource>(resourceId).GetGLTextureId());
     }    
   
-    auto playerAnimationComponent = std::make_unique<AnimationComponent>(playerAnimations, 0.05f);
+    auto playerAnimationComponent = std::make_unique<AnimationComponent>(playerAnimations, 0.03f);
     playerAnimationComponent->ChangeAnimation(StringId("idle"));
 
     auto playerShaderComponent = std::make_unique<ShaderComponent>("basic");
@@ -272,6 +272,7 @@ void App::Update(const float dt)
     physicsComponent2.GetVelocity().y = goingRight ? 60.0f : -60.0f;
     mPhysicsSystem->UpdateEntities(mActiveEntityIds, dt);
     mAnimationService->UpdateAnimations(mActiveEntityIds, dt);
+    mCoreRenderingService->UpdateCamera(mActiveEntityIds[3]);
     mCoreRenderingService->RenderEntities(mActiveEntityIds);
 }
 

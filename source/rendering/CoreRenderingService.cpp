@@ -29,7 +29,6 @@
 
 #include <string>
 #include <vector>
-#include <glm/mat4x4.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 
 static const char* SHADER_DIRECTORY = "shaders/";
@@ -51,9 +50,7 @@ CoreRenderingService::CoreRenderingService(const ServiceLocator& serviceLocator)
     , mSdlGLContext(nullptr)
     , mDebugHitboxDisplay(false)
     , mRunning(false)
-    , mRenderableAreaWidth(0.0f)
-    , mRenderableAreaHeight(0.0f)
-    , mAspectRatio(0.0f)
+    , mRenderableDimensions(0.0f, 0.0f)
     , mVAO(0U)
     , mVBO(0U)
     , mCurrentShaderUsed("basic")
@@ -78,12 +75,12 @@ bool CoreRenderingService::InitializeEngine()
     mEntityComponentManager = &(mServiceLocator.ResolveService<EntityComponentManager>());    
     mResourceManager = &(mServiceLocator.ResolveService<ResourceManager>());
     mEventCommunicator = mServiceLocator.ResolveService<EventCommunicationService>().CreateEventCommunicator();
-
+    
     if (!InitializeContext()) return false;    
     InitializeRenderingPrimitive();
     CompileAllShaders();
     RegisterEventCallbacks();
-
+    
     return true;
 }
 
@@ -138,18 +135,23 @@ void CoreRenderingService::RenderEntities(const std::vector<EntityId>& entityIds
 {
     for (const auto entityId: entityIds)
     {
-        RenderEntity(entityId);
+        RenderEntityInternal(entityId);
     }
+}
+
+void CoreRenderingService::UpdateCamera(const EntityId focusedEntity)
+{
+    mCamera.Update(mEntityComponentManager->GetComponent<TransformationComponent>(focusedEntity).GetTranslation());
 }
 
 float CoreRenderingService::GetRenderableWidth() const
 {
-    return mRenderableAreaWidth;
+    return mRenderableDimensions.x;
 }
 
 float CoreRenderingService::GetRenderableHeight() const
 {
-    return mRenderableAreaHeight;
+    return mRenderableDimensions.y;
 }
 
 bool CoreRenderingService::InitializeContext()
@@ -214,10 +216,10 @@ bool CoreRenderingService::InitializeContext()
 	int rendWidth = 0;
 	int rendHeight = 0;
     SDL_GL_GetDrawableSize(mSdlWindow, &rendWidth, &rendHeight);
-	mRenderableAreaWidth = static_cast<float>(rendWidth);
-	mRenderableAreaHeight = static_cast<float>(rendHeight);
-	mAspectRatio = mRenderableAreaWidth/mRenderableAreaHeight;
-
+    mRenderableDimensions = glm::vec2(static_cast<float>(rendWidth), static_cast<float>(rendHeight));
+    mCamera.Initialize(mRenderableDimensions);
+    mProjectionMatrix = glm::orthoLH(0.0f, mRenderableDimensions.x, 0.0f, mRenderableDimensions.y, 0.001f, 100.0f);
+    
     // Log GL driver info
     Log(LogType::INFO, "Vendor     : %s", GL_NO_CHECK(glGetString(GL_VENDOR)));
     Log(LogType::INFO, "Renderer   : %s", GL_NO_CHECK(glGetString(GL_RENDERER)));
@@ -387,7 +389,7 @@ void CoreRenderingService::RegisterEventCallbacks()
     });
 }
 
-void CoreRenderingService::RenderEntity(const EntityId entityId)
+void CoreRenderingService::RenderEntityInternal(const EntityId entityId)
 {    
     if (mEntityComponentManager->HasComponent<ShaderComponent>(entityId))
     {
@@ -458,14 +460,12 @@ void CoreRenderingService::PrepareSpecificShaderUniformsForEntityRendering(const
 	const auto& shaderUniforms = mShaders[mCurrentShaderUsed]->GetUniformNamesToLocations();
 
 	if (shaderUniforms.count("view") != 0)
-	{		
-		glm::mat4 viewMatrix = glm::lookAtLH(glm::vec3(0.0f, 0.0f, -1.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
-		GL_CHECK(glUniformMatrix4fv(mShaders[mCurrentShaderUsed]->GetUniformNamesToLocations().at("view"), 1, GL_FALSE, (GLfloat*)&viewMatrix));
+	{
+		GL_CHECK(glUniformMatrix4fv(mShaders[mCurrentShaderUsed]->GetUniformNamesToLocations().at("view"), 1, GL_FALSE, (GLfloat*)&(mCamera.GetViewMatrix())));
 	}
 
 	if (shaderUniforms.count("proj") != 0)
 	{
-		glm::mat4 projMatrix = glm::orthoLH(0.0f, mRenderableAreaWidth, 0.0f, mRenderableAreaHeight, 0.001f, 100.0f);
-		GL_CHECK(glUniformMatrix4fv(mShaders[mCurrentShaderUsed]->GetUniformNamesToLocations().at("proj"), 1, GL_FALSE, (GLfloat*)&projMatrix));
+		GL_CHECK(glUniformMatrix4fv(mShaders[mCurrentShaderUsed]->GetUniformNamesToLocations().at("proj"), 1, GL_FALSE, (GLfloat*)&mProjectionMatrix));
 	}
 }
