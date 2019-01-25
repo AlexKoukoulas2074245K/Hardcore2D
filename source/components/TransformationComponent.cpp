@@ -11,6 +11,7 @@ TransformationComponent::TransformationComponent()
     : mTranslation(0.0f, 0.0f, 0.0f)
     , mRotation(0.0f, 0.0f, 0.0f)
     , mScale(1.0f, 1.0f, 1.0f)
+    , mPreviousTranslation(0.0f, 0.0f, 0.0f)
 {
     
 }
@@ -40,6 +41,11 @@ glm::vec3& TransformationComponent::GetScale()
     return mScale;
 }
 
+glm::vec3& TransformationComponent::GetPreviousTranslation()
+{
+    return mPreviousTranslation;
+}
+
 const glm::vec3& TransformationComponent::GetTranslation() const
 {
     return mTranslation;
@@ -53,4 +59,9 @@ const glm::vec3& TransformationComponent::GetRotation() const
 const glm::vec3& TransformationComponent::GetScale() const
 {
     return mScale;
+}
+
+const glm::vec3& TransformationComponent::GetPreviousTranslation() const
+{
+    return mPreviousTranslation;
 }

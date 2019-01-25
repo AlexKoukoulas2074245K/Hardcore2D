@@ -56,33 +56,56 @@ void PhysicsSystem::UpdateEntities(const std::vector<EntityId>& entityIds, const
             referenceEntityTransformComponent.GetTranslation().x += referenceEntityPhysicsComponent.GetVelocity().x * dt;
             
             // Find any entity collided with
-            auto collisionCheckEntityId = CheckAndGetCollidedEntity(entityId, entityIds);            
+            auto otherEntityId = CheckAndGetCollidedEntity(entityId, entityIds);
 
             // If any were found, push the current entity outside of them
-            if (collisionCheckEntityId != entityId)
+            if (otherEntityId != entityId)
             {
-                PushEntityOutsideOtherEntityInAxis(entityId, collisionCheckEntityId, Axis::X_AXIS, dt);
+                PushEntityOutsideOtherEntityInAxis(entityId, otherEntityId, Axis::X_AXIS, dt);
             }
             
             // Update vertical position next
             referenceEntityTransformComponent.GetTranslation().y += referenceEntityPhysicsComponent.GetVelocity().y * dt;
             
             // Find any entity collided with
-            collisionCheckEntityId = CheckAndGetCollidedEntity(entityId, entityIds);
+            otherEntityId = CheckAndGetCollidedEntity(entityId, entityIds);
             
             // If any were found, push the current entity outside of them
-            if (collisionCheckEntityId != entityId)
+            if (otherEntityId != entityId)
             {
-                const auto& otherEntityPhysicsComponent = mEntityComponentManager->GetComponent<PhysicsComponent>(collisionCheckEntityId);
+                const auto& otherEntityPhysicsComponent = mEntityComponentManager->GetComponent<PhysicsComponent>(otherEntityId);
                 
-                PushEntityOutsideOtherEntityInAxis(entityId, collisionCheckEntityId, Axis::Y_AXIS, dt);
+                PushEntityOutsideOtherEntityInAxis(entityId, otherEntityId, Axis::Y_AXIS, dt);
                 
+                // In the case of a Kinematic object append its deltas to current entity
                 if (otherEntityPhysicsComponent.GetBodyType() == PhysicsComponent::BodyType::KINEMATIC)
                 {
-                    referenceEntityTransformComponent.GetTranslation() += otherEntityPhysicsComponent.GetVelocity() * dt;
+                    const auto& otherEntityTransformComponent = mEntityComponentManager->GetComponent<TransformationComponent>(otherEntityId);
+                    
+                    // Before adding the kinematic object's horizontal velocity, make sure that the kinematic object itself
+                    // is not horizontally blocked by another object
+                    if (Abs(otherEntityTransformComponent.GetPreviousTranslation().x - otherEntityTransformComponent.GetTranslation().x) > 0.01f)
+                    {
+                        referenceEntityTransformComponent.GetTranslation().x += otherEntityPhysicsComponent.GetVelocity().x * dt;
+                    }
+                    
+                    // Before adding the kinematic object's vertical velocity, make sure that the kinematic object itself
+                    // is not vertically blocked by another object
+                    if (Abs(otherEntityTransformComponent.GetPreviousTranslation().y - otherEntityTransformComponent.GetTranslation().y) > 0.01f)
+                    {
+                        referenceEntityTransformComponent.GetTranslation().y += otherEntityPhysicsComponent.GetVelocity().y * dt;
+                    }
                 }
-                
             }
+        }
+    }
+    
+    for (const auto entityId: entityIds)
+    {
+        if (mEntityComponentManager->HasComponent<TransformationComponent>(entityId))
+        {
+            auto& referenceEntityTransformComponent = mEntityComponentManager->GetComponent<TransformationComponent>(entityId);
+            referenceEntityTransformComponent.GetPreviousTranslation() = referenceEntityTransformComponent.GetTranslation();
         }
     }
 }

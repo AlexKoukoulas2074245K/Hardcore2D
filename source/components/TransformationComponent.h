@@ -23,13 +23,15 @@ public:
     glm::vec3& GetTranslation();
     glm::vec3& GetRotation();
     glm::vec3& GetScale();
+    glm::vec3& GetPreviousTranslation();
     
     const glm::vec3& GetTranslation() const;
     const glm::vec3& GetRotation() const;
     const glm::vec3& GetScale() const;
+    const glm::vec3& GetPreviousTranslation() const;
     
 private:
-    glm::vec3 mTranslation, mRotation, mScale;
+    glm::vec3 mTranslation, mRotation, mScale, mPreviousTranslation;
 };
 
 #endif /* TransformationComponent_h */
