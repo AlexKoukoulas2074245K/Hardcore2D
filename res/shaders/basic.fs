@@ -18,11 +18,11 @@ void main()
 {
     float final_uv_x = uv_frag.x;
     if (flip_tex_hor)
-	final_uv_x = 1.0f - final_uv_x;
+	final_uv_x = 1.01 - final_uv_x;
 
-    float final_uv_y = 1.0f - uv_frag.y;
+    float final_uv_y = 1.01 - uv_frag.y;
     if (flip_tex_ver)
-	final_uv_y = 1.0f - final_uv_y;
+	final_uv_y = 1.01 - final_uv_y;
 
     frag_color = texture(tex, vec2(final_uv_x, final_uv_y));
 }

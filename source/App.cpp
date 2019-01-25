@@ -26,6 +26,7 @@
 #include "input/InputHandler.h"
 
 #include <vector>
+#include <json.hpp>
 
 #ifdef _WIN32
 static const char* RES_ROOT = "../res/";

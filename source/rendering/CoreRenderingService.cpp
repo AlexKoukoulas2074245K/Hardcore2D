@@ -163,11 +163,13 @@ bool CoreRenderingService::InitializeContext()
         return false;
     }
     
-    // Set SDL GL attributes
+    // Set SDL GL attributes        
+    SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
+    SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 24);    
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 2);
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
-    
+   
 #if DEMO_ENABLE_MULTISAMPLE
     SDL_GL_SetAttribute(SDL_GL_MULTISAMPLEBUFFERS, 1);
     SDL_GL_SetAttribute(SDL_GL_MULTISAMPLESAMPLES, 2);
@@ -205,7 +207,7 @@ bool CoreRenderingService::InitializeContext()
     }
     
     SDL_GL_MakeCurrent(mSdlWindow, mSdlGLContext);
-    SDL_GL_SetSwapInterval(1);
+    SDL_GL_SetSwapInterval(0);
     
 #ifdef _WIN32
     // Initialize GLES2 function table

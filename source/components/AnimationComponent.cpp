@@ -8,6 +8,8 @@
 #include "AnimationComponent.h"
 #include "../util/Logging.h"
 
+#include <cassert>
+
 AnimationComponent::AnimationComponent(const std::map<StringId, std::vector<GLuint>>& animations, const float animationDuration)
     : mAnimations(animations)
     , mFacingDirection(FacingDirection::RIGHT)
