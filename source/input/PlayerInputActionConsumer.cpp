@@ -43,8 +43,7 @@ bool PlayerInputActionConsumer::VConsumeInputAction(const InputAction& inputActi
                         
         } break;
         case InputAction::ActionType::MOVE_RIGHT:
-        {
-            auto& entityPhysicsComponent = mEntityComponentManager.GetComponent<PhysicsComponent>(mEntityId);
+        {            
             switch (inputAction.mActionState)
             {
                 case InputAction::ActionState::START:
