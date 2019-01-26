@@ -32,9 +32,6 @@
 #include <glm/gtc/matrix_transform.hpp>
 
 static const char* SHADER_DIRECTORY = "shaders/";
-GLuint frameBufferId = 0;
-GLuint renderedTexture = 0;
-GLenum DrawBuffers[1] = { GL_COLOR_ATTACHMENT0 };
 
 static const GLfloat QUAD_VERTICES[] =
 {
@@ -53,9 +50,12 @@ CoreRenderingService::CoreRenderingService(const ServiceLocator& serviceLocator)
     , mDebugHitboxDisplay(false)
     , mRunning(false)
     , mRenderableDimensions(0.0f, 0.0f)
+    , mSwirlAngle(0.0f)
     , mVAO(0U)
     , mVBO(0U)
-    , mCurrentShaderUsed("basic")
+    , mFrameBufferId(0U)
+    , mScreenRenderingTexture(0U)
+    , mCurrentShader("basic")
 
 {
     
@@ -94,11 +94,6 @@ void CoreRenderingService::GameLoop(std::function<void(const float)> appUpdateMe
     
     while(mRunning)
     {
-        // Clear viewport
-        GL_CHECK(glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT));
-        GL_CHECK(glViewport(0, 0, static_cast<GLsizei>(mRenderableDimensions.x), static_cast<GLsizei>(mRenderableDimensions.y)));
-        GL_CHECK(glBindVertexArray(mVAO));
-        
         // Poll events
         while (SDL_PollEvent(&event))
         {
@@ -126,13 +121,26 @@ void CoreRenderingService::GameLoop(std::function<void(const float)> appUpdateMe
         elapsedTicks = currentTicks;
         const auto dt = lastFrameTicks * 0.001f;
 		
+        // Execute first pass rendering
+        GL_CHECK(glBindFramebuffer(GL_FRAMEBUFFER, mFrameBufferId));
+        GL_CHECK(glClearColor(0.1f, 0.1f, 0.1f, 1.0f));
+        GL_CHECK(glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT));
+        GL_CHECK(glViewport(0, 0, static_cast<GLsizei>(mRenderableDimensions.x), static_cast<GLsizei>(mRenderableDimensions.y)));
+        GL_CHECK(glBindVertexArray(mVAO));
+        
         // Update client
         appUpdateMethod(Min(dt, 0.05f));
        
-        // Display 
+        // Clear buffers for post-processing
         GL_CHECK(glBindFramebuffer(GL_FRAMEBUFFER, 0));
-        GL_CHECK(glUseProgram(mShaders["postprocessing"]->GetShaderId()));
-        GL_CHECK(glBindTexture(GL_TEXTURE_2D, renderedTexture));
+        GL_CHECK(glClearColor(1.0f, 1.0f, 1.0f, 1.0f));
+        GL_CHECK(glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT));
+        
+        PreparePostProcessingPass();
+        
+        // Execute prost-processing pass
+        GL_CHECK(glBindTexture(GL_TEXTURE_2D, mScreenRenderingTexture));
+        GL_CHECK(glBindVertexArray(mVAO));
         GL_CHECK(glDrawArrays(GL_TRIANGLE_FAN, 0, 4));
 
         // Swap window buffers
@@ -236,24 +244,21 @@ bool CoreRenderingService::InitializeContext()
     Log(LogType::INFO, "Renderer   : %s", GL_NO_CHECK(glGetString(GL_RENDERER)));
     Log(LogType::INFO, "Version    : %s", GL_NO_CHECK(glGetString(GL_VERSION)));
     
-    GL_CHECK(glClearColor(1.0f, 1.0f, 1.0, 1.0f));
+    // Configure Blending
     GL_CHECK(glEnable(GL_BLEND));
     GL_CHECK(glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA));
     
+    // Create Frame Buffer
+    GL_CHECK(glGenFramebuffers(1, &mFrameBufferId));
+    GL_CHECK(glBindFramebuffer(GL_FRAMEBUFFER, mFrameBufferId));
 
-    GL_CHECK(glGenFramebuffers(1, &frameBufferId));
-    GL_CHECK(glBindFramebuffer(GL_FRAMEBUFFER, frameBufferId));
-
-
-    GL_CHECK(glGenTextures(1, &renderedTexture));
-    GL_CHECK(glBindTexture(GL_TEXTURE_2D, renderedTexture));
-    GL_CHECK(glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, static_cast<GLsizei>(mRenderableDimensions.x), static_cast<GLsizei>(mRenderableDimensions.y), 0, GL_RGBA, GL_UNSIGNED_BYTE, 0));
+    // Create Frame Buffer Texture
+    GL_CHECK(glGenTextures(1, &mScreenRenderingTexture));
+    GL_CHECK(glBindTexture(GL_TEXTURE_2D, mScreenRenderingTexture));
+    GL_CHECK(glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, static_cast<GLsizei>(mRenderableDimensions.x), static_cast<GLsizei>(mRenderableDimensions.y), 0, GL_RGB, GL_UNSIGNED_BYTE, 0));
     GL_CHECK(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST));
     GL_CHECK(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST));
-
-    GL_CHECK(glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, renderedTexture, 0));
-
-    GL_CHECK(glDrawBuffers(1, DrawBuffers));
+    GL_CHECK(glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, mScreenRenderingTexture, 0));
 
     if (GL_NO_CHECK(glCheckFramebufferStatus(GL_FRAMEBUFFER)) != GL_FRAMEBUFFER_COMPLETE)
     {
@@ -368,7 +373,7 @@ void CoreRenderingService::CompileAllShaders()
             shaderUniformNames.insert(shaderUniformNames.end(), uniformNames.begin(), uniformNames.end());
             
             // Extract uniform locations
-            std::map<std::string, GLuint> shaderUniformNamesToLocations;
+            std::unordered_map<StringId, GLuint> shaderUniformNamesToLocations;
             for (const auto uniformName: shaderUniformNames)
             {
                 shaderUniformNamesToLocations[uniformName] = GL_NO_CHECK(glGetUniformLocation(currentProgramId, uniformName.c_str()));
@@ -424,9 +429,20 @@ void CoreRenderingService::RenderEntityInternal(const EntityId entityId)
 {    
     if (mEntityComponentManager->HasComponent<ShaderComponent>(entityId))
     {
-        const auto& shaderComponent = mEntityComponentManager->GetComponent<ShaderComponent>(entityId);
-        mCurrentShaderUsed = shaderComponent.GetShaderName();
-        GL_CHECK(glUseProgram(mShaders[mCurrentShaderUsed]->GetShaderId()));
+        mCurrentShader = mEntityComponentManager->GetComponent<ShaderComponent>(entityId).GetShaderName();
+        GL_CHECK(glUseProgram(mShaders[mCurrentShader]->GetShaderId()));
+        
+        const auto& shaderUniforms = mShaders[mCurrentShader]->GetUniformNamesToLocations();
+        
+        if (shaderUniforms.count(StringId("view")) != 0)
+        {
+            GL_CHECK(glUniformMatrix4fv(mShaders[mCurrentShader]->GetUniformNamesToLocations().at(StringId("view")), 1, GL_FALSE, (GLfloat*)&(mCamera.GetViewMatrix())));
+        }
+        
+        if (shaderUniforms.count(StringId("proj")) != 0)
+        {
+            GL_CHECK(glUniformMatrix4fv(mShaders[mCurrentShader]->GetUniformNamesToLocations().at(StringId("proj")), 1, GL_FALSE, (GLfloat*)&mProjectionMatrix));
+        }
     }
 
     if (mEntityComponentManager->HasComponent<AnimationComponent>(entityId))
@@ -435,10 +451,10 @@ void CoreRenderingService::RenderEntityInternal(const EntityId entityId)
         
         GL_CHECK(glBindTexture(GL_TEXTURE_2D, animationComponent.GetCurrentFrameResourceId()));
 
-        if (mCurrentShaderUsed == "basic")
+        if (mCurrentShader.GetString() == "basic")
         {
             const auto textureFlip = animationComponent.GetCurrentFacingDirection() == AnimationComponent::FacingDirection::LEFT ? 1 : 0;
-            GL_CHECK(glUniform1i(mShaders[mCurrentShaderUsed]->GetUniformNamesToLocations().at("flip_tex_hor"), textureFlip));
+            GL_CHECK(glUniform1i(mShaders[mCurrentShader]->GetUniformNamesToLocations().at(StringId("flip_tex_hor")), textureFlip));
         }
     }
 
@@ -454,10 +470,8 @@ void CoreRenderingService::RenderEntityInternal(const EntityId entityId)
         worldMatrix = glm::rotate(worldMatrix, transformationComponent.GetRotation().z, glm::vec3(0.0f, 0.0f, 1.0f));        
         worldMatrix = glm::scale(worldMatrix, transformationComponent.GetScale() * 0.5f);
 
-        GL_CHECK(glUniformMatrix4fv(mShaders[mCurrentShaderUsed]->GetUniformNamesToLocations().at("world"), 1, GL_FALSE, (GLfloat*)&worldMatrix));
+        GL_CHECK(glUniformMatrix4fv(mShaders[mCurrentShader]->GetUniformNamesToLocations().at(StringId("world")), 1, GL_FALSE, (GLfloat*)&worldMatrix));
     }
-
-    PrepareSpecificShaderUniformsForEntityRendering(entityId);
 
     GL_CHECK(glDrawArrays(GL_TRIANGLE_FAN, 0, 4));
  
@@ -473,30 +487,30 @@ void CoreRenderingService::RenderEntityInternal(const EntityId entityId)
         worldMatrix = glm::rotate(worldMatrix, transformationComponent.GetRotation().z, glm::vec3(0.0f, 0.0f, 1.0f));        
         worldMatrix = glm::scale(worldMatrix, glm::vec3(physicsComponent.GetHitBox().mDimensions.x * 0.5f, physicsComponent.GetHitBox().mDimensions.y * 0.5f, 1.0));
 
-        mCurrentShaderUsed = "debug_rect";
-        GL_CHECK(glUseProgram(mShaders[mCurrentShaderUsed]->GetShaderId()));
-        GL_CHECK(glUniformMatrix4fv(mShaders[mCurrentShaderUsed]->GetUniformNamesToLocations().at("world"), 1, GL_FALSE, (GLfloat*)&worldMatrix));
+        mCurrentShader = StringId("debug_rect");
+        GL_CHECK(glUseProgram(mShaders[mCurrentShader]->GetShaderId()));
+        GL_CHECK(glUniformMatrix4fv(mShaders[mCurrentShader]->GetUniformNamesToLocations().at(StringId("world")), 1, GL_FALSE, (GLfloat*)&worldMatrix));
         GL_CHECK(glBindTexture(GL_TEXTURE_2D, mResourceManager->GetResource<TextureResource>("debug/debug_square.png").GetGLTextureId()));
-
-        PrepareSpecificShaderUniformsForEntityRendering(entityId);
-
+        GL_CHECK(glUniformMatrix4fv(mShaders[mCurrentShader]->GetUniformNamesToLocations().at(StringId("view")), 1, GL_FALSE, (GLfloat*)&(mCamera.GetViewMatrix())));
+        GL_CHECK(glUniformMatrix4fv(mShaders[mCurrentShader]->GetUniformNamesToLocations().at(StringId("proj")), 1, GL_FALSE, (GLfloat*)&mProjectionMatrix));
         GL_CHECK(glDrawArrays(GL_TRIANGLE_FAN, 0, 4));
     }
     
 }
 
-void CoreRenderingService::PrepareSpecificShaderUniformsForEntityRendering(const EntityId)
+void CoreRenderingService::PreparePostProcessingPass()
 {
-	//auto& mEntityComponentManager->= mServiceLocator.ResolveService<EntityComponentManager>();
-	const auto& shaderUniforms = mShaders[mCurrentShaderUsed]->GetUniformNamesToLocations();
-
-	if (shaderUniforms.count("view") != 0)
-	{
-		GL_CHECK(glUniformMatrix4fv(mShaders[mCurrentShaderUsed]->GetUniformNamesToLocations().at("view"), 1, GL_FALSE, (GLfloat*)&(mCamera.GetViewMatrix())));
-	}
-
-	if (shaderUniforms.count("proj") != 0)
-	{
-		GL_CHECK(glUniformMatrix4fv(mShaders[mCurrentShaderUsed]->GetUniformNamesToLocations().at("proj"), 1, GL_FALSE, (GLfloat*)&mProjectionMatrix));
-	}
+    mCurrentShader = StringId("postprocessing");
+    GL_CHECK(glUseProgram(mShaders[mCurrentShader]->GetShaderId()));
+    
+    const auto& currentShaderUniforms = mShaders[mCurrentShader]->GetUniformNamesToLocations();
+    GL_CHECK(glUniform1f(currentShaderUniforms.at(StringId("swirlRadius")), 300.0f));
+    GL_CHECK(glUniform1f(currentShaderUniforms.at(StringId("swirlAngle")), mSwirlAngle));
+    
+    glm::vec2 swirlCenter(mRenderableDimensions.x * 0.5f, mRenderableDimensions.y * 0.5f);
+    GL_CHECK(glUniform2fv(currentShaderUniforms.at(StringId("swirlCenter")), 1, (GLfloat*)&swirlCenter));
+    
+    glm::vec2 swirlDimensions(mRenderableDimensions.x, mRenderableDimensions.y);
+    GL_CHECK(glUniform2fv(currentShaderUniforms.at(StringId("swirlDimensions")), 1, (GLfloat*)&swirlDimensions));
+    
 }

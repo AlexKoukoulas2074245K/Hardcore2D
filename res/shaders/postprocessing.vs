@@ -11,5 +11,5 @@ out vec2 uv_frag;
 void main()
 {
     uv_frag = uv;
-    gl_Position = world * vec4(position, 1.0);
+    gl_Position = vec4(position, 1.0);
 }

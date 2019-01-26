@@ -90,9 +90,9 @@ bool App::Initialize()
         auto backgroundTransformComponent = std::make_unique<TransformationComponent>();
         backgroundTransformComponent->GetScale() *= 2.0f;
 
-        auto backgroundShaderComponent = std::make_unique<ShaderComponent>("background");
+        auto backgroundShaderComponent = std::make_unique<ShaderComponent>(StringId("background"));
         mEntityComponentManager->AddComponent<TransformationComponent>(mActiveEntityIds.back(), std::move(backgroundTransformComponent));
-        std::map<StringId, std::vector<GLuint>> backgroundAnimations = { { StringId("background"),{ backgroundTextureId } } };
+        AnimationComponent::AnimationsMap backgroundAnimations = { { StringId("background"),{ backgroundTextureId } } };
         auto backgroundAnimationComponent = std::make_unique<AnimationComponent>(backgroundAnimations, 100.0f);
         mEntityComponentManager->AddComponent<AnimationComponent>(mActiveEntityIds.back(), std::move(backgroundAnimationComponent));
         mEntityComponentManager->AddComponent<ShaderComponent>(mActiveEntityIds.back(), std::move(backgroundShaderComponent));
@@ -103,10 +103,10 @@ bool App::Initialize()
         auto movingPlatformTransformationComponent = std::make_unique<TransformationComponent>();
         movingPlatformTransformationComponent->GetScale() = glm::vec3(80.0f, 80.0f, 1.0f);
         movingPlatformTransformationComponent->GetTranslation() = glm::vec3(900.0f, 800.0f, 1.0f);
-        auto movingPlatformShaderComponent = std::make_unique<ShaderComponent>("basic");
+        auto movingPlatformShaderComponent = std::make_unique<ShaderComponent>(StringId("basic"));
         auto movingPlatformPhysicsComponent = std::make_unique<PhysicsComponent>(PhysicsComponent::BodyType::KINEMATIC, PhysicsComponent::Hitbox(glm::vec2(0.0f, 0.0f), glm::vec2(80.0f, 80.0f)));
 
-        std::map<StringId, std::vector<GLuint>> movingPlatformAnimations = { { StringId("ground"),{ groundTextureId } } };
+        AnimationComponent::AnimationsMap movingPlatformAnimations = { { StringId("ground"),{ groundTextureId } } };
         auto movingPlatformAnimationComponent = std::make_unique<AnimationComponent>(movingPlatformAnimations, 100.0f);
 
         mEntityComponentManager->AddComponent<TransformationComponent>(mActiveEntityIds.back(), std::move(movingPlatformTransformationComponent));
@@ -120,10 +120,10 @@ bool App::Initialize()
         auto movingPlatformTransformationComponent = std::make_unique<TransformationComponent>();
         movingPlatformTransformationComponent->GetScale() = glm::vec3(80.0f, 80.0f, 1.0f);
         movingPlatformTransformationComponent->GetTranslation() = glm::vec3(900.0f, 240.0f, 1.0f);
-        auto movingPlatformShaderComponent = std::make_unique<ShaderComponent>("basic");
+        auto movingPlatformShaderComponent = std::make_unique<ShaderComponent>(StringId("basic"));
         auto movingPlatformPhysicsComponent = std::make_unique<PhysicsComponent>(PhysicsComponent::BodyType::KINEMATIC, PhysicsComponent::Hitbox(glm::vec2(0.0f, 0.0f), glm::vec2(80.0f, 80.0f)));
         
-        std::map<StringId, std::vector<GLuint>> movingPlatformAnimations = { { StringId("ground"),{ groundTextureId } } };
+        AnimationComponent::AnimationsMap movingPlatformAnimations = { { StringId("ground"),{ groundTextureId } } };
         auto movingPlatformAnimationComponent = std::make_unique<AnimationComponent>(movingPlatformAnimations, 100.0f);
         
         mEntityComponentManager->AddComponent<TransformationComponent>(mActiveEntityIds.back(), std::move(movingPlatformTransformationComponent));
@@ -136,7 +136,7 @@ bool App::Initialize()
     mActiveEntityIds.push_back(mEntityComponentManager->GenerateEntity());
     
     auto playerTransformComponent = std::make_unique<TransformationComponent>();
-    std::map<StringId, std::vector<GLuint>> playerAnimations;
+    AnimationComponent::AnimationsMap playerAnimations;
     
     auto idleAnimationFileNames = GetAllFilenamesInDirectory(mResourceManager->GetRootResourceDirectory() + "characters/player/idle");
     for (const auto fileName : idleAnimationFileNames)
@@ -152,14 +152,14 @@ bool App::Initialize()
         playerAnimations[StringId("running")].push_back(mResourceManager->GetResource<TextureResource>(resourceId).GetGLTextureId());
     }    
   
-    auto playerAnimationComponent = std::make_unique<AnimationComponent>(playerAnimations, 0.03f);
+    auto playerAnimationComponent = std::make_unique<AnimationComponent>(playerAnimations, 0.04f);
     playerAnimationComponent->ChangeAnimation(StringId("idle"));
 
-    auto playerShaderComponent = std::make_unique<ShaderComponent>("basic");
+    auto playerShaderComponent = std::make_unique<ShaderComponent>(StringId("basic"));
     auto playerPhysicsComponent = std::make_unique<PhysicsComponent>(PhysicsComponent::BodyType::DYNAMIC, PhysicsComponent::Hitbox(glm::vec2(0.0f, 0.0f), glm::vec2(30.0f, 90.0f)));
     
     playerTransformComponent->GetScale() = glm::vec3(160.0f, 160.0f, 1.0f);
-	playerTransformComponent->GetTranslation() = glm::vec3(640.0f, 800.0f, 1.0f);
+	playerTransformComponent->GetTranslation() = glm::vec3(640.0f, 400.0f, 1.0f);
     playerPhysicsComponent->GetGravity() = glm::vec3(0.0f, -1680.0f, 0.0f);
     playerPhysicsComponent->GetMinVelocity() = glm::vec3(-240.0f, -480.0f, 0.0f);
     playerPhysicsComponent->GetMaxVelocity() = glm::vec3(240.0f, 480.0f, 0.0f);
@@ -176,10 +176,10 @@ bool App::Initialize()
         auto transformationComponent = std::make_unique<TransformationComponent>();
         transformationComponent->GetScale() = glm::vec3(80.0f, 80.0f, 1.0f);
         transformationComponent->GetTranslation() = glm::vec3(40.0f + static_cast<float>(i) * 80.0f, 40.0f, 1.0f);
-        auto shaderComponent = std::make_unique<ShaderComponent>("basic");
+        auto shaderComponent = std::make_unique<ShaderComponent>(StringId("basic"));
         auto physicsComponent = std::make_unique<PhysicsComponent>(PhysicsComponent::BodyType::STATIC, PhysicsComponent::Hitbox(glm::vec2(0.0f, 0.0f), glm::vec2(80.0f, 80.0f)));
 
-        std::map<StringId, std::vector<GLuint>> groundTextureAnimations = {{ StringId("ground"), {groundTextureId} }};
+        AnimationComponent::AnimationsMap groundTextureAnimations = {{ StringId("ground"), {groundTextureId} }};
         auto animationComponent = std::make_unique<AnimationComponent>(groundTextureAnimations, 100.0f);
         
         mEntityComponentManager->AddComponent<TransformationComponent>(mActiveEntityIds.back(), std::move(transformationComponent));
@@ -194,10 +194,10 @@ bool App::Initialize()
         auto transformationComponent = std::make_unique<TransformationComponent>();
         transformationComponent->GetScale() = glm::vec3(80.0f, 80.0f, 1.0f);
         transformationComponent->GetTranslation() = glm::vec3(40.0f + static_cast<float>(i) * 80.0f, 460.0f, 1.0f);
-        auto shaderComponent = std::make_unique<ShaderComponent>("basic");
+        auto shaderComponent = std::make_unique<ShaderComponent>(StringId("basic"));
         auto physicsComponent = std::make_unique<PhysicsComponent>(PhysicsComponent::BodyType::STATIC, PhysicsComponent::Hitbox(glm::vec2(0.0f, 0.0f), glm::vec2(80.0f, 80.0f)));
         
-        std::map<StringId, std::vector<GLuint>> groundTextureAnimations = {{ StringId("ground"), {groundTextureId} }};
+        AnimationComponent::AnimationsMap groundTextureAnimations = {{ StringId("ground"), {groundTextureId} }};
         auto animationComponent = std::make_unique<AnimationComponent>(groundTextureAnimations, 100.0f);
         
         mEntityComponentManager->AddComponent<TransformationComponent>(mActiveEntityIds.back(), std::move(transformationComponent));
@@ -212,10 +212,10 @@ bool App::Initialize()
         auto transformationComponent = std::make_unique<TransformationComponent>();
         transformationComponent->GetScale() = glm::vec3(80.0f, 80.0f, 1.0f);
         transformationComponent->GetTranslation() = glm::vec3(440, 120.0f + static_cast<float>(i) * 80.0f, 1.0f);
-        auto shaderComponent = std::make_unique<ShaderComponent>("basic");
+        auto shaderComponent = std::make_unique<ShaderComponent>(StringId("basic"));
         auto physicsComponent = std::make_unique<PhysicsComponent>(PhysicsComponent::BodyType::STATIC, PhysicsComponent::Hitbox(glm::vec2(0.0f, 0.0f), glm::vec2(80.0f, 80.0f)));
         
-        std::map<StringId, std::vector<GLuint>> groundTextureAnimations = {{ StringId("ground"), {groundTextureId} }};
+        AnimationComponent::AnimationsMap groundTextureAnimations = {{ StringId("ground"), {groundTextureId} }};
         auto animationComponent = std::make_unique<AnimationComponent>(groundTextureAnimations, 100.0f);
         
         mEntityComponentManager->AddComponent<TransformationComponent>(mActiveEntityIds.back(), std::move(transformationComponent));
@@ -230,10 +230,10 @@ bool App::Initialize()
         auto transformationComponent = std::make_unique<TransformationComponent>();
         transformationComponent->GetScale() = glm::vec3(80.0f, 80.0f, 1.0f);
         transformationComponent->GetTranslation() = glm::vec3(840, 40.0f + static_cast<float>(i) * 80.0f, 1.0f);
-        auto shaderComponent = std::make_unique<ShaderComponent>("basic");
+        auto shaderComponent = std::make_unique<ShaderComponent>(StringId("basic"));
         auto physicsComponent = std::make_unique<PhysicsComponent>(PhysicsComponent::BodyType::STATIC, PhysicsComponent::Hitbox(glm::vec2(0.0f, 0.0f), glm::vec2(80.0f, 80.0f)));
         
-        std::map<StringId, std::vector<GLuint>> groundTextureAnimations = {{ StringId("ground"), {groundTextureId} }};
+        AnimationComponent::AnimationsMap groundTextureAnimations = {{ StringId("ground"), {groundTextureId} }};
         auto animationComponent = std::make_unique<AnimationComponent>(groundTextureAnimations, 100.0f);
         
         mEntityComponentManager->AddComponent<TransformationComponent>(mActiveEntityIds.back(), std::move(transformationComponent));

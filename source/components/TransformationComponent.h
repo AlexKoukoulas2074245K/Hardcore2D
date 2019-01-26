@@ -11,6 +11,7 @@
 #include "IComponent.h"
 
 #include <glm/vec3.hpp>
+#include <glm/mat4x4.hpp>
 
 class TransformationComponent final: public IComponent
 {
@@ -19,6 +20,7 @@ public:
     
     std::string VSerializeToString() const override;
     bool VInitializeFromString(const std::string&) override;
+    
     
     glm::vec3& GetTranslation();
     glm::vec3& GetRotation();

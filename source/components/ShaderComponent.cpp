@@ -7,7 +7,7 @@
 
 #include "ShaderComponent.h"
 
-ShaderComponent::ShaderComponent(const std::string& shaderName)
+ShaderComponent::ShaderComponent(const StringId& shaderName)
     : mShaderName(shaderName)
 {
     
@@ -23,7 +23,7 @@ bool ShaderComponent::VInitializeFromString(const std::string&)
     return true;
 }
 
-const std::string& ShaderComponent::GetShaderName() const
+const StringId& ShaderComponent::GetShaderName() const
 {
     return mShaderName;
 }

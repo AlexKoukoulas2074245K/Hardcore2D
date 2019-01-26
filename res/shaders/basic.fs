@@ -12,7 +12,7 @@ uniform bool flip_tex_ver;
 
 // actual output
 // gl_FragColor is deprecated
-layout(location = 0) out vec4 frag_color;
+out vec4 frag_color;
 
 void main()
 {

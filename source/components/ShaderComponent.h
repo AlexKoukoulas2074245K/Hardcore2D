@@ -9,19 +9,20 @@
 #define ShaderComponent_h
 
 #include "IComponent.h"
+#include "../util/StringId.h"
 
 class ShaderComponent final: public IComponent
 {
 public:
-    ShaderComponent(const std::string& shaderName);
+    ShaderComponent(const StringId& shaderName);
     
     std::string VSerializeToString() const override;
     bool VInitializeFromString(const std::string&) override;
 
-    const std::string& GetShaderName() const;
+    const StringId& GetShaderName() const;
     
 private:
-    const std::string mShaderName;
+    const StringId mShaderName;
 };
 
 #endif /* ShaderComponent_h */

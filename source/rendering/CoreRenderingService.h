@@ -11,13 +11,14 @@
 #include "../IService.h"
 #include "Camera.h"
 #include "../util/TypeTraits.h"
+#include "../util/StringId.h"
 
 #include <glm/vec2.hpp>
 #include <glm/mat4x4.hpp>
 #include <functional>
 #include <vector>
 #include <string>
-#include <map>
+#include <unordered_map>
 #include <memory>
 
 struct SDL_Window;
@@ -58,8 +59,8 @@ private:
     void RegisterEventCallbacks();
 
     void RenderEntityInternal(const EntityId);
-	void PrepareSpecificShaderUniformsForEntityRendering(const EntityId);
-
+    void PreparePostProcessingPass();
+    
     const ServiceLocator& mServiceLocator;
     EntityComponentManager* mEntityComponentManager;
     ResourceManager* mResourceManager;
@@ -73,13 +74,15 @@ private:
     
     glm::vec2 mRenderableDimensions;
     glm::mat4 mProjectionMatrix;
+    
+    float mSwirlAngle;
+    
     Camera mCamera;
     
-    GLuint mVAO;
-    GLuint mVBO;
+    GLuint mVAO, mVBO, mFrameBufferId, mScreenRenderingTexture;
 
-    std::map<std::string, std::unique_ptr<Shader>> mShaders;
-    std::string mCurrentShaderUsed;
+    std::unordered_map<StringId, std::unique_ptr<Shader>> mShaders;
+    StringId mCurrentShader;
 };
 
 

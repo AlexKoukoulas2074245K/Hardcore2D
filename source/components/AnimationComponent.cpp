@@ -10,7 +10,7 @@
 
 #include <cassert>
 
-AnimationComponent::AnimationComponent(const std::map<StringId, std::vector<GLuint>>& animations, const float animationDuration)
+AnimationComponent::AnimationComponent(const AnimationsMap& animations, const float animationDuration)
     : mAnimations(animations)
     , mFacingDirection(FacingDirection::RIGHT)
     , mCurrentAnimation(animations.begin()->first)

@@ -9,21 +9,22 @@
 #define Shader_h
 
 #include "../util/TypeTraits.h"
+#include "../util/StringId.h"
 
 #include <string>
-#include <map>
+#include <unordered_map>
 
 class Shader final
 {
 public:
-    Shader(const GLuint shaderId, const std::map<std::string, GLuint> uniformNamesToLocations);
+    Shader(const GLuint shaderId, const std::unordered_map<StringId, GLuint> uniformNamesToLocations);
     
     GLuint GetShaderId() const;
-    const std::map<std::string, GLuint>& GetUniformNamesToLocations() const;
+    const std::unordered_map<StringId, GLuint>& GetUniformNamesToLocations() const;
     
 private:
     GLuint mShaderId;
-    std::map<std::string, GLuint> mShaderUniformNamesToLocations;
+    std::unordered_map<StringId, GLuint> mShaderUniformNamesToLocations;
 };
 
 #endif /* Shader_h */

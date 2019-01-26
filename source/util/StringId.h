@@ -23,7 +23,8 @@ public:
 	}
 
 	operator size_t () { return mStringId; }
-
+    bool operator == (const StringId& other) const { return mStringId == other.GetStringId(); }
+    
 	const std::string& GetString() const { return mString; }
 	size_t GetStringId() const { return mStringId; }
 
@@ -35,6 +36,18 @@ private:
 inline bool operator < (const StringId& lhs, const StringId& rhs)
 {
     return lhs.GetStringId() < rhs.GetStringId();
+}
+
+namespace std
+{
+    template <>
+    struct hash<StringId>
+    {
+        std::size_t operator()(const StringId& key) const
+        {
+            return key.GetStringId();
+        }
+    };
 }
 
 #endif /* StringId_h */

@@ -12,18 +12,19 @@
 #include "../util/TypeTraits.h"
 #include "../util/StringId.h"
 
-#include <map>
+#include <unordered_map>
 #include <vector>
 
 class AnimationComponent final: public IComponent
 {
 public:
+    using AnimationsMap = std::unordered_map<StringId, std::vector<GLuint>>;
     enum class FacingDirection
     {
         LEFT, RIGHT
     };
     
-    AnimationComponent(const std::map<StringId, std::vector<GLuint>>& animations, const float animationDuration);
+    AnimationComponent(const AnimationsMap& animations, const float animationDuration);
     
     std::string VSerializeToString() const override;
     bool VInitializeFromString(const std::string&) override;
@@ -40,7 +41,7 @@ public:
     void AdvanceFrame();
     
 private:
-    const std::map<StringId, std::vector<GLuint>> mAnimations;
+    const AnimationsMap mAnimations;
     FacingDirection mFacingDirection;
     StringId mCurrentAnimation;
     int mCurrentFrameIndex;
