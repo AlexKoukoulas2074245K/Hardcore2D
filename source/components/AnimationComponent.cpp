@@ -30,7 +30,7 @@ bool AnimationComponent::VInitializeFromString(const std::string&)
     return true;
 }
 
-AnimationComponent::FacingDirection AnimationComponent::GetCurrentFacingDirection() const
+FacingDirection AnimationComponent::GetCurrentFacingDirection() const
 {
     return mFacingDirection;
 }

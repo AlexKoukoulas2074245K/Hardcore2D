@@ -6,16 +6,21 @@
 //
 
 #include "MoveEntityByCustomVelocityCommand.h"
+#include "../ServiceLocator.h"
+#include "../events/EventCommunicator.h"
+#include "../events/PlayerChangedDirectionEvent.h"
 #include "../components/EntityComponentManager.h"
 #include "../components/PhysicsComponent.h"
 #include "../components/AnimationComponent.h"
 #include "../components/ShaderComponent.h"
+
 #include "../util/MathUtils.h"
 
 const StringId MoveEntityByCustomVelocityCommand::COMMAND_CLASS_ID("MoveEntityByCustomVelocityCommand");
 
-MoveEntityByCustomVelocityCommand::MoveEntityByCustomVelocityCommand(EntityComponentManager& entityComponentManager, const EntityId entityId, const glm::vec3& velocity)
-    : mEntityComponentManager(entityComponentManager)
+MoveEntityByCustomVelocityCommand::MoveEntityByCustomVelocityCommand(const ServiceLocator& serviceLocator, const EntityId entityId, const glm::vec3& velocity)
+    : mEntityComponentManager(serviceLocator.ResolveService<EntityComponentManager>())
+    , mEventCommunicator(serviceLocator.ResolveService<EventCommunicationService>().CreateEventCommunicator())
     , mEntityId(entityId)
     , mVelocity(velocity)
 {
@@ -30,11 +35,20 @@ void MoveEntityByCustomVelocityCommand::Execute()
         auto& animationComponent = mEntityComponentManager.GetComponent<AnimationComponent>(mEntityId);
         if (mVelocity.x < 0.0f)
         {
-            animationComponent.SetFacingDirection(AnimationComponent::FacingDirection::LEFT);
+            if (animationComponent.GetCurrentFacingDirection() != FacingDirection::LEFT)
+            {
+                animationComponent.SetFacingDirection(FacingDirection::LEFT);
+                mEventCommunicator->DispatchEvent(std::make_unique<PlayerChangedDirectionEvent>(FacingDirection::LEFT));
+            }
+            
         }
         else
         {
-            animationComponent.SetFacingDirection(AnimationComponent::FacingDirection::RIGHT);
+            if (animationComponent.GetCurrentFacingDirection() != FacingDirection::RIGHT)
+            {
+                animationComponent.SetFacingDirection(FacingDirection::RIGHT);
+                mEventCommunicator->DispatchEvent(std::make_unique<PlayerChangedDirectionEvent>(FacingDirection::RIGHT));
+            }
         }
         
         if (animationComponent.GetCurrentAnimation() != StringId("running"))

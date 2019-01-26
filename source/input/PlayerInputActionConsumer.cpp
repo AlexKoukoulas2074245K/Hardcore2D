@@ -6,19 +6,27 @@
 //
 
 #include "PlayerInputActionConsumer.h"
+#include "../ServiceLocator.h"
 #include "../components/PhysicsComponent.h"
 #include "../components/EntityComponentManager.h"
 #include "../commands/MoveEntityByCustomVelocityCommand.h"
 #include "../commands/SetEntityCustomVelocityCommand.h"
+#include "../events/EventCommunicator.h"
 #include "../util/Logging.h"
 
 #include <glm/glm.hpp>
 
-PlayerInputActionConsumer::PlayerInputActionConsumer(EntityComponentManager& entityComponentManager, const EntityId entityId)
-    : mEntityComponentManager(entityComponentManager)
+PlayerInputActionConsumer::PlayerInputActionConsumer(const ServiceLocator& serviceLocator, const EntityId entityId)
+    : mServiceLocator(serviceLocator)
+    , mEntityComponentManager(serviceLocator.ResolveService<EntityComponentManager>())
     , mEntityId(entityId)
+    , mEventCommunicator(serviceLocator.ResolveService<EventCommunicationService>().CreateEventCommunicator())
 {
     
+}
+
+PlayerInputActionConsumer::~PlayerInputActionConsumer()
+{
 }
 
 bool PlayerInputActionConsumer::VConsumeInputAction(const InputAction& inputAction) const
@@ -33,14 +41,13 @@ bool PlayerInputActionConsumer::VConsumeInputAction(const InputAction& inputActi
                 case InputAction::ActionState::START:
 				case InputAction::ActionState::CONTINUE:
                 {
-                    MoveEntityByCustomVelocityCommand(mEntityComponentManager, mEntityId, glm::vec3(-entityPhysicsComponent.GetMaxVelocity().x, 0.0f, 0.0f)).Execute();
+                    MoveEntityByCustomVelocityCommand(mServiceLocator, mEntityId, glm::vec3(-entityPhysicsComponent.GetMaxVelocity().x, 0.0f, 0.0f)).Execute();
                 } break;
                 case InputAction::ActionState::STOP:
                 {
                     SetEntityCustomVelocityCommand(mEntityComponentManager, mEntityId, glm::vec3(0.0f, entityPhysicsComponent.GetVelocity().y, entityPhysicsComponent.GetVelocity().z)).Execute();
                 } break;
             }
-                        
         } break;
         case InputAction::ActionType::MOVE_RIGHT:
         {            
@@ -49,7 +56,7 @@ bool PlayerInputActionConsumer::VConsumeInputAction(const InputAction& inputActi
                 case InputAction::ActionState::START:
                 case InputAction::ActionState::CONTINUE:
                 {
-                    MoveEntityByCustomVelocityCommand(mEntityComponentManager, mEntityId, glm::vec3(entityPhysicsComponent.GetMaxVelocity().x, 0.0f, 0.0f)).Execute();
+                    MoveEntityByCustomVelocityCommand(mServiceLocator, mEntityId, glm::vec3(entityPhysicsComponent.GetMaxVelocity().x, 0.0f, 0.0f)).Execute();
                 } break;
                 case InputAction::ActionState::STOP:
                 {

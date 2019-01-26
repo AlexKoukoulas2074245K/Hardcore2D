@@ -244,7 +244,7 @@ bool App::Initialize()
     
     // Initialized in order of priority
     mInputActionConsumers.push_back(std::make_unique<DebugInputActionConsumer>(*mServiceLocator));
-    mInputActionConsumers.push_back(std::make_unique<PlayerInputActionConsumer>(*mEntityComponentManager, mActiveEntityIds[3]));
+    mInputActionConsumers.push_back(std::make_unique<PlayerInputActionConsumer>(*mServiceLocator, mActiveEntityIds[3]));
     
     return true;
 }

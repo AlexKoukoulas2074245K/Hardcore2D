@@ -7,13 +7,16 @@
 
 #include "Camera.h"
 #include "../ServiceLocator.h"
+#include "../events/EventCommunicator.h"
+#include "../events/PlayerChangedDirectionEvent.h"
 #include "../components/EntityComponentManager.h"
 #include "../components/TransformationComponent.h"
 
 #include <glm/gtc/matrix_transform.hpp>
 
-void Camera::Initialize(const glm::vec2& renderableDimensions)
+void Camera::Initialize(const ServiceLocator& serviceLocator, const glm::vec2& renderableDimensions)
 {
+    mEventCommunicator = serviceLocator.ResolveService<EventCommunicationService>().CreateEventCommunicator();
     mRenderableDimensions = renderableDimensions;
 }
 

@@ -11,18 +11,25 @@
 #include "IInputActionConsumer.h"
 #include "../util/TypeTraits.h"
 
+#include <memory>
+
+class ServiceLocator;
 class EntityComponentManager;
+class EventCommunicator;
 
 class PlayerInputActionConsumer final: public IInputActionConsumer
 {
 public:
-    PlayerInputActionConsumer(EntityComponentManager&, const EntityId);
+    PlayerInputActionConsumer(const ServiceLocator&, const EntityId);
+    ~PlayerInputActionConsumer();
     
     bool VConsumeInputAction(const InputAction&) const override;
     
 private:
+    const ServiceLocator& mServiceLocator;
     EntityComponentManager& mEntityComponentManager;
     EntityId mEntityId;
+    std::unique_ptr<EventCommunicator> mEventCommunicator;
 };
 
 #endif /* PlayerInputActionConsumer_h */

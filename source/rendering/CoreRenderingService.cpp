@@ -236,7 +236,7 @@ bool CoreRenderingService::InitializeContext()
 	int rendHeight = 0;
     SDL_GL_GetDrawableSize(mSdlWindow, &rendWidth, &rendHeight);
     mRenderableDimensions = glm::vec2(static_cast<float>(rendWidth), static_cast<float>(rendHeight));
-    mCamera.Initialize(mRenderableDimensions);
+    mCamera.Initialize(mServiceLocator, mRenderableDimensions);
     mProjectionMatrix = glm::orthoLH(0.0f, mRenderableDimensions.x, 0.0f, mRenderableDimensions.y, 0.001f, 100.0f);
     
     // Log GL driver info
@@ -453,7 +453,7 @@ void CoreRenderingService::RenderEntityInternal(const EntityId entityId)
 
         if (mCurrentShader.GetString() == "basic")
         {
-            const auto textureFlip = animationComponent.GetCurrentFacingDirection() == AnimationComponent::FacingDirection::LEFT ? 1 : 0;
+            const auto textureFlip = animationComponent.GetCurrentFacingDirection() == FacingDirection::LEFT ? 1 : 0;
             GL_CHECK(glUniform1i(mShaders[mCurrentShader]->GetUniformNamesToLocations().at(StringId("flip_tex_hor")), textureFlip));
         }
     }

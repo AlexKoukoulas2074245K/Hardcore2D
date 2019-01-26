@@ -11,6 +11,7 @@
 #include "IComponent.h"
 #include "../util/TypeTraits.h"
 #include "../util/StringId.h"
+#include "../GameConstants.h"
 
 #include <unordered_map>
 #include <vector>
@@ -19,10 +20,6 @@ class AnimationComponent final: public IComponent
 {
 public:
     using AnimationsMap = std::unordered_map<StringId, std::vector<GLuint>>;
-    enum class FacingDirection
-    {
-        LEFT, RIGHT
-    };
     
     AnimationComponent(const AnimationsMap& animations, const float animationDuration);
     
