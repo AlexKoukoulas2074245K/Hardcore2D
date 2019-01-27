@@ -156,9 +156,9 @@ void CoreRenderingService::RenderEntities(const std::vector<EntityId>& entityIds
     }
 }
 
-void CoreRenderingService::UpdateCamera(const EntityId focusedEntity)
+void CoreRenderingService::UpdateCamera(const EntityId focusedEntity, const float dt)
 {
-    mCamera.Update(mEntityComponentManager->GetComponent<TransformationComponent>(focusedEntity).GetTranslation());
+    mCamera.Update(mEntityComponentManager->GetComponent<TransformationComponent>(focusedEntity).GetTranslation(), dt);
 }
 
 float CoreRenderingService::GetRenderableWidth() const

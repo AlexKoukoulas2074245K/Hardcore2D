@@ -273,7 +273,7 @@ void App::Update(const float dt)
     physicsComponent2.GetVelocity().y = goingRight ? 60.0f : -60.0f;
     mPhysicsSystem->UpdateEntities(mActiveEntityIds, dt);
     mAnimationService->UpdateAnimations(mActiveEntityIds, dt);
-    mCoreRenderingService->UpdateCamera(mActiveEntityIds[3]);
+    mCoreRenderingService->UpdateCamera(mActiveEntityIds[3], dt);
     mCoreRenderingService->RenderEntities(mActiveEntityIds);
 }
 

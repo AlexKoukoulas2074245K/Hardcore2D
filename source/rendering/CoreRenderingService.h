@@ -42,7 +42,7 @@ public:
     bool InitializeEngine();
     void GameLoop(std::function<void(const float)> appUpdateMethod);
     void RenderEntities(const std::vector<EntityId>& entityIds);
-    void UpdateCamera(const EntityId focusedEntity);
+    void UpdateCamera(const EntityId focusedEntity, const float dt);
     
     float GetRenderableWidth() const;
     float GetRenderableHeight() const;
