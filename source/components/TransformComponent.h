@@ -1,22 +1,23 @@
 //
-//  TransformationComponent.h
+//  TransformComponent.h
 //  Hardcore2D
 //
 //  Created by Alex Koukoulas on 15/01/2019.
 //
 
-#ifndef TransformationComponent_h
-#define TransformationComponent_h
+#ifndef TransformComponent_h
+#define TransformComponent_h
 
 #include "IComponent.h"
 
 #include <glm/vec3.hpp>
 #include <glm/mat4x4.hpp>
 
-class TransformationComponent final: public IComponent
+class TransformComponent final: public IComponent
 {
 public:
-    TransformationComponent();
+    TransformComponent();
+    TransformComponent(const glm::vec3& translation, const glm::vec3& rotation, const glm::vec3& scale);
     
     std::string VSerializeToString() const override;
     bool VInitializeFromString(const std::string&) override;
@@ -36,4 +37,4 @@ private:
     glm::vec3 mTranslation, mRotation, mScale, mPreviousTranslation;
 };
 
-#endif /* TransformationComponent_h */
+#endif /* TransformComponent_h */

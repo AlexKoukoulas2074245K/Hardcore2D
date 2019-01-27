@@ -9,7 +9,7 @@
 #include "input/PlayerInputActionConsumer.h"
 #include "input/DebugInputActionConsumer.h"
 #include "components/EntityComponentManager.h"
-#include "components/TransformationComponent.h"
+#include "components/TransformComponent.h"
 #include "components/AnimationComponent.h"
 #include "components/ShaderComponent.h"
 #include "components/PhysicsComponent.h"
@@ -67,11 +67,11 @@ bool App::Initialize()
     {
         mActiveEntityIds.push_back(mEntityComponentManager->GenerateEntity());
 
-        auto backgroundTransformComponent = std::make_unique<TransformationComponent>();
+        auto backgroundTransformComponent = std::make_unique<TransformComponent>();
         backgroundTransformComponent->GetScale() *= 2.0f;
 
         auto backgroundShaderComponent = std::make_unique<ShaderComponent>(StringId("background"));
-        mEntityComponentManager->AddComponent<TransformationComponent>(mActiveEntityIds.back(), std::move(backgroundTransformComponent));
+        mEntityComponentManager->AddComponent<TransformComponent>(mActiveEntityIds.back(), std::move(backgroundTransformComponent));
 
         auto backgroundAnimationComponent = std::make_unique<AnimationComponent>("environments/background", 100.0f, *mResourceManager);
         mEntityComponentManager->AddComponent<AnimationComponent>(mActiveEntityIds.back(), std::move(backgroundAnimationComponent));
@@ -80,15 +80,13 @@ bool App::Initialize()
     
     {
         mActiveEntityIds.push_back(mEntityComponentManager->GenerateEntity());
-        auto movingPlatformTransformationComponent = std::make_unique<TransformationComponent>();
-        movingPlatformTransformationComponent->GetScale() = glm::vec3(80.0f, 80.0f, 1.0f);
-        movingPlatformTransformationComponent->GetTranslation() = glm::vec3(900.0f, 800.0f, 1.0f);
+        auto movingPlatformTransformComponent = std::make_unique<TransformComponent>(glm::vec3(900.0f, 800.0f, 1.0f), glm::vec3(), glm::vec3(80.0f, 80.0f, 1.0f));
         auto movingPlatformShaderComponent = std::make_unique<ShaderComponent>(StringId("basic"));
         auto movingPlatformPhysicsComponent = std::make_unique<PhysicsComponent>(PhysicsComponent::BodyType::KINEMATIC, PhysicsComponent::Hitbox(glm::vec2(0.0f, 0.0f), glm::vec2(80.0f, 80.0f)));
 
         auto movingPlatformAnimationComponent = std::make_unique<AnimationComponent>("environments/jungle_tiles/ground_top_middle", 100.0f, *mResourceManager);
 
-        mEntityComponentManager->AddComponent<TransformationComponent>(mActiveEntityIds.back(), std::move(movingPlatformTransformationComponent));
+        mEntityComponentManager->AddComponent<TransformComponent>(mActiveEntityIds.back(), std::move(movingPlatformTransformComponent));
         mEntityComponentManager->AddComponent<AnimationComponent>(mActiveEntityIds.back(), std::move(movingPlatformAnimationComponent));
         mEntityComponentManager->AddComponent<PhysicsComponent>(mActiveEntityIds.back(), std::move(movingPlatformPhysicsComponent));
         mEntityComponentManager->AddComponent<ShaderComponent>(mActiveEntityIds.back(), std::move(movingPlatformShaderComponent));
@@ -96,15 +94,12 @@ bool App::Initialize()
     
     {
         mActiveEntityIds.push_back(mEntityComponentManager->GenerateEntity());
-        auto movingPlatformTransformationComponent = std::make_unique<TransformationComponent>();
-        movingPlatformTransformationComponent->GetScale() = glm::vec3(80.0f, 80.0f, 1.0f);
-        movingPlatformTransformationComponent->GetTranslation() = glm::vec3(900.0f, 240.0f, 1.0f);
+        auto movingPlatformTransformComponent = std::make_unique<TransformComponent>(glm::vec3(900.0f, 240.0f, 1.0f), glm::vec3(), glm::vec3(80.0f, 80.0f, 1.0f));
         auto movingPlatformShaderComponent = std::make_unique<ShaderComponent>(StringId("basic"));
         auto movingPlatformPhysicsComponent = std::make_unique<PhysicsComponent>(PhysicsComponent::BodyType::KINEMATIC, PhysicsComponent::Hitbox(glm::vec2(0.0f, 0.0f), glm::vec2(80.0f, 80.0f)));
-        
         auto movingPlatformAnimationComponent = std::make_unique<AnimationComponent>("environments/jungle_tiles/ground_top_middle", 100.0f, *mResourceManager);
         
-        mEntityComponentManager->AddComponent<TransformationComponent>(mActiveEntityIds.back(), std::move(movingPlatformTransformationComponent));
+        mEntityComponentManager->AddComponent<TransformComponent>(mActiveEntityIds.back(), std::move(movingPlatformTransformComponent));
         mEntityComponentManager->AddComponent<AnimationComponent>(mActiveEntityIds.back(), std::move(movingPlatformAnimationComponent));
         mEntityComponentManager->AddComponent<PhysicsComponent>(mActiveEntityIds.back(), std::move(movingPlatformPhysicsComponent));
         mEntityComponentManager->AddComponent<ShaderComponent>(mActiveEntityIds.back(), std::move(movingPlatformShaderComponent));
@@ -113,19 +108,16 @@ bool App::Initialize()
     {
     mActiveEntityIds.push_back(mEntityComponentManager->GenerateEntity());
     
-    auto playerTransformComponent = std::make_unique<TransformationComponent>();
-  
+    auto playerTransformComponent = std::make_unique<TransformComponent>(glm::vec3(640.0f, 400.0f, 1.0f), glm::vec3(), glm::vec3(160.0f, 160.0f, 1.0f));
     auto playerAnimationComponent = std::make_unique<AnimationComponent>("characters/player", 0.04f, *mResourceManager);
     auto playerShaderComponent = std::make_unique<ShaderComponent>(StringId("basic"));
     auto playerPhysicsComponent = std::make_unique<PhysicsComponent>(PhysicsComponent::BodyType::DYNAMIC, PhysicsComponent::Hitbox(glm::vec2(0.0f, 0.0f), glm::vec2(30.0f, 90.0f)));
     
-    playerTransformComponent->GetScale() = glm::vec3(160.0f, 160.0f, 1.0f);
-	playerTransformComponent->GetTranslation() = glm::vec3(640.0f, 400.0f, 1.0f);
     playerPhysicsComponent->GetGravity() = glm::vec3(0.0f, -1680.0f, 0.0f);
     playerPhysicsComponent->GetMinVelocity() = glm::vec3(-240.0f, -480.0f, 0.0f);
     playerPhysicsComponent->GetMaxVelocity() = glm::vec3(240.0f, 480.0f, 0.0f);
                                                                      
-    mEntityComponentManager->AddComponent<TransformationComponent>(mActiveEntityIds.back(), std::move(playerTransformComponent));
+    mEntityComponentManager->AddComponent<TransformComponent>(mActiveEntityIds.back(), std::move(playerTransformComponent));
     mEntityComponentManager->AddComponent<AnimationComponent>(mActiveEntityIds.back(), std::move(playerAnimationComponent));
     mEntityComponentManager->AddComponent<ShaderComponent>(mActiveEntityIds.back(), std::move(playerShaderComponent));
     mEntityComponentManager->AddComponent<PhysicsComponent>(mActiveEntityIds.back(), std::move(playerPhysicsComponent));
@@ -134,14 +126,14 @@ bool App::Initialize()
     for (int i = 5; i < 10; ++i)
     {
         mActiveEntityIds.push_back(mEntityComponentManager->GenerateEntity());
-        auto transformationComponent = std::make_unique<TransformationComponent>();
-        transformationComponent->GetScale() = glm::vec3(80.0f, 80.0f, 1.0f);
-        transformationComponent->GetTranslation() = glm::vec3(40.0f + static_cast<float>(i) * 80.0f, 40.0f, 1.0f);
+        auto transformComponent = std::make_unique<TransformComponent>();
+        transformComponent->GetScale() = glm::vec3(80.0f, 80.0f, 1.0f);
+        transformComponent->GetTranslation() = glm::vec3(40.0f + static_cast<float>(i) * 80.0f, 40.0f, 1.0f);
         auto shaderComponent = std::make_unique<ShaderComponent>(StringId("basic"));
         auto physicsComponent = std::make_unique<PhysicsComponent>(PhysicsComponent::BodyType::STATIC, PhysicsComponent::Hitbox(glm::vec2(0.0f, 0.0f), glm::vec2(80.0f, 80.0f)));
         auto animationComponent = std::make_unique<AnimationComponent>("environments/jungle_tiles/ground_top_middle", 100.0f, *mResourceManager);
         
-        mEntityComponentManager->AddComponent<TransformationComponent>(mActiveEntityIds.back(), std::move(transformationComponent));
+        mEntityComponentManager->AddComponent<TransformComponent>(mActiveEntityIds.back(), std::move(transformComponent));
         mEntityComponentManager->AddComponent<AnimationComponent>(mActiveEntityIds.back(), std::move(animationComponent));
         mEntityComponentManager->AddComponent<PhysicsComponent>(mActiveEntityIds.back(), std::move(physicsComponent));
         mEntityComponentManager->AddComponent<ShaderComponent>(mActiveEntityIds.back(), std::move(shaderComponent));
@@ -150,15 +142,15 @@ bool App::Initialize()
     for (int i = 5; i < 10; ++i)
     {
         mActiveEntityIds.push_back(mEntityComponentManager->GenerateEntity());
-        auto transformationComponent = std::make_unique<TransformationComponent>();
-        transformationComponent->GetScale() = glm::vec3(80.0f, 80.0f, 1.0f);
-        transformationComponent->GetTranslation() = glm::vec3(40.0f + static_cast<float>(i) * 80.0f, 460.0f, 1.0f);
+        auto transformComponent = std::make_unique<TransformComponent>();
+        transformComponent->GetScale() = glm::vec3(80.0f, 80.0f, 1.0f);
+        transformComponent->GetTranslation() = glm::vec3(40.0f + static_cast<float>(i) * 80.0f, 460.0f, 1.0f);
         auto shaderComponent = std::make_unique<ShaderComponent>(StringId("basic"));
         auto physicsComponent = std::make_unique<PhysicsComponent>(PhysicsComponent::BodyType::STATIC, PhysicsComponent::Hitbox(glm::vec2(0.0f, 0.0f), glm::vec2(80.0f, 80.0f)));
         
         auto animationComponent = std::make_unique<AnimationComponent>("environments/jungle_tiles/ground_top_middle", 100.0f, *mResourceManager);
         
-        mEntityComponentManager->AddComponent<TransformationComponent>(mActiveEntityIds.back(), std::move(transformationComponent));
+        mEntityComponentManager->AddComponent<TransformComponent>(mActiveEntityIds.back(), std::move(transformComponent));
         mEntityComponentManager->AddComponent<AnimationComponent>(mActiveEntityIds.back(), std::move(animationComponent));
         mEntityComponentManager->AddComponent<PhysicsComponent>(mActiveEntityIds.back(), std::move(physicsComponent));
         mEntityComponentManager->AddComponent<ShaderComponent>(mActiveEntityIds.back(), std::move(shaderComponent));
@@ -167,15 +159,15 @@ bool App::Initialize()
     for (int i = 0; i < 5; ++i)
     {
         mActiveEntityIds.push_back(mEntityComponentManager->GenerateEntity());
-        auto transformationComponent = std::make_unique<TransformationComponent>();
-        transformationComponent->GetScale() = glm::vec3(80.0f, 80.0f, 1.0f);
-        transformationComponent->GetTranslation() = glm::vec3(440, 120.0f + static_cast<float>(i) * 80.0f, 1.0f);
+        auto transformComponent = std::make_unique<TransformComponent>();
+        transformComponent->GetScale() = glm::vec3(80.0f, 80.0f, 1.0f);
+        transformComponent->GetTranslation() = glm::vec3(440, 120.0f + static_cast<float>(i) * 80.0f, 1.0f);
         auto shaderComponent = std::make_unique<ShaderComponent>(StringId("basic"));
         auto physicsComponent = std::make_unique<PhysicsComponent>(PhysicsComponent::BodyType::STATIC, PhysicsComponent::Hitbox(glm::vec2(0.0f, 0.0f), glm::vec2(80.0f, 80.0f)));
         
         auto animationComponent = std::make_unique<AnimationComponent>("environments/jungle_tiles/ground_top_middle", 100.0f, *mResourceManager);
         
-        mEntityComponentManager->AddComponent<TransformationComponent>(mActiveEntityIds.back(), std::move(transformationComponent));
+        mEntityComponentManager->AddComponent<TransformComponent>(mActiveEntityIds.back(), std::move(transformComponent));
         mEntityComponentManager->AddComponent<AnimationComponent>(mActiveEntityIds.back(), std::move(animationComponent));
         mEntityComponentManager->AddComponent<PhysicsComponent>(mActiveEntityIds.back(), std::move(physicsComponent));
         mEntityComponentManager->AddComponent<ShaderComponent>(mActiveEntityIds.back(), std::move(shaderComponent));
@@ -184,14 +176,14 @@ bool App::Initialize()
     for (int i = 0; i < 2; ++i)
     {
         mActiveEntityIds.push_back(mEntityComponentManager->GenerateEntity());
-        auto transformationComponent = std::make_unique<TransformationComponent>();
-        transformationComponent->GetScale() = glm::vec3(80.0f, 80.0f, 1.0f);
-        transformationComponent->GetTranslation() = glm::vec3(840, 40.0f + static_cast<float>(i) * 80.0f, 1.0f);
+        auto transformComponent = std::make_unique<TransformComponent>();
+        transformComponent->GetScale() = glm::vec3(80.0f, 80.0f, 1.0f);
+        transformComponent->GetTranslation() = glm::vec3(840, 40.0f + static_cast<float>(i) * 80.0f, 1.0f);
         auto shaderComponent = std::make_unique<ShaderComponent>(StringId("basic"));
         auto physicsComponent = std::make_unique<PhysicsComponent>(PhysicsComponent::BodyType::STATIC, PhysicsComponent::Hitbox(glm::vec2(0.0f, 0.0f), glm::vec2(80.0f, 80.0f)));
         auto animationComponent = std::make_unique<AnimationComponent>("environments/jungle_tiles/ground_top_middle", 100.0f, *mResourceManager);
         
-        mEntityComponentManager->AddComponent<TransformationComponent>(mActiveEntityIds.back(), std::move(transformationComponent));
+        mEntityComponentManager->AddComponent<TransformComponent>(mActiveEntityIds.back(), std::move(transformComponent));
         mEntityComponentManager->AddComponent<AnimationComponent>(mActiveEntityIds.back(), std::move(animationComponent));
         mEntityComponentManager->AddComponent<PhysicsComponent>(mActiveEntityIds.back(), std::move(physicsComponent));
         mEntityComponentManager->AddComponent<ShaderComponent>(mActiveEntityIds.back(), std::move(shaderComponent));

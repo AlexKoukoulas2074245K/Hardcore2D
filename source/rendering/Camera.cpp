@@ -10,7 +10,7 @@
 #include "../events/EventCommunicator.h"
 #include "../events/PlayerChangedDirectionEvent.h"
 #include "../components/EntityComponentManager.h"
-#include "../components/TransformationComponent.h"
+#include "../components/TransformComponent.h"
 
 #include <glm/gtc/matrix_transform.hpp>
 

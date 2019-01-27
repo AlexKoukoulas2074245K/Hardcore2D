@@ -16,7 +16,16 @@ PhysicsComponent::PhysicsComponent(const BodyType bodyType, const Hitbox& hitBox
     , mGravity(0.0f, 0.0f, 0.0f)
     , mMaxVelocity(FLT_MAX, FLT_MAX, 0.0f)
     , mMinVelocity(-FLT_MAX, -FLT_MAX, 0.0f)
-    , mIsGrounded(false)
+{
+    
+}
+
+PhysicsComponent::PhysicsComponent(const BodyType bodyType, const Hitbox& hitBox, const glm::vec3& gravity, const glm::vec3& maxVelocity, const glm::vec3& minVelocity)
+    : mBodyType(bodyType)
+    , mHitBox(hitBox)
+    , mGravity(gravity)
+    , mMaxVelocity(maxVelocity)
+    , mMinVelocity(minVelocity)
 {
     
 }
@@ -34,11 +43,6 @@ bool PhysicsComponent::VInitializeFromString(const std::string&)
 void PhysicsComponent::SetBodyType(const BodyType bodyType)
 {
     mBodyType = bodyType;
-}
-
-void PhysicsComponent::SetGrounded(const bool isGrounded)
-{
-    mIsGrounded = isGrounded;
 }
 
 glm::vec3& PhysicsComponent::GetVelocity()
@@ -88,9 +92,4 @@ const glm::vec3& PhysicsComponent::GetMinVelocity() const
 PhysicsComponent::BodyType PhysicsComponent::GetBodyType() const
 {
     return mBodyType;
-}
-
-bool PhysicsComponent::IsGrounded() const
-{
-    return mIsGrounded;
 }

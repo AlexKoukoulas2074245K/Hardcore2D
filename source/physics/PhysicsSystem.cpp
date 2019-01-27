@@ -11,7 +11,7 @@
 #include "../ServiceLocator.h"
 #include "../components/EntityComponentManager.h"
 #include "../components/PhysicsComponent.h"
-#include "../components/TransformationComponent.h"
+#include "../components/TransformComponent.h"
 
 #include <algorithm>
 #include <unordered_map>
@@ -42,7 +42,7 @@ void PhysicsSystem::UpdateEntities(const std::vector<EntityId>& entityIds, const
         if (mEntityComponentManager->HasComponent<PhysicsComponent>(entityId) && 
             mEntityComponentManager->GetComponent<PhysicsComponent>(entityId).GetBodyType() != PhysicsComponent::BodyType::STATIC)
         {            
-            auto& referenceEntityTransformComponent = mEntityComponentManager->GetComponent<TransformationComponent>(entityId);
+            auto& referenceEntityTransformComponent = mEntityComponentManager->GetComponent<TransformComponent>(entityId);
             auto& referenceEntityPhysicsComponent = mEntityComponentManager->GetComponent<PhysicsComponent>(entityId);
             
             // Update velocity
@@ -80,7 +80,7 @@ void PhysicsSystem::UpdateEntities(const std::vector<EntityId>& entityIds, const
                 // In the case of a Kinematic object append its deltas to current entity
                 if (otherEntityPhysicsComponent.GetBodyType() == PhysicsComponent::BodyType::KINEMATIC)
                 {
-                    const auto& otherEntityTransformComponent = mEntityComponentManager->GetComponent<TransformationComponent>(otherEntityId);
+                    const auto& otherEntityTransformComponent = mEntityComponentManager->GetComponent<TransformComponent>(otherEntityId);
                     
                     // Before adding the kinematic object's horizontal velocity, make sure that the kinematic object itself
                     // is not horizontally blocked by another object
@@ -102,9 +102,9 @@ void PhysicsSystem::UpdateEntities(const std::vector<EntityId>& entityIds, const
     
     for (const auto entityId: entityIds)
     {
-        if (mEntityComponentManager->HasComponent<TransformationComponent>(entityId))
+        if (mEntityComponentManager->HasComponent<TransformComponent>(entityId))
         {
-            auto& referenceEntityTransformComponent = mEntityComponentManager->GetComponent<TransformationComponent>(entityId);
+            auto& referenceEntityTransformComponent = mEntityComponentManager->GetComponent<TransformComponent>(entityId);
             referenceEntityTransformComponent.GetPreviousTranslation() = referenceEntityTransformComponent.GetTranslation();
         }
     }
@@ -113,7 +113,7 @@ void PhysicsSystem::UpdateEntities(const std::vector<EntityId>& entityIds, const
 EntityId PhysicsSystem::CheckAndGetCollidedEntity(const EntityId referenceEntityId, const std::vector<EntityId>& allConsideredEntityIds)
 {
     const auto& referenceEntityPhysicsComponent = mEntityComponentManager->GetComponent<PhysicsComponent>(referenceEntityId);
-    const auto& referenceEntityTransformComponent = mEntityComponentManager->GetComponent<TransformationComponent>(referenceEntityId);
+    const auto& referenceEntityTransformComponent = mEntityComponentManager->GetComponent<TransformComponent>(referenceEntityId);
     const auto& referenceEntityHitBox = referenceEntityPhysicsComponent.GetHitBox();
     
     for (const EntityId otherEntityId: allConsideredEntityIds)
@@ -129,7 +129,7 @@ EntityId PhysicsSystem::CheckAndGetCollidedEntity(const EntityId referenceEntity
                 continue;
             }
             
-            const auto& otherEntityTransformComponentormComponent = mEntityComponentManager->GetComponent<TransformationComponent>(otherEntityId);
+            const auto& otherEntityTransformComponentormComponent = mEntityComponentManager->GetComponent<TransformComponent>(otherEntityId);
             const auto& otherEntityHitBox = otherEntityPhysicsComponent.GetHitBox();
 
             const auto rectAX = referenceEntityTransformComponent.GetTranslation().x + referenceEntityHitBox.mCenterPoint.x;
@@ -153,13 +153,13 @@ EntityId PhysicsSystem::CheckAndGetCollidedEntity(const EntityId referenceEntity
 
 void PhysicsSystem::PushEntityOutsideOtherEntityInAxis(const EntityId referenceEntityId, const EntityId collidedWithEntityId, const PhysicsSystem::Axis axis, const float dt)
 {
-    auto& referenceEntityTransformComponent = mEntityComponentManager->GetComponent<TransformationComponent>(referenceEntityId);
+    auto& referenceEntityTransformComponent = mEntityComponentManager->GetComponent<TransformComponent>(referenceEntityId);
     auto& referenceEntityPhysicsComponent = mEntityComponentManager->GetComponent<PhysicsComponent>(referenceEntityId);
 
     const auto& referenceEntityHitBox = referenceEntityPhysicsComponent.GetHitBox();
     const auto& otherEntityPhysicsComponent = mEntityComponentManager->GetComponent<PhysicsComponent>(collidedWithEntityId);
     const auto& otherEntityHitBox = otherEntityPhysicsComponent.GetHitBox();
-    const auto& otherEntityTransformComponent = mEntityComponentManager->GetComponent<TransformationComponent>(collidedWithEntityId);
+    const auto& otherEntityTransformComponent = mEntityComponentManager->GetComponent<TransformComponent>(collidedWithEntityId);
     
     if (axis == Axis::X_AXIS)
     {
