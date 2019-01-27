@@ -18,9 +18,14 @@
 #include <string>
 #include <cassert>
 
-ResourceManager::ResourceManager(const std::string& rootResourceDirectory)
-    : mRootResourceDirectory(rootResourceDirectory)
-    , mTextFileLoader(new TextFileLoader)
+#ifdef _WIN32
+const std::string ResourceManager::RES_ROOT = "../res/";
+#else
+const std::string ResourceManager::RES_ROOT = "../../res/";
+#endif
+
+ResourceManager::ResourceManager()
+    : mTextFileLoader(new TextFileLoader)
     , mTextureLoader(new TextureLoader)
 
 {
@@ -35,12 +40,10 @@ bool ResourceManager::InitializeResourceLoaders()
 {
     if (!mTextureLoader->Initialize()) return false;
     if (!mTextFileLoader->Initialize()) return false;
+    
+    LoadResource("debug/debug_square.png");
+    
     return true;
-}
-
-const std::string& ResourceManager::GetRootResourceDirectory() const
-{
-	return mRootResourceDirectory;
 }
 
 ResourceId ResourceManager::LoadResource(const std::string& resourceRelativePath, const bool /* false */)
@@ -50,7 +53,7 @@ ResourceId ResourceManager::LoadResource(const std::string& resourceRelativePath
     if (mResourceMap.count(resourceId))
     {
         Log(LogType::WARNING, "Resource %s already loaded", resourceRelativePath.c_str());
-        return 0;
+        return resourceId;
     }
     else
     {
@@ -108,7 +111,7 @@ void ResourceManager::LoadResourceInternal(const std::string& resourceRelativePa
 {
     const auto resourceFileExtension = GetFileExtension(resourceRelativePath);
     
-    auto loadedResource = mResourceExtensionsToLoadersMap[resourceFileExtension]->VCreateAndLoadResource(mRootResourceDirectory + resourceRelativePath);
+    auto loadedResource = mResourceExtensionsToLoadersMap[resourceFileExtension]->VCreateAndLoadResource(RES_ROOT + resourceRelativePath);
     
     mResourceMap[resourceId] = std::move(loadedResource);
 }

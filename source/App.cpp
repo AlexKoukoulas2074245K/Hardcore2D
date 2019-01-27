@@ -28,12 +28,6 @@
 #include <vector>
 #include <json.hpp>
 
-#ifdef _WIN32
-static const char* RES_ROOT = "../res/";
-#else
-static const char* RES_ROOT = "../../res/";
-#endif
-
 App::App()
 {
 }
@@ -53,7 +47,7 @@ bool App::Initialize()
     mServiceLocator = std::unique_ptr<ServiceLocator>(new ServiceLocator);
     mEntityComponentManager = std::unique_ptr<EntityComponentManager>(new EntityComponentManager);
     mEventCommunicationService = std::unique_ptr<EventCommunicationService>(new EventCommunicationService);
-    mResourceManager = std::unique_ptr<ResourceManager>(new ResourceManager(RES_ROOT));
+    mResourceManager = std::unique_ptr<ResourceManager>(new ResourceManager());
     mCoreRenderingService = std::unique_ptr<CoreRenderingService>(new CoreRenderingService(*mServiceLocator));
     mAnimationService = std::unique_ptr<AnimationService>(new AnimationService(*mServiceLocator));
     mPhysicsSystem = std::unique_ptr<PhysicsSystem>(new PhysicsSystem(*mServiceLocator));
@@ -70,20 +64,6 @@ bool App::Initialize()
     if (!mCoreRenderingService->InitializeEngine()) return false;
     if (!mResourceManager->InitializeResourceLoaders()) return false;
 
-
-    auto backgroundTextureResourceId = mResourceManager->LoadResource("jungle-sky.png");
-    auto groundTextureResourceId = mResourceManager->LoadResource("environments/jungle_tiles/ground_top_middle.png");
-    mResourceManager->LoadResource("debug/debug_square.png");
-
-    //auto groundLeftTextureResourceId = mResourceManager->LoadResource("environments/jungle_tiles/ground_top_edge_left_side.png");
-    //auto groundRightTextureResourceId = mResourceManager->LoadResource("environments/jungle_tiles/ground_top_edge_right_side.png");
-
-    auto backgroundTextureId = mResourceManager->GetResource<TextureResource>(backgroundTextureResourceId).GetGLTextureId();
-    auto groundTextureId = mResourceManager->GetResource<TextureResource>(groundTextureResourceId).GetGLTextureId();
-
-    //auto groundLeftTextureId = mResourceManager->GetResource<TextureResource>(groundLeftTextureResourceId).GetGLTextureId();
-    //auto groundRightTextureId = mResourceManager->GetResource<TextureResource>(groundRightTextureResourceId).GetGLTextureId();    
-
     {
         mActiveEntityIds.push_back(mEntityComponentManager->GenerateEntity());
 
@@ -92,8 +72,8 @@ bool App::Initialize()
 
         auto backgroundShaderComponent = std::make_unique<ShaderComponent>(StringId("background"));
         mEntityComponentManager->AddComponent<TransformationComponent>(mActiveEntityIds.back(), std::move(backgroundTransformComponent));
-        AnimationComponent::AnimationsMap backgroundAnimations = { { StringId("background"),{ backgroundTextureId } } };
-        auto backgroundAnimationComponent = std::make_unique<AnimationComponent>(backgroundAnimations, 100.0f);
+
+        auto backgroundAnimationComponent = std::make_unique<AnimationComponent>("environments/background", 100.0f, *mResourceManager);
         mEntityComponentManager->AddComponent<AnimationComponent>(mActiveEntityIds.back(), std::move(backgroundAnimationComponent));
         mEntityComponentManager->AddComponent<ShaderComponent>(mActiveEntityIds.back(), std::move(backgroundShaderComponent));
     }
@@ -106,8 +86,7 @@ bool App::Initialize()
         auto movingPlatformShaderComponent = std::make_unique<ShaderComponent>(StringId("basic"));
         auto movingPlatformPhysicsComponent = std::make_unique<PhysicsComponent>(PhysicsComponent::BodyType::KINEMATIC, PhysicsComponent::Hitbox(glm::vec2(0.0f, 0.0f), glm::vec2(80.0f, 80.0f)));
 
-        AnimationComponent::AnimationsMap movingPlatformAnimations = { { StringId("ground"),{ groundTextureId } } };
-        auto movingPlatformAnimationComponent = std::make_unique<AnimationComponent>(movingPlatformAnimations, 100.0f);
+        auto movingPlatformAnimationComponent = std::make_unique<AnimationComponent>("environments/jungle_tiles/ground_top_middle", 100.0f, *mResourceManager);
 
         mEntityComponentManager->AddComponent<TransformationComponent>(mActiveEntityIds.back(), std::move(movingPlatformTransformationComponent));
         mEntityComponentManager->AddComponent<AnimationComponent>(mActiveEntityIds.back(), std::move(movingPlatformAnimationComponent));
@@ -123,8 +102,7 @@ bool App::Initialize()
         auto movingPlatformShaderComponent = std::make_unique<ShaderComponent>(StringId("basic"));
         auto movingPlatformPhysicsComponent = std::make_unique<PhysicsComponent>(PhysicsComponent::BodyType::KINEMATIC, PhysicsComponent::Hitbox(glm::vec2(0.0f, 0.0f), glm::vec2(80.0f, 80.0f)));
         
-        AnimationComponent::AnimationsMap movingPlatformAnimations = { { StringId("ground"),{ groundTextureId } } };
-        auto movingPlatformAnimationComponent = std::make_unique<AnimationComponent>(movingPlatformAnimations, 100.0f);
+        auto movingPlatformAnimationComponent = std::make_unique<AnimationComponent>("environments/jungle_tiles/ground_top_middle", 100.0f, *mResourceManager);
         
         mEntityComponentManager->AddComponent<TransformationComponent>(mActiveEntityIds.back(), std::move(movingPlatformTransformationComponent));
         mEntityComponentManager->AddComponent<AnimationComponent>(mActiveEntityIds.back(), std::move(movingPlatformAnimationComponent));
@@ -136,25 +114,8 @@ bool App::Initialize()
     mActiveEntityIds.push_back(mEntityComponentManager->GenerateEntity());
     
     auto playerTransformComponent = std::make_unique<TransformationComponent>();
-    AnimationComponent::AnimationsMap playerAnimations;
-    
-    auto idleAnimationFileNames = GetAllFilenamesInDirectory(mResourceManager->GetRootResourceDirectory() + "characters/player/idle");
-    for (const auto fileName : idleAnimationFileNames)
-    {
-        auto resourceId = mResourceManager->LoadResource("characters/player/idle/" + fileName);
-        playerAnimations[StringId("idle")].push_back(mResourceManager->GetResource<TextureResource>(resourceId).GetGLTextureId());
-    }
-
-    auto runAnimationFileNames = GetAllFilenamesInDirectory(mResourceManager->GetRootResourceDirectory() + "characters/player/running");
-    for (const auto fileName : runAnimationFileNames)
-    {
-        auto resourceId = mResourceManager->LoadResource("characters/player/running/" + fileName);
-        playerAnimations[StringId("running")].push_back(mResourceManager->GetResource<TextureResource>(resourceId).GetGLTextureId());
-    }    
   
-    auto playerAnimationComponent = std::make_unique<AnimationComponent>(playerAnimations, 0.04f);
-    playerAnimationComponent->ChangeAnimation(StringId("idle"));
-
+    auto playerAnimationComponent = std::make_unique<AnimationComponent>("characters/player", 0.04f, *mResourceManager);
     auto playerShaderComponent = std::make_unique<ShaderComponent>(StringId("basic"));
     auto playerPhysicsComponent = std::make_unique<PhysicsComponent>(PhysicsComponent::BodyType::DYNAMIC, PhysicsComponent::Hitbox(glm::vec2(0.0f, 0.0f), glm::vec2(30.0f, 90.0f)));
     
@@ -178,9 +139,7 @@ bool App::Initialize()
         transformationComponent->GetTranslation() = glm::vec3(40.0f + static_cast<float>(i) * 80.0f, 40.0f, 1.0f);
         auto shaderComponent = std::make_unique<ShaderComponent>(StringId("basic"));
         auto physicsComponent = std::make_unique<PhysicsComponent>(PhysicsComponent::BodyType::STATIC, PhysicsComponent::Hitbox(glm::vec2(0.0f, 0.0f), glm::vec2(80.0f, 80.0f)));
-
-        AnimationComponent::AnimationsMap groundTextureAnimations = {{ StringId("ground"), {groundTextureId} }};
-        auto animationComponent = std::make_unique<AnimationComponent>(groundTextureAnimations, 100.0f);
+        auto animationComponent = std::make_unique<AnimationComponent>("environments/jungle_tiles/ground_top_middle", 100.0f, *mResourceManager);
         
         mEntityComponentManager->AddComponent<TransformationComponent>(mActiveEntityIds.back(), std::move(transformationComponent));
         mEntityComponentManager->AddComponent<AnimationComponent>(mActiveEntityIds.back(), std::move(animationComponent));
@@ -197,8 +156,7 @@ bool App::Initialize()
         auto shaderComponent = std::make_unique<ShaderComponent>(StringId("basic"));
         auto physicsComponent = std::make_unique<PhysicsComponent>(PhysicsComponent::BodyType::STATIC, PhysicsComponent::Hitbox(glm::vec2(0.0f, 0.0f), glm::vec2(80.0f, 80.0f)));
         
-        AnimationComponent::AnimationsMap groundTextureAnimations = {{ StringId("ground"), {groundTextureId} }};
-        auto animationComponent = std::make_unique<AnimationComponent>(groundTextureAnimations, 100.0f);
+        auto animationComponent = std::make_unique<AnimationComponent>("environments/jungle_tiles/ground_top_middle", 100.0f, *mResourceManager);
         
         mEntityComponentManager->AddComponent<TransformationComponent>(mActiveEntityIds.back(), std::move(transformationComponent));
         mEntityComponentManager->AddComponent<AnimationComponent>(mActiveEntityIds.back(), std::move(animationComponent));
@@ -215,8 +173,7 @@ bool App::Initialize()
         auto shaderComponent = std::make_unique<ShaderComponent>(StringId("basic"));
         auto physicsComponent = std::make_unique<PhysicsComponent>(PhysicsComponent::BodyType::STATIC, PhysicsComponent::Hitbox(glm::vec2(0.0f, 0.0f), glm::vec2(80.0f, 80.0f)));
         
-        AnimationComponent::AnimationsMap groundTextureAnimations = {{ StringId("ground"), {groundTextureId} }};
-        auto animationComponent = std::make_unique<AnimationComponent>(groundTextureAnimations, 100.0f);
+        auto animationComponent = std::make_unique<AnimationComponent>("environments/jungle_tiles/ground_top_middle", 100.0f, *mResourceManager);
         
         mEntityComponentManager->AddComponent<TransformationComponent>(mActiveEntityIds.back(), std::move(transformationComponent));
         mEntityComponentManager->AddComponent<AnimationComponent>(mActiveEntityIds.back(), std::move(animationComponent));
@@ -232,9 +189,7 @@ bool App::Initialize()
         transformationComponent->GetTranslation() = glm::vec3(840, 40.0f + static_cast<float>(i) * 80.0f, 1.0f);
         auto shaderComponent = std::make_unique<ShaderComponent>(StringId("basic"));
         auto physicsComponent = std::make_unique<PhysicsComponent>(PhysicsComponent::BodyType::STATIC, PhysicsComponent::Hitbox(glm::vec2(0.0f, 0.0f), glm::vec2(80.0f, 80.0f)));
-        
-        AnimationComponent::AnimationsMap groundTextureAnimations = {{ StringId("ground"), {groundTextureId} }};
-        auto animationComponent = std::make_unique<AnimationComponent>(groundTextureAnimations, 100.0f);
+        auto animationComponent = std::make_unique<AnimationComponent>("environments/jungle_tiles/ground_top_middle", 100.0f, *mResourceManager);
         
         mEntityComponentManager->AddComponent<TransformationComponent>(mActiveEntityIds.back(), std::move(transformationComponent));
         mEntityComponentManager->AddComponent<AnimationComponent>(mActiveEntityIds.back(), std::move(animationComponent));

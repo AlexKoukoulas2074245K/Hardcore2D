@@ -7,17 +7,21 @@
 
 #include "AnimationComponent.h"
 #include "../util/Logging.h"
+#include "../util/FileUtils.h"
+#include "../resources/ResourceManager.h"
+#include "../resources/TextureResource.h"
 
 #include <cassert>
 
-AnimationComponent::AnimationComponent(const AnimationsMap& animations, const float animationDuration)
-    : mAnimations(animations)
+AnimationComponent::AnimationComponent(const std::string& relativeEntityAnimationsDirectoryPath, const float animationDuration, ResourceManager& resourceManager)
+    : mResourceManager(resourceManager)
     , mFacingDirection(FacingDirection::RIGHT)
-    , mCurrentAnimation(animations.begin()->first)
+    , mCurrentAnimation("")
     , mCurrentFrameIndex(0)
     , mAnimationDuration(animationDuration)
     , mAnimationTimer(0.0f)
 {
+    CreateAnimationsMapFromRelativeEntityAnimationsDirectory(relativeEntityAnimationsDirectoryPath);
 }
 
 std::string AnimationComponent::VSerializeToString() const
@@ -77,3 +81,27 @@ void AnimationComponent::AdvanceFrame()
 {
     mCurrentFrameIndex = (mCurrentFrameIndex + 1) % mAnimations.at(mCurrentAnimation).size();
 }
+
+void AnimationComponent::CreateAnimationsMapFromRelativeEntityAnimationsDirectory(const std::string& relativeEntityAnimationsDirectoryPath)
+{
+    AnimationsMap result;
+    const auto rootEntityAnimationsDirectory = ResourceManager::RES_ROOT + relativeEntityAnimationsDirectoryPath;
+    auto animationFolderNames = GetAllFilenamesInDirectory(rootEntityAnimationsDirectory);
+    
+    for (const auto animationName : animationFolderNames)
+    {
+        const auto animationNameStringId = StringId(animationName);
+        const auto relativeAnimationDirectoryPath = relativeEntityAnimationsDirectoryPath + "/" + animationName;
+        const auto animationFrameFiles = GetAllFilenamesInDirectory(ResourceManager::RES_ROOT + relativeAnimationDirectoryPath);
+        
+        for (const auto animationFrameNumber: animationFrameFiles)
+        {
+            auto resourceId = mResourceManager.LoadResource(relativeAnimationDirectoryPath + "/" + animationFrameNumber);
+            mAnimations[animationNameStringId].push_back(mResourceManager.GetResource<TextureResource>(resourceId).GetGLTextureId());
+        }
+        
+    }
+    
+    ChangeAnimation(StringId("idle"));
+}
+

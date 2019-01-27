@@ -23,12 +23,12 @@ class ResourceManager final: public IService
 {
     friend class App;
 public:
+    static const std::string RES_ROOT;
+    
     ~ResourceManager();
     
     bool InitializeResourceLoaders();
     
-	const std::string& GetRootResourceDirectory() const;
-
     ResourceId LoadResource(const std::string& resourceRelativePath, const bool async = false);
     void LoadResources(const std::vector<std::string>& resourceRelativePaths, const bool async = false);
     
@@ -51,15 +51,13 @@ public:
 	}
 
 private:
-    ResourceManager(const std::string& rootResourceDirectory);
+    ResourceManager();
     
     void MapResourceExtensionsToLoaders();
     void LoadResourceInternal(const std::string& resourceRelativePath, const ResourceId resourceId);
     
     std::unordered_map<ResourceId, std::unique_ptr<IResource>> mResourceMap;
     std::map<std::string, IResourceLoader*> mResourceExtensionsToLoadersMap;
-    
-    const std::string mRootResourceDirectory;
     
     std::unique_ptr<IResourceLoader> mTextFileLoader;
     std::unique_ptr<IResourceLoader> mTextureLoader;

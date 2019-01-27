@@ -299,7 +299,7 @@ void CoreRenderingService::CompileAllShaders()
 	auto currentProgramId = 0;
     std::vector<std::string> shaderUniformNames;
     
-    const auto shaderFileNames = GetAllFilenamesInDirectory(resourceManager.GetRootResourceDirectory() + SHADER_DIRECTORY);
+    const auto shaderFileNames = GetAllFilenamesInDirectory(ResourceManager::RES_ROOT + SHADER_DIRECTORY);
     
     for (const auto fileName: shaderFileNames)
 	{

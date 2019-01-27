@@ -16,12 +16,14 @@
 #include <unordered_map>
 #include <vector>
 
+class ResourceManager;
+
 class AnimationComponent final: public IComponent
 {
 public:
     using AnimationsMap = std::unordered_map<StringId, std::vector<GLuint>>;
     
-    AnimationComponent(const AnimationsMap& animations, const float animationDuration);
+    AnimationComponent(const std::string& relativeEntityAnimationsDirectoryPath, const float animationDuration, ResourceManager&);
     
     std::string VSerializeToString() const override;
     bool VInitializeFromString(const std::string&) override;
@@ -38,7 +40,11 @@ public:
     void AdvanceFrame();
     
 private:
-    const AnimationsMap mAnimations;
+    void CreateAnimationsMapFromRelativeEntityAnimationsDirectory(const std::string& relativeEntityAnimationsDirectoryPath);
+    
+    ResourceManager& mResourceManager;
+    
+    AnimationsMap mAnimations;
     FacingDirection mFacingDirection;
     StringId mCurrentAnimation;
     int mCurrentFrameIndex;
