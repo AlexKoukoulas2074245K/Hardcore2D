@@ -16,6 +16,7 @@
 #include "../resources/TextFileResource.h"
 #include "../resources/ResourceManager.h"
 #include "../util/Logging.h"
+#include "../game/GameConstants.h"
 
 #include <glm/vec3.hpp>
 #include <json.hpp>
@@ -45,7 +46,7 @@ std::unique_ptr<Level> LevelFactory::CreateLevel(const std::string& levelPath)
     const auto& levelFileResource = resourceManager.GetResource<TextFileResource>(resourceManager.LoadResource(LEVEL_DIRECTORY + levelPath));
     const auto levelJson = nlohmann::json::parse(levelFileResource.GetContents());
     
-    std::vector<Level::EntityNameIdEntry> levelEntityEntries;
+    std::vector<EntityNameIdEntry> levelEntityEntries;
     
     for (auto& entity: levelJson["entities"])
     {
@@ -108,7 +109,7 @@ std::unique_ptr<Level> LevelFactory::CreateLevel(const std::string& levelPath)
             } 
         }
         
-        levelEntityEntries.emplace_back(Level::EntityNameIdEntry(StringId(entityName), entityId));
+        levelEntityEntries.emplace_back(EntityNameIdEntry(StringId(entityName), entityId));
     }
     
     return std::unique_ptr<Level>(new Level(levelEntityEntries));

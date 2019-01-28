@@ -8,9 +8,24 @@
 #ifndef GameConstants_h
 #define GameConstants_h
 
+#include "../util/StringId.h"
+#include "../util/TypeTraits.h"
+
 enum class FacingDirection
 {
     LEFT, RIGHT
+};
+
+struct EntityNameIdEntry
+{
+    EntityNameIdEntry(const StringId entityName, const EntityId entityId)
+        : mEntityName(entityName)
+        , mEntityId(entityId)
+    {
+    };
+
+    StringId mEntityName;
+    EntityId mEntityId;
 };
 
 #endif /* GameConstants_h */

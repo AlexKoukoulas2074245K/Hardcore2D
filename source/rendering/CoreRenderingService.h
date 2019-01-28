@@ -12,6 +12,7 @@
 #include "Camera.h"
 #include "../util/TypeTraits.h"
 #include "../util/StringId.h"
+#include "../game/GameConstants.h"
 
 #include <glm/vec2.hpp>
 #include <glm/mat4x4.hpp>
@@ -41,7 +42,7 @@ public:
     
     bool InitializeEngine();
     void GameLoop(std::function<void(const float)> appUpdateMethod);
-    void RenderEntities(const std::vector<EntityId>& entityIds);
+    void RenderEntities(const std::vector<EntityNameIdEntry>& entityIds);
     void UpdateCamera(const EntityId focusedEntity, const float dt);
     
     float GetRenderableWidth() const;

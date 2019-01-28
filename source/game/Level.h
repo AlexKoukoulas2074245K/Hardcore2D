@@ -9,29 +9,18 @@
 #define Level_h
 
 #include "../util/StringId.h"
-#include "../util/TypeTraits.h"
+#include "GameConstants.h"
 
 #include <vector>
 
 class Level final
 {
     friend class LevelFactory;
-public:
-    struct EntityNameIdEntry
-    {
-        EntityNameIdEntry(const StringId entityName, const EntityId entityId)
-            : mEntityName(entityName)
-            , mEntityId(entityId)
-        {
-        };
-        
-        StringId mEntityName;
-        EntityId mEntityId;
-    };
-    
+public:        
     ~Level() = default;
 
-    EntityId GetEntityIdFromName(const StringId entityName);
+    const std::vector<EntityNameIdEntry>& GetAllActiveEntities() const;
+    EntityId GetEntityIdFromName(const StringId entityName) const;
 
 private:
     Level(const std::vector<EntityNameIdEntry> mLevelEntities);

@@ -26,6 +26,7 @@ PhysicsComponent::PhysicsComponent(const BodyType bodyType, const Hitbox& hitBox
     , mGravity(gravity)
     , mMaxVelocity(maxVelocity)
     , mMinVelocity(minVelocity)
+    , mVelocity(0.0f, 0.0f, 0.0f)
 {
     
 }

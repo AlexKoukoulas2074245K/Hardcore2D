@@ -10,26 +10,6 @@
 				"TransformComponent": { "translation": [0.0, 0.0, 0.0], "rotation": [0.0, 0.0, 0.0], "scale": [2.0, 2.0, 2.0] }
 	  		}
 	  	},
-	  	{
-			"name": "moving-platform-0",
-			"components": 
-		    	{
-				"AnimationComponent": { "path": "environments/jungle_tiles/ground_top_middle", "timer": 100.0 },			  	
-			  	"PhysicsComponent":   { "bodyType": "kinematic", "hitBox": { "centerPoint": [0.0, 0.0], "dimensions": [80.0, 80.0] }, "gravity": [0.0, 0.0, 0.0], "maxVelocity": [10000.0, 10000.0, 0.0], "minVelocity": [-10000.0, -10000.0, 0.0] },
-			  	"ShaderComponent":    { "shaderName": "basic" },
-				"TransformComponent": { "translation": [900.0, 800.0, 1.0], "rotation": [0.0, 0.0, 0.0], "scale": [80.0, 80.0, 1.0] }
-			}
-	  	},
-	  	{
-			"name": "moving-platform-1",
-			"components": 
-		    	{
-				"AnimationComponent": { "path": "environments/jungle_tiles/ground_top_middle", "timer": 100.0 },			  	
-			  	"PhysicsComponent":   { "bodyType": "kinematic", "hitBox": { "centerPoint": [0.0, 0.0], "dimensions": [80.0, 80.0] }, "gravity": [0.0, 0.0, 0.0], "maxVelocity": [10000.0, 10000.0, 0.0], "minVelocity": [-10000.0, -10000.0, 0.0] },
-			  	"ShaderComponent":    { "shaderName": "basic" },
-				"TransformComponent": { "translation": [900.0, 240.0, 1.0], "rotation": [0.0, 0.0, 0.0], "scale": [80.0, 80.0, 1.0] }
-	  		}
-	  	},
 		{
 			"name": "player",
 			"components": 
@@ -69,6 +49,72 @@
 			  	"PhysicsComponent":   { "bodyType": "static", "hitBox": { "centerPoint": [0.0, 0.0], "dimensions": [80.0, 80.0] }, "gravity": [0.0, 0.0, 0.0], "maxVelocity": [10000.0, 10000.0, 0.0], "minVelocity": [-10000.0, -10000.0, 0.0] },
 				"ShaderComponent":    { "shaderName": "basic" },
 				"TransformComponent": { "translation": [600.0, 40.0, 1.0], "rotation": [0.0, 0.0, 0.0], "scale": [80.0, 80.0, 1.0] }
+			    
+	  		}
+	  	},
+		{
+			"name": "ground-platform-3",
+			"components": 
+		    	{
+				"AnimationComponent": { "path": "environments/jungle_tiles/ground_top_middle", "timer": 100.0 },
+			  	"PhysicsComponent":   { "bodyType": "static", "hitBox": { "centerPoint": [0.0, 0.0], "dimensions": [80.0, 80.0] }, "gravity": [0.0, 0.0, 0.0], "maxVelocity": [10000.0, 10000.0, 0.0], "minVelocity": [-10000.0, -10000.0, 0.0] },
+				"ShaderComponent":    { "shaderName": "basic" },
+				"TransformComponent": { "translation": [680.0, 40.0, 1.0], "rotation": [0.0, 0.0, 0.0], "scale": [80.0, 80.0, 1.0] }
+			    
+	  		}
+	  	},
+		{
+			"name": "ground-platform-4",
+			"components": 
+		    	{
+				"AnimationComponent": { "path": "environments/jungle_tiles/ground_top_middle", "timer": 100.0 },
+			  	"PhysicsComponent":   { "bodyType": "static", "hitBox": { "centerPoint": [0.0, 0.0], "dimensions": [80.0, 80.0] }, "gravity": [0.0, 0.0, 0.0], "maxVelocity": [10000.0, 10000.0, 0.0], "minVelocity": [-10000.0, -10000.0, 0.0] },
+				"ShaderComponent":    { "shaderName": "basic" },
+				"TransformComponent": { "translation": [760.0, 40.0, 1.0], "rotation": [0.0, 0.0, 0.0], "scale": [80.0, 80.0, 1.0] }
+			    
+	  		}
+	  	},
+		{
+			"name": "ground-platform-4",
+			"components": 
+		    	{
+				"AnimationComponent": { "path": "environments/jungle_tiles/ground_top_middle", "timer": 100.0 },
+			  	"PhysicsComponent":   { "bodyType": "static", "hitBox": { "centerPoint": [0.0, 0.0], "dimensions": [80.0, 80.0] }, "gravity": [0.0, 0.0, 0.0], "maxVelocity": [10000.0, 10000.0, 0.0], "minVelocity": [-10000.0, -10000.0, 0.0] },
+				"ShaderComponent":    { "shaderName": "basic" },
+				"TransformComponent": { "translation": [840.0, 40.0, 1.0], "rotation": [0.0, 0.0, 0.0], "scale": [80.0, 80.0, 1.0] }
+			    
+	  		}
+	  	},
+		{
+			"name": "ground-platform-5",
+			"components": 
+		    	{
+				"AnimationComponent": { "path": "environments/jungle_tiles/ground_top_middle", "timer": 100.0 },
+			  	"PhysicsComponent":   { "bodyType": "static", "hitBox": { "centerPoint": [0.0, 0.0], "dimensions": [80.0, 80.0] }, "gravity": [0.0, 0.0, 0.0], "maxVelocity": [10000.0, 10000.0, 0.0], "minVelocity": [-10000.0, -10000.0, 0.0] },
+				"ShaderComponent":    { "shaderName": "basic" },
+				"TransformComponent": { "translation": [920.0, 40.0, 1.0], "rotation": [0.0, 0.0, 0.0], "scale": [80.0, 80.0, 1.0] }
+			    
+	  		}
+	  	},
+		{
+			"name": "ground-platform-6",
+			"components": 
+		    	{
+				"AnimationComponent": { "path": "environments/jungle_tiles/ground_top_middle", "timer": 100.0 },
+			  	"PhysicsComponent":   { "bodyType": "static", "hitBox": { "centerPoint": [0.0, 0.0], "dimensions": [80.0, 80.0] }, "gravity": [0.0, 0.0, 0.0], "maxVelocity": [10000.0, 10000.0, 0.0], "minVelocity": [-10000.0, -10000.0, 0.0] },
+				"ShaderComponent":    { "shaderName": "basic" },
+				"TransformComponent": { "translation": [1000.0, 40.0, 1.0], "rotation": [0.0, 0.0, 0.0], "scale": [80.0, 80.0, 1.0] }
+			    
+	  		}
+	  	},
+		{
+			"name": "ground-platform-7",
+			"components": 
+		    	{
+				"AnimationComponent": { "path": "environments/jungle_tiles/ground_top_middle", "timer": 100.0 },
+			  	"PhysicsComponent":   { "bodyType": "static", "hitBox": { "centerPoint": [0.0, 0.0], "dimensions": [80.0, 80.0] }, "gravity": [0.0, 0.0, 0.0], "maxVelocity": [10000.0, 10000.0, 0.0], "minVelocity": [-10000.0, -10000.0, 0.0] },
+				"ShaderComponent":    { "shaderName": "basic" },
+				"TransformComponent": { "translation": [1080.0, 40.0, 1.0], "rotation": [0.0, 0.0, 0.0], "scale": [80.0, 80.0, 1.0] }
 			    
 	  		}
 	  	}

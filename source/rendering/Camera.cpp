@@ -43,8 +43,8 @@ void Camera::Update(const glm::vec3& focusedEntityTranslation, const float dt)
     const auto targetX = focusedEntityTranslation.x + lookAheadDistance - mRenderableDimensions.x * 0.5f;
     
     // Increase horizontal position by inverse of distance to target
-    mCameraTranslation.x += (targetX - mCameraTranslation.x) * dt;
-    
+    mCameraTranslation.x += 2.0f * (targetX - mCameraTranslation.x) * dt;    
+
     // Vertical position always matches focused entity's y
     mCameraTranslation.y = focusedEntityTranslation.y - mRenderableDimensions.y * 0.5f;
     mViewMatrix = glm::lookAtLH(mCameraTranslation,

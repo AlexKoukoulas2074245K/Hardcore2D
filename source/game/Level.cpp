@@ -15,7 +15,12 @@ Level::Level(const std::vector<EntityNameIdEntry> mLevelEntities)
 {
 }
 
-EntityId Level::GetEntityIdFromName(const StringId entityName)
+const std::vector<EntityNameIdEntry>& Level::GetAllActiveEntities() const
+{
+    return mActiveEntities;
+}
+
+EntityId Level::GetEntityIdFromName(const StringId entityName) const
 {
     const auto resultIter = std::find_if(mActiveEntities.begin(), mActiveEntities.end(), [entityName](const EntityNameIdEntry& entityEntry)
     {

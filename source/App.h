@@ -8,8 +8,6 @@
 #ifndef App_h
 #define App_h
 
-#include "util/TypeTraits.h"
-
 #include <memory>
 #include <vector>
 
@@ -51,7 +49,6 @@ private:
     std::vector<std::unique_ptr<IInputActionConsumer>> mInputActionConsumers;
     
     std::unique_ptr<Level> mLevel;
-    std::vector<EntityId> mActiveEntityIds;
 };
 
 #endif /* App_h */

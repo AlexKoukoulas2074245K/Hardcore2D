@@ -16,12 +16,13 @@ AnimationService::AnimationService(const ServiceLocator& serviceLocator)
 {
 }
 
-void AnimationService::UpdateAnimations(const std::vector<EntityId>& entityIds, const  float dt)
+void AnimationService::UpdateAnimations(const std::vector<EntityNameIdEntry>& entityIds, const  float dt)
 {
     auto& entityComponentManager = mServiceLocator.ResolveService<EntityComponentManager>();
     
-    for (const auto entityId : entityIds)
+    for (const auto entityEntry : entityIds)
     {
+        const auto entityId = entityEntry.mEntityId;
         if (entityComponentManager.HasComponent<AnimationComponent>(entityId))
         {
             auto& animationComponent = entityComponentManager.GetComponent<AnimationComponent>(entityId);

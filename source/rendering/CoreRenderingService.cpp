@@ -148,11 +148,11 @@ void CoreRenderingService::GameLoop(std::function<void(const float)> appUpdateMe
     }
 }
 
-void CoreRenderingService::RenderEntities(const std::vector<EntityId>& entityIds)
+void CoreRenderingService::RenderEntities(const std::vector<EntityNameIdEntry>& entityIds)
 {
-    for (const auto entityId: entityIds)
+    for (const auto entityEntry: entityIds)
     {
-        RenderEntityInternal(entityId);
+        RenderEntityInternal(entityEntry.mEntityId);
     }
 }
 

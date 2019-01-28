@@ -10,6 +10,7 @@
 
 #include "../IService.h"
 #include "../util/TypeTraits.h"
+#include "../game/GameConstants.h"
 
 #include <vector>
 
@@ -19,7 +20,7 @@ class AnimationService final : public IService
 {
     friend class App;
 public:
-    void UpdateAnimations(const std::vector<EntityId>&, const float dt);
+    void UpdateAnimations(const std::vector<EntityNameIdEntry>&, const float dt);
 
 private:
     AnimationService(const ServiceLocator&);

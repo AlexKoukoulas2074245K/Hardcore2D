@@ -9,7 +9,7 @@
 #define PhysicsSystem_h
 
 #include "../IService.h"
-#include "../util/TypeTraits.h"
+#include "../game/GameConstants.h"
 
 #include <vector>
 #include <utility>
@@ -22,7 +22,7 @@ class PhysicsSystem final: public IService
     friend class App;
 public:
     void Initialize();
-    void UpdateEntities(const std::vector<EntityId>& entityIds, const float dt);
+    void UpdateEntities(const std::vector<EntityNameIdEntry>& activeEntities, const float dt);
     
 private:
     PhysicsSystem(const ServiceLocator&);
@@ -32,7 +32,7 @@ private:
         X_AXIS, Y_AXIS
     };
 
-    EntityId CheckAndGetCollidedEntity(const EntityId referenceEntityId, const std::vector<EntityId>& allConsideredEntityIds);
+    EntityId CheckAndGetCollidedEntity(const EntityId referenceEntityId, const std::vector<EntityNameIdEntry>& allConsideredEntityIds);
     void PushEntityOutsideOtherEntityInAxis(const EntityId referenceEntityId, const EntityId collidedWithEntityId, const Axis, const float dt);
 
     const ServiceLocator& mServiceLocator;
