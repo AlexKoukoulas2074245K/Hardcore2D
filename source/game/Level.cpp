@@ -7,8 +7,25 @@
 
 #include "Level.h"
 
+#include <algorithm>
+#include <cassert>
 
 Level::Level(const std::vector<EntityNameIdEntry> mLevelEntities)
     : mActiveEntities(mLevelEntities)
 {
+}
+
+EntityId Level::GetEntityIdFromName(const StringId entityName)
+{
+    const auto resultIter = std::find_if(mActiveEntities.begin(), mActiveEntities.end(), [entityName](const EntityNameIdEntry& entityEntry)
+    {
+        return entityEntry.mEntityName == entityName;
+    });
+    
+    if (resultIter == mActiveEntities.end())
+    {
+        assert(false);
+    }
+
+    return resultIter->mEntityId;
 }

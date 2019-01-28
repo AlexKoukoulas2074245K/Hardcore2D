@@ -31,6 +31,8 @@ public:
     
     ~Level() = default;
 
+    EntityId GetEntityIdFromName(const StringId entityName);
+
 private:
     Level(const std::vector<EntityNameIdEntry> mLevelEntities);
     
