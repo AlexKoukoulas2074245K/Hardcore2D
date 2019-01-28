@@ -11,6 +11,7 @@
 #include <memory>
 #include <vector>
 
+class Camera;
 class ServiceLocator;
 class EntityComponentManager;
 class EventCommunicationService;
@@ -48,6 +49,7 @@ private:
     
     std::vector<std::unique_ptr<IInputActionConsumer>> mInputActionConsumers;
     
+    std::unique_ptr<Camera> mCamera;
     std::unique_ptr<Level> mLevel;
 };
 

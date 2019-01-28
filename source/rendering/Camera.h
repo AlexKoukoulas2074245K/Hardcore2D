@@ -15,25 +15,32 @@
 #include <glm/vec2.hpp>
 #include <memory>
 
-class ServiceLocator;
+class EntityComponentManager;
 class EventCommunicator;
+class ServiceLocator;
 
 class Camera final
 {
 public:
-    Camera();
-    ~Camera() = default;
+    Camera(const ServiceLocator& serviceLocator,
+           const glm::vec2& renderableDimensions,
+           const glm::vec2& levelHorBounds,
+           const glm::vec2& levelVerBounds);
+    ~Camera();
     Camera(const Camera&) = delete;
     const Camera& operator = (const Camera&) = delete;
-    
-    void Initialize(const ServiceLocator&, const glm::vec2& renderableDimensions);
-    void Update(const glm::vec3& focusedEntityTranslation, const glm::vec3& focusedEntityVelocity, const float dt);
+
+    void Update(const EntityId focusedEntityId, const float dt);
     const glm::mat4x4& GetViewMatrix() const;
 
 private:
+    const EntityComponentManager& mEntityComponentManager;
     std::unique_ptr<EventCommunicator> mEventCommunicator;
     
-    glm::vec2 mRenderableDimensions;
+    const glm::vec2& mLevelHorBounds;
+    const glm::vec2& mLevelVerBounds;
+    const glm::vec2& mRenderableDimensions;
+    
     glm::vec3 mCameraTranslation;
     glm::mat4x4 mViewMatrix;
     bool mLookingAheadRight;

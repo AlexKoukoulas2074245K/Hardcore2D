@@ -9,7 +9,6 @@
 #define CoreRenderingService_h
 
 #include "../IService.h"
-#include "Camera.h"
 #include "../util/TypeTraits.h"
 #include "../util/StringId.h"
 #include "../game/GameConstants.h"
@@ -31,7 +30,7 @@ class ResourceManager;
 class ServiceLocator;
 class Shader;
 class EventCommunicator;
-
+class Camera;
 
 class CoreRenderingService final: public IService
 {
@@ -41,12 +40,12 @@ public:
     ~CoreRenderingService();
     
     bool InitializeEngine();
+    void AttachCamera(const Camera* camera);
     void GameLoop(std::function<void(const float)> appUpdateMethod);
     void RenderEntities(const std::vector<EntityNameIdEntry>& entityIds);
     void UpdateCamera(const EntityId focusedEntity, const float dt);
     
-    float GetRenderableWidth() const;
-    float GetRenderableHeight() const;
+    const glm::vec2& GetRenderableDimensions() const;
     
 private:
     using SDL_GLContext = void*;
@@ -78,7 +77,7 @@ private:
     
     float mSwirlAngle;
     
-    Camera mCamera;
+    const Camera* mAttachedCamera;
     
     GLuint mVAO, mVBO, mFrameBufferId, mScreenRenderingTexture;
 

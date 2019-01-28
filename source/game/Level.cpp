@@ -10,14 +10,11 @@
 #include <algorithm>
 #include <cassert>
 
-Level::Level(const std::vector<EntityNameIdEntry> mLevelEntities)
+Level::Level(const std::vector<EntityNameIdEntry> mLevelEntities, const glm::vec2& horizontalBounds, const glm::vec2& verticalBounds)
     : mActiveEntities(mLevelEntities)
+    , mLevelHorizontalBounds(horizontalBounds)
+    , mLevelVerticalBounds(verticalBounds)
 {
-}
-
-const std::vector<EntityNameIdEntry>& Level::GetAllActiveEntities() const
-{
-    return mActiveEntities;
 }
 
 EntityId Level::GetEntityIdFromName(const StringId entityName) const
@@ -31,6 +28,21 @@ EntityId Level::GetEntityIdFromName(const StringId entityName) const
     {
         assert(false);
     }
-
+    
     return resultIter->mEntityId;
+}
+
+const std::vector<EntityNameIdEntry>& Level::GetAllActiveEntities() const
+{
+    return mActiveEntities;
+}
+
+const glm::vec2& Level::GetHorizontalBounds() const
+{
+    return mLevelHorizontalBounds;
+}
+
+const glm::vec2& Level::GetVerticalBounds() const
+{
+    return mLevelVerticalBounds;
 }

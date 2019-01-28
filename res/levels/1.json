@@ -1,4 +1,6 @@
 {
+	"horBounds": { "left": 0.0, "right": 1500.0 },
+	"verBounds": { "bottom": 0.0, "top": 1500.0 },
 	"entities": 
 	[
   		{

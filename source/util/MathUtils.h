@@ -8,6 +8,7 @@
 #ifndef MathUtils_h
 #define MathUtils_h
 
+#include <glm/vec2.hpp>
 #include <glm/vec3.hpp>
 
 template<class T>

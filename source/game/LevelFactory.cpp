@@ -46,6 +46,12 @@ std::unique_ptr<Level> LevelFactory::CreateLevel(const std::string& levelPath)
     const auto& levelFileResource = resourceManager.GetResource<TextFileResource>(resourceManager.LoadResource(LEVEL_DIRECTORY + levelPath));
     const auto levelJson = nlohmann::json::parse(levelFileResource.GetContents());
     
+    const auto levelHorizontalBounds = glm::vec2(levelJson["horBounds"]["left"].get<float>(),
+                                                 levelJson["horBounds"]["right"].get<float>());
+    
+    const auto levelVerticalBounds = glm::vec2(levelJson["verBounds"]["bottom"].get<float>(),
+                                               levelJson["verBounds"]["top"].get<float>());
+    
     std::vector<EntityNameIdEntry> levelEntityEntries;
     
     for (auto& entity: levelJson["entities"])
@@ -112,5 +118,5 @@ std::unique_ptr<Level> LevelFactory::CreateLevel(const std::string& levelPath)
         levelEntityEntries.emplace_back(EntityNameIdEntry(StringId(entityName), entityId));
     }
     
-    return std::unique_ptr<Level>(new Level(levelEntityEntries));
+    return std::unique_ptr<Level>(new Level(levelEntityEntries, levelHorizontalBounds, levelVerticalBounds));
 }

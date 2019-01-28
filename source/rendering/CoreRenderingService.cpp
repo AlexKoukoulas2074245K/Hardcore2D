@@ -7,6 +7,7 @@
 
 #include "CoreRenderingService.h"
 #include "Shader.h"
+#include "Camera.h"
 #include "../ServiceLocator.h"
 #include "../util/StringUtils.h"
 #include "../util/ShaderUtils.h"
@@ -86,6 +87,11 @@ bool CoreRenderingService::InitializeEngine()
     return true;
 }
 
+void CoreRenderingService::AttachCamera(const Camera* camera)
+{
+    mAttachedCamera = camera;
+}
+
 void CoreRenderingService::GameLoop(std::function<void(const float)> appUpdateMethod)
 {
     SDL_Event event;
@@ -156,21 +162,9 @@ void CoreRenderingService::RenderEntities(const std::vector<EntityNameIdEntry>& 
     }
 }
 
-void CoreRenderingService::UpdateCamera(const EntityId focusedEntity, const float dt)
+const glm::vec2& CoreRenderingService::GetRenderableDimensions() const
 {
-    mCamera.Update(mEntityComponentManager->GetComponent<TransformComponent>(focusedEntity).GetTranslation(),
-                   mEntityComponentManager->GetComponent<PhysicsComponent>(focusedEntity).GetVelocity(),
-                   dt);
-}
-
-float CoreRenderingService::GetRenderableWidth() const
-{
-    return mRenderableDimensions.x;
-}
-
-float CoreRenderingService::GetRenderableHeight() const
-{
-    return mRenderableDimensions.y;
+    return mRenderableDimensions;
 }
 
 bool CoreRenderingService::InitializeContext()
@@ -238,7 +232,6 @@ bool CoreRenderingService::InitializeContext()
 	int rendHeight = 0;
     SDL_GL_GetDrawableSize(mSdlWindow, &rendWidth, &rendHeight);
     mRenderableDimensions = glm::vec2(static_cast<float>(rendWidth), static_cast<float>(rendHeight));
-    mCamera.Initialize(mServiceLocator, mRenderableDimensions);
     mProjectionMatrix = glm::orthoLH(0.0f, mRenderableDimensions.x, 0.0f, mRenderableDimensions.y, 0.001f, 100.0f);
     
     // Log GL driver info
@@ -438,7 +431,7 @@ void CoreRenderingService::RenderEntityInternal(const EntityId entityId)
         
         if (shaderUniforms.count(StringId("view")) != 0)
         {
-            GL_CHECK(glUniformMatrix4fv(mShaders[mCurrentShader]->GetUniformNamesToLocations().at(StringId("view")), 1, GL_FALSE, (GLfloat*)&(mCamera.GetViewMatrix())));
+            GL_CHECK(glUniformMatrix4fv(mShaders[mCurrentShader]->GetUniformNamesToLocations().at(StringId("view")), 1, GL_FALSE, (GLfloat*)&(mAttachedCamera->GetViewMatrix())));
         }
         
         if (shaderUniforms.count(StringId("proj")) != 0)
@@ -493,7 +486,7 @@ void CoreRenderingService::RenderEntityInternal(const EntityId entityId)
         GL_CHECK(glUseProgram(mShaders[mCurrentShader]->GetShaderId()));
         GL_CHECK(glUniformMatrix4fv(mShaders[mCurrentShader]->GetUniformNamesToLocations().at(StringId("world")), 1, GL_FALSE, (GLfloat*)&worldMatrix));
         GL_CHECK(glBindTexture(GL_TEXTURE_2D, mResourceManager->GetResource<TextureResource>("debug/debug_square.png").GetGLTextureId()));
-        GL_CHECK(glUniformMatrix4fv(mShaders[mCurrentShader]->GetUniformNamesToLocations().at(StringId("view")), 1, GL_FALSE, (GLfloat*)&(mCamera.GetViewMatrix())));
+        GL_CHECK(glUniformMatrix4fv(mShaders[mCurrentShader]->GetUniformNamesToLocations().at(StringId("view")), 1, GL_FALSE, (GLfloat*)&(mAttachedCamera->GetViewMatrix())));
         GL_CHECK(glUniformMatrix4fv(mShaders[mCurrentShader]->GetUniformNamesToLocations().at(StringId("proj")), 1, GL_FALSE, (GLfloat*)&mProjectionMatrix));
         GL_CHECK(glDrawArrays(GL_TRIANGLE_FAN, 0, 4));
     }

@@ -6,13 +6,10 @@
 //
 
 #include "App.h"
+#include "rendering/Camera.h"
 #include "input/PlayerInputActionConsumer.h"
 #include "input/DebugInputActionConsumer.h"
 #include "components/EntityComponentManager.h"
-#include "components/TransformComponent.h"
-#include "components/AnimationComponent.h"
-#include "components/ShaderComponent.h"
-#include "components/PhysicsComponent.h"
 #include "events/EventCommunicationService.h"
 #include "rendering/CoreRenderingService.h"
 #include "rendering/AnimationService.h"
@@ -47,6 +44,7 @@ void App::Run()
 
 bool App::Initialize()
 {
+    // Initialize services
     mServiceLocator = std::unique_ptr<ServiceLocator>(new ServiceLocator);
     mEntityComponentManager = std::unique_ptr<EntityComponentManager>(new EntityComponentManager);
     mEventCommunicationService = std::unique_ptr<EventCommunicationService>(new EventCommunicationService);
@@ -56,6 +54,7 @@ bool App::Initialize()
     mPhysicsSystem = std::unique_ptr<PhysicsSystem>(new PhysicsSystem(*mServiceLocator));
     mInputHandler = std::unique_ptr<InputHandler>(new InputHandler());
 
+    // Register services
     mServiceLocator->RegisterService<EntityComponentManager>(mEntityComponentManager.get());
     mServiceLocator->RegisterService<EventCommunicationService>(mEventCommunicationService.get());
     mServiceLocator->RegisterService<CoreRenderingService>(mCoreRenderingService.get());
@@ -63,12 +62,18 @@ bool App::Initialize()
     mServiceLocator->RegisterService<ResourceManager>(mResourceManager.get());
     mServiceLocator->RegisterService<InputHandler>(mInputHandler.get());
 
+    // 2nd step service initialization
     mPhysicsSystem->Initialize();
     if (!mCoreRenderingService->InitializeEngine()) return false;
     if (!mResourceManager->InitializeResourceLoaders()) return false;
     
+    // Parse Level
     LevelFactory levelFactory(*mServiceLocator);
     mLevel = levelFactory.CreateLevel("1.json");
+    
+    // Initialize camera
+    mCamera = std::make_unique<Camera>(*mServiceLocator, mCoreRenderingService->GetRenderableDimensions(), mLevel->GetHorizontalBounds(), mLevel->GetVerticalBounds());
+    mCoreRenderingService->AttachCamera(mCamera.get());
     
     // Initialized in order of priority
     mInputActionConsumers.push_back(std::make_unique<DebugInputActionConsumer>(*mServiceLocator));
@@ -83,7 +88,7 @@ void App::Update(const float dt)
     HandleInput();  
     mPhysicsSystem->UpdateEntities(mLevel->GetAllActiveEntities(), dt);
     mAnimationService->UpdateAnimations(mLevel->GetAllActiveEntities(), dt);
-    mCoreRenderingService->UpdateCamera(mLevel->GetEntityIdFromName(StringId("player")), dt);
+    mCamera->Update(mLevel->GetEntityIdFromName(StringId("player")), dt);
     mCoreRenderingService->RenderEntities(mLevel->GetAllActiveEntities());
 }
 
