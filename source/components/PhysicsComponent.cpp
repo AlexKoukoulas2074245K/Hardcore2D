@@ -23,10 +23,10 @@ PhysicsComponent::PhysicsComponent(const BodyType bodyType, const Hitbox& hitBox
 PhysicsComponent::PhysicsComponent(const BodyType bodyType, const Hitbox& hitBox, const glm::vec3& gravity, const glm::vec3& maxVelocity, const glm::vec3& minVelocity)
     : mBodyType(bodyType)
     , mHitBox(hitBox)
+    , mVelocity(0.0f, 0.0f, 0.0f)
     , mGravity(gravity)
     , mMaxVelocity(maxVelocity)
     , mMinVelocity(minVelocity)
-    , mVelocity(0.0f, 0.0f, 0.0f)
 {
     
 }

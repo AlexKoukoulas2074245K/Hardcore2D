@@ -27,7 +27,7 @@ public:
     const Camera& operator = (const Camera&) = delete;
     
     void Initialize(const ServiceLocator&, const glm::vec2& renderableDimensions);
-    void Update(const glm::vec3& focusedEntityTranslation, const float dt);
+    void Update(const glm::vec3& focusedEntityTranslation, const glm::vec3& focusedEntityVelocity, const float dt);
     const glm::mat4x4& GetViewMatrix() const;
 
 private:

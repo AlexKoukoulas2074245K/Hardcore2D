@@ -11,6 +11,7 @@
 #include "../events/PlayerChangedDirectionEvent.h"
 #include "../components/EntityComponentManager.h"
 #include "../components/TransformComponent.h"
+#include "../util/MathUtils.h"
 
 #include <glm/gtc/matrix_transform.hpp>
 
@@ -36,14 +37,23 @@ void Camera::Initialize(const ServiceLocator& serviceLocator, const glm::vec2& r
     });
 }
 
-void Camera::Update(const glm::vec3& focusedEntityTranslation, const float dt)
+void Camera::Update(const glm::vec3& focusedEntityTranslation, const glm::vec3& focusedEntityVelocity, const float dt)
 {
     // Calculate target camera end position
     const auto lookAheadDistance = mLookingAheadRight ? LOOKAHEAD_DISTANCE : -LOOKAHEAD_DISTANCE;
     const auto targetX = focusedEntityTranslation.x + lookAheadDistance - mRenderableDimensions.x * 0.5f;
     
     // Increase horizontal position by inverse of distance to target
-    mCameraTranslation.x += 2.0f * (targetX - mCameraTranslation.x) * dt;    
+    mCameraTranslation.x += (2.0f * (targetX - mCameraTranslation.x) + focusedEntityVelocity.x) * dt;
+    
+    if (mLookingAheadRight && mCameraTranslation.x > targetX)
+    {
+        mCameraTranslation.x = targetX;
+    }
+    else if (!mLookingAheadRight && mCameraTranslation.x < targetX)
+    {
+        mCameraTranslation.x = targetX;
+    }
 
     // Vertical position always matches focused entity's y
     mCameraTranslation.y = focusedEntityTranslation.y - mRenderableDimensions.y * 0.5f;
