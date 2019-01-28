@@ -9,7 +9,7 @@
 #define PlayerChangedDirectionEvent_h
 
 #include "IEvent.h"
-#include "../GameConstants.h"
+#include "../game/GameConstants.h"
 
 class PlayerChangedDirectionEvent final: public IEvent
 {

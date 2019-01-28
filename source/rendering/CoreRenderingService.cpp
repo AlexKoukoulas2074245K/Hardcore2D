@@ -31,7 +31,7 @@
 #include <vector>
 #include <glm/gtc/matrix_transform.hpp>
 
-static const char* SHADER_DIRECTORY = "shaders/";
+static const std::string SHADER_DIRECTORY = "shaders/";
 
 static const GLfloat QUAD_VERTICES[] =
 {

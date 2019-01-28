@@ -24,9 +24,10 @@
 #include "gl/Context.h"
 #include "resources/TextureResource.h"
 #include "input/InputHandler.h"
+#include "game/Level.h"
+#include "game/LevelFactory.h"
 
 #include <vector>
-#include <json.hpp>
 
 App::App()
 {
@@ -188,6 +189,9 @@ bool App::Initialize()
         mEntityComponentManager->AddComponent<PhysicsComponent>(mActiveEntityIds.back(), std::move(physicsComponent));
         mEntityComponentManager->AddComponent<ShaderComponent>(mActiveEntityIds.back(), std::move(shaderComponent));
     }
+    
+    LevelFactory levelFactory(*mServiceLocator);
+    mLevel = levelFactory.CreateLevel("1.json");
     
     // Initialized in order of priority
     mInputActionConsumers.push_back(std::make_unique<DebugInputActionConsumer>(*mServiceLocator));

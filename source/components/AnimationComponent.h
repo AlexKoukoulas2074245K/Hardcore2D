@@ -11,7 +11,7 @@
 #include "IComponent.h"
 #include "../util/TypeTraits.h"
 #include "../util/StringId.h"
-#include "../GameConstants.h"
+#include "../game/GameConstants.h"
 
 #include <unordered_map>
 #include <vector>

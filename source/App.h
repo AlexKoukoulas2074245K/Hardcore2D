@@ -22,6 +22,7 @@ class ResourceManager;
 class PhysicsSystem;
 class InputHandler;
 class IInputActionConsumer;
+class Level;
 
 union SDL_Event;
 
@@ -49,6 +50,7 @@ private:
     
     std::vector<std::unique_ptr<IInputActionConsumer>> mInputActionConsumers;
     
+    std::unique_ptr<Level> mLevel;
     std::vector<EntityId> mActiveEntityIds;
 };
 
