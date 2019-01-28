@@ -42,14 +42,8 @@ Camera::~Camera()
     
 }
 
-auto x = 0.0f;
-auto y = 0.0f;
-
 void Camera::Update(const EntityId focusedEntityId, const float dt)
 {
-    x = mLevelHorBounds.x;
-    y = mLevelVerBounds.y;
-    
     const auto& focusedEntityTranslation = mEntityComponentManager.GetComponent<TransformComponent>(focusedEntityId).GetTranslation();
     const auto& focusedEntityVelocity = mEntityComponentManager.GetComponent<PhysicsComponent>(focusedEntityId).GetVelocity();
     
@@ -60,7 +54,7 @@ void Camera::Update(const EntityId focusedEntityId, const float dt)
     // Increase horizontal position by inverse of distance to target
     mCameraTranslation.x += (2.0f * (targetX - mCameraTranslation.x) + focusedEntityVelocity.x) * dt;
     
-    // Stop camera if its passed the target position
+    // Stop camera if it passes the target position
     if ((mLookingAheadRight && mCameraTranslation.x > targetX) ||
         (!mLookingAheadRight && mCameraTranslation.x < targetX))
     {
@@ -69,6 +63,13 @@ void Camera::Update(const EntityId focusedEntityId, const float dt)
 
     // Vertical position always matches focused entity's y
     mCameraTranslation.y = focusedEntityTranslation.y - mRenderableDimensions.y * 0.5f;
+    
+    // Stop camera if it passes the level boundaries
+    if (mCameraTranslation.x < mLevelHorBounds.x) mCameraTranslation.x = mLevelHorBounds.x;
+    if (mCameraTranslation.y < mLevelVerBounds.x) mCameraTranslation.y = mLevelVerBounds.x;
+    if (mCameraTranslation.x > mLevelHorBounds.y) mCameraTranslation.x = mLevelHorBounds.y;
+    if (mCameraTranslation.y > mLevelVerBounds.y) mCameraTranslation.y = mLevelVerBounds.y;
+
     mViewMatrix = glm::lookAtLH(mCameraTranslation,
                                 glm::vec3(mCameraTranslation.x, mCameraTranslation.y, 0.0f),
                                 glm::vec3(0.0f, 1.0f, 0.0f));
