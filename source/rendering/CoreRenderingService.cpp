@@ -94,8 +94,10 @@ void CoreRenderingService::AttachCamera(const Camera* camera)
 
 void CoreRenderingService::GameLoop(std::function<void(const float)> appUpdateMethod)
 {
-    SDL_Event event;
+    SDL_Event event;    
     float elapsedTicks = 0.0f;
+    float dtAccumulator = 0.0f;
+    long framesAccumulator = 0;
     mRunning = true;
     
     while(mRunning)
@@ -126,6 +128,15 @@ void CoreRenderingService::GameLoop(std::function<void(const float)> appUpdateMe
         auto lastFrameTicks = currentTicks - elapsedTicks;
         elapsedTicks = currentTicks;
         const auto dt = lastFrameTicks * 0.001f;
+        framesAccumulator++;
+        dtAccumulator += dt;
+        if (dtAccumulator > 1.0f)
+        {
+            const auto windowTitle = "FPS: " + std::to_string(framesAccumulator);
+            SDL_SetWindowTitle(mSdlWindow, windowTitle.c_str());
+            framesAccumulator = 0;
+            dtAccumulator = 0.0f;
+        }
 		
         // Execute first pass rendering
         GL_CHECK(glBindFramebuffer(GL_FRAMEBUFFER, mFrameBufferId));
