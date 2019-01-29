@@ -8,6 +8,7 @@
 #include "LevelFactory.h"
 #include "Level.h"
 #include "../components/EntityComponentManager.h"
+#include "../components/LightSamuraiAIComponent.h"
 #include "../components/AnimationComponent.h"
 #include "../components/PhysicsComponent.h"
 #include "../components/ShaderComponent.h"
@@ -16,6 +17,7 @@
 #include "../resources/TextFileResource.h"
 #include "../resources/ResourceManager.h"
 #include "../util/Logging.h"
+#include "../util/StringUtils.h"
 #include "../game/GameConstants.h"
 
 #include <glm/vec3.hpp>
@@ -63,8 +65,15 @@ std::unique_ptr<Level> LevelFactory::CreateLevel(const std::string& levelPath)
         {
             const auto& componentName = componentEntry.key();
             const auto& componentProperties = componentEntry.value();
-
-            if (componentName == "AnimationComponent")
+            
+            if (StringEndsWith(componentName, "AIComponent"))
+            {
+                if (componentName == "LightSamuraiAIComponent")
+                {
+                    entityComponentManager.AddComponent<IAIComponent>(entityId, std::make_unique<LightSamuraiAIComponent>());
+                }
+            }
+            else if (componentName == "AnimationComponent")
             {
                 const auto animationRootDirectory = componentProperties["path"].get<std::string>();
                 const auto animationTimer = componentProperties["timer"].get<float>();

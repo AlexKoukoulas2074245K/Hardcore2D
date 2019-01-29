@@ -11,6 +11,7 @@
 #include <memory>
 #include <vector>
 
+class AIService;
 class Camera;
 class ServiceLocator;
 class EntityComponentManager;
@@ -37,6 +38,7 @@ private:
 	void HandleInput();
 
     std::unique_ptr<ServiceLocator> mServiceLocator;
+    std::unique_ptr<AIService> mAIService;
     std::unique_ptr<EntityComponentManager> mEntityComponentManager;
     std::unique_ptr<EventCommunicationService> mEventCommunicationService;
     std::unique_ptr<CoreRenderingService> mCoreRenderingService;

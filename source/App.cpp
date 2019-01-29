@@ -6,6 +6,7 @@
 //
 
 #include "App.h"
+#include "controllers/AIService.h"
 #include "rendering/Camera.h"
 #include "input/PlayerInputActionConsumer.h"
 #include "input/DebugInputActionConsumer.h"
@@ -46,6 +47,7 @@ bool App::Initialize()
 {
     // Initialize services
     mServiceLocator = std::unique_ptr<ServiceLocator>(new ServiceLocator);
+    mAIService = std::unique_ptr<AIService>(new AIService(*mServiceLocator));
     mEntityComponentManager = std::unique_ptr<EntityComponentManager>(new EntityComponentManager);
     mEventCommunicationService = std::unique_ptr<EventCommunicationService>(new EventCommunicationService);
     mResourceManager = std::unique_ptr<ResourceManager>(new ResourceManager());
@@ -64,6 +66,7 @@ bool App::Initialize()
 
     // 2nd step service initialization
     mPhysicsSystem->Initialize();
+    if (!mAIService->Initialize()) return false;
     if (!mCoreRenderingService->InitializeEngine()) return false;
     if (!mResourceManager->InitializeResourceLoaders()) return false;
     
@@ -85,7 +88,8 @@ bool App::Initialize()
 
 void App::Update(const float dt)
 {    
-    HandleInput();  
+    HandleInput();
+    mAIService->UpdateAIComponents(mLevel->GetAllActiveEntities(), dt);
     mPhysicsSystem->UpdateEntities(mLevel->GetAllActiveEntities(), dt);
     mAnimationService->UpdateAnimations(mLevel->GetAllActiveEntities(), dt);
     mCamera->Update(mLevel->GetEntityIdFromName(StringId("player")), dt);
