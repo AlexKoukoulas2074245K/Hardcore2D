@@ -476,7 +476,7 @@ void CoreRenderingService::RenderEntityInternal(const EntityId entityId)
         const auto& physicsComponent = mEntityComponentManager->GetComponent<PhysicsComponent>(entityId);
         const auto& transformComponent = mEntityComponentManager->GetComponent<TransformComponent>(entityId);
         glm::mat4 worldMatrix(1.0f);
-        worldMatrix = glm::translate(worldMatrix, transformComponent.GetTranslation());
+        worldMatrix = glm::translate(worldMatrix, glm::vec3(transformComponent.GetTranslation().x + physicsComponent.GetHitBox().mCenterPoint.x, transformComponent.GetTranslation().y + physicsComponent.GetHitBox().mCenterPoint.y, 1.0f));
         worldMatrix = glm::rotate(worldMatrix, transformComponent.GetRotation().x, glm::vec3(1.0f, 0.0f, 0.0f));
         worldMatrix = glm::rotate(worldMatrix, transformComponent.GetRotation().y, glm::vec3(0.0f, 1.0f, 0.0f));
         worldMatrix = glm::rotate(worldMatrix, transformComponent.GetRotation().z, glm::vec3(0.0f, 0.0f, 1.0f));        

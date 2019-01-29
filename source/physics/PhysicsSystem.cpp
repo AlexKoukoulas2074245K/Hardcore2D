@@ -169,7 +169,12 @@ void PhysicsSystem::PushEntityOutsideOtherEntityInAxis(const EntityId referenceE
         // Collided with entity to the right
         if (referenceEntityTransformComponent.GetTranslation().x < otherEntityTransformComponent.GetTranslation().x)
         {
-            const auto horizontalPushDelta = otherEntityTransformComponent.GetTranslation().x - otherEntityHitBox.mDimensions.x * 0.5f - referenceEntityHitBox.mDimensions.x * 0.5f;
+            const auto horizontalPushDelta = otherEntityTransformComponent.GetTranslation().x -
+                                             otherEntityHitBox.mCenterPoint.x -
+                                             otherEntityHitBox.mDimensions.x * 0.5f -
+                                             referenceEntityHitBox.mCenterPoint.x -
+                                             referenceEntityHitBox.mDimensions.x * 0.5f;
+            
             if (otherEntityPhysicsComponent.GetBodyType() != PhysicsComponent::BodyType::KINEMATIC ||
                 Abs(-referenceEntityTransformComponent.GetTranslation().x + horizontalPushDelta) < 10.0f)
             {
@@ -179,7 +184,12 @@ void PhysicsSystem::PushEntityOutsideOtherEntityInAxis(const EntityId referenceE
         // Collided with entity to the left
         else
         {
-            const auto horizontalPushDelta = otherEntityTransformComponent.GetTranslation().x + otherEntityHitBox.mDimensions.x * 0.5f + referenceEntityHitBox.mDimensions.x * 0.5f;
+            const auto horizontalPushDelta = otherEntityTransformComponent.GetTranslation().x -
+                                             otherEntityHitBox.mCenterPoint.x +
+                                             otherEntityHitBox.mDimensions.x * 0.5f -
+                                             referenceEntityHitBox.mCenterPoint.x +
+                                             referenceEntityHitBox.mDimensions.x * 0.5f;
+            
             if (otherEntityPhysicsComponent.GetBodyType() != PhysicsComponent::BodyType::KINEMATIC ||
                 Abs(-referenceEntityTransformComponent.GetTranslation().x + horizontalPushDelta) < 10.0f)
             {
@@ -199,7 +209,11 @@ void PhysicsSystem::PushEntityOutsideOtherEntityInAxis(const EntityId referenceE
             }
             else
             {
-                referenceEntityTransformComponent.GetTranslation().y = otherEntityTransformComponent.GetTranslation().y - otherEntityHitBox.mDimensions.y * 0.5f - referenceEntityHitBox.mDimensions.y * 0.5f;
+                referenceEntityTransformComponent.GetTranslation().y = otherEntityTransformComponent.GetTranslation().y -
+                                                                       otherEntityHitBox.mCenterPoint.y -
+                                                                       otherEntityHitBox.mDimensions.y * 0.5f -
+                                                                       referenceEntityHitBox.mCenterPoint.y -
+                                                                       referenceEntityHitBox.mDimensions.y * 0.5f;
                 referenceEntityPhysicsComponent.GetVelocity().y = 0.0f;
             }
         }
@@ -212,7 +226,11 @@ void PhysicsSystem::PushEntityOutsideOtherEntityInAxis(const EntityId referenceE
             }
             else
             {
-                referenceEntityTransformComponent.GetTranslation().y = otherEntityTransformComponent.GetTranslation().y + otherEntityHitBox.mDimensions.y * 0.5f + referenceEntityHitBox.mDimensions.y * 0.5f;
+                referenceEntityTransformComponent.GetTranslation().y = otherEntityTransformComponent.GetTranslation().y -
+                                                                       otherEntityHitBox.mCenterPoint.y +
+                                                                       otherEntityHitBox.mDimensions.y * 0.5f -
+                                                                       referenceEntityHitBox.mCenterPoint.y +
+                                                                       referenceEntityHitBox.mDimensions.y * 0.5f;
             }
         }
     }
