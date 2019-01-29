@@ -9,7 +9,6 @@
 #define MoveEntityByCustomVelocityCommand_h
 
 #include "ICommand.h"
-#include "../util/TypeTraits.h"
 
 #include <glm/vec3.hpp>
 #include <memory>

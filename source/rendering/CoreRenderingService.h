@@ -22,8 +22,6 @@
 #include <memory>
 
 struct SDL_Window;
-struct SDL_Context;
-union SDL_Event;
 
 class EntityComponentManager;
 class ResourceManager;

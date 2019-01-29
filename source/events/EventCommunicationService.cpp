@@ -8,6 +8,11 @@
 #include "EventCommunicationService.h"
 #include "EventCommunicator.h"
 #include "../util/Logging.h"
+#include "IEvent.h"
+
+EventCommunicationService::~EventCommunicationService()
+{
+}
 
 std::unique_ptr<EventCommunicator> EventCommunicationService::CreateEventCommunicator()
 {

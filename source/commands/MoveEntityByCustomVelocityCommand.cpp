@@ -13,7 +13,6 @@
 #include "../components/PhysicsComponent.h"
 #include "../components/AnimationComponent.h"
 #include "../components/ShaderComponent.h"
-
 #include "../util/MathUtils.h"
 
 const StringId MoveEntityByCustomVelocityCommand::COMMAND_CLASS_ID("MoveEntityByCustomVelocityCommand");

@@ -8,7 +8,6 @@
 #ifndef Shader_h
 #define Shader_h
 
-#include "../util/TypeTraits.h"
 #include "../util/StringId.h"
 
 #include <string>

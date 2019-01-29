@@ -23,8 +23,6 @@ class InputHandler;
 class IInputActionConsumer;
 class Level;
 
-union SDL_Event;
-
 class App final
 {
 public:

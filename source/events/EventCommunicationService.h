@@ -9,7 +9,6 @@
 #define EventCommunicationService_h
 
 #include "../IService.h"
-#include "IEvent.h"
 #include "../util/TypeTraits.h"
 
 #include <memory>
@@ -25,6 +24,8 @@ class EventCommunicationService final: public IService
 public:
     using EventCallback = std::function<void(const IEvent&)>;
     
+    ~EventCommunicationService();
+
     template <class EventType>
     inline void RegisterEventCallback(EventCommunicator* listener, EventCallback eventCallback)
     {

@@ -9,7 +9,6 @@
 #define GameConstants_h
 
 #include "../util/StringId.h"
-#include "../util/TypeTraits.h"
 
 enum class FacingDirection
 {

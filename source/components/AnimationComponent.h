@@ -9,7 +9,6 @@
 #define AnimationComponent_h
 
 #include "IComponent.h"
-#include "../util/TypeTraits.h"
 #include "../util/StringId.h"
 #include "../game/GameConstants.h"
 

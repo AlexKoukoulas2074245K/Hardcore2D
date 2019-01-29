@@ -6,7 +6,6 @@
 //
 
 #include "SetEntityCustomVelocityCommand.h"
-
 #include "../components/EntityComponentManager.h"
 #include "../components/PhysicsComponent.h"
 #include "../components/AnimationComponent.h"

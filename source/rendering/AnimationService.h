@@ -9,7 +9,6 @@
 #define AnimationService_h
 
 #include "../IService.h"
-#include "../util/TypeTraits.h"
 #include "../game/GameConstants.h"
 
 #include <vector>
