@@ -35,6 +35,7 @@ public:
     
     void SetFacingDirection(const FacingDirection);
     void ChangeAnimation(const StringId newAnimation);
+    void PlayAnimationOnce(const StringId newAnimation);
     void SetAnimationTimer(const float animationTimer);
     void AdvanceFrame();
     
@@ -46,6 +47,8 @@ private:
     AnimationsMap mAnimations;
     FacingDirection mFacingDirection;
     StringId mCurrentAnimation;
+    StringId mPreviousAnimation;
+    bool mPlayingPriorityAnimation;
     int mCurrentFrameIndex;
     float mAnimationDuration;
     float mAnimationTimer;

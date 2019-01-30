@@ -17,6 +17,8 @@ AnimationComponent::AnimationComponent(const std::string& relativeEntityAnimatio
     : mResourceManager(resourceManager)
     , mFacingDirection(FacingDirection::RIGHT)
     , mCurrentAnimation("")
+    , mPreviousAnimation("")
+    , mPlayingPriorityAnimation(false)
     , mCurrentFrameIndex(0)
     , mAnimationDuration(animationDuration)
     , mAnimationTimer(0.0f)
@@ -66,8 +68,19 @@ void AnimationComponent::SetFacingDirection(const FacingDirection facingDirectio
 
 void AnimationComponent::ChangeAnimation(const StringId newAnimation)
 {
+    if (mAnimations.count(newAnimation) == 0) assert(false);    
+    if (mPlayingPriorityAnimation) return;
+
+    mCurrentAnimation = newAnimation;    
+    mCurrentFrameIndex = 0;
+}
+
+void AnimationComponent::PlayAnimationOnce(const StringId newAnimation)
+{
     if (mAnimations.count(newAnimation) == 0) assert(false);
-    
+
+    mPlayingPriorityAnimation = true;
+    mPreviousAnimation = mCurrentAnimation;
     mCurrentAnimation = newAnimation;
     mCurrentFrameIndex = 0;
 }
@@ -80,6 +93,11 @@ void AnimationComponent::SetAnimationTimer(const float animationTimer)
 void AnimationComponent::AdvanceFrame()
 {
     mCurrentFrameIndex = (mCurrentFrameIndex + 1) % mAnimations.at(mCurrentAnimation).size();
+    if (mCurrentFrameIndex == 0 && mPlayingPriorityAnimation)
+    {
+        mPlayingPriorityAnimation = false;
+        ChangeAnimation(mPreviousAnimation);
+    }
 }
 
 void AnimationComponent::CreateAnimationsMapFromRelativeEntityAnimationsDirectory(const std::string& relativeEntityAnimationsDirectoryPath)

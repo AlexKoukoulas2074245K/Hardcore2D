@@ -29,6 +29,7 @@ bool DebugInputActionConsumer::VConsumeInputAction(const InputAction& inputActio
         inputAction.mActionState == InputAction::ActionState::START)
     {
         mEventCommunicator->DispatchEvent(std::make_unique<DebugToggleHitboxDisplayEvent>());
+        return true;
     }
 
     return false;
