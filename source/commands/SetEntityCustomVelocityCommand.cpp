@@ -28,22 +28,28 @@ void SetEntityCustomVelocityCommand::Execute()
         auto& animationComponent = mEntityComponentManager.GetComponent<AnimationComponent>(mEntityId);
         if (Abs(mVelocity.x) < 1.0f)
         {
-            animationComponent.ChangeAnimation(StringId("idle"));
-        }
-        else if (mVelocity.x < 0.0f)
-        {
-            if (animationComponent.GetCurrentFacingDirection() != FacingDirection::LEFT)
-            {
-                animationComponent.SetFacingDirection(FacingDirection::LEFT);
-            }
+            animationComponent.PlayAnimation(StringId("idle"));
         }
         else
         {
-            if (animationComponent.GetCurrentFacingDirection() != FacingDirection::RIGHT)
+            if (mVelocity.x < 0.0f)
             {
-                animationComponent.SetFacingDirection(FacingDirection::RIGHT);
+                if (animationComponent.GetCurrentFacingDirection() != FacingDirection::LEFT)
+                {
+                    animationComponent.SetFacingDirection(FacingDirection::LEFT);
+                }
             }
+            else
+            {
+                if (animationComponent.GetCurrentFacingDirection() != FacingDirection::RIGHT)
+                {
+                    animationComponent.SetFacingDirection(FacingDirection::RIGHT);
+                }
+            }
+            
+            animationComponent.PlayAnimation(StringId("running"));
         }
+        
     }
     mEntityComponentManager.GetComponent<PhysicsComponent>(mEntityId).GetVelocity() = mVelocity;
 }

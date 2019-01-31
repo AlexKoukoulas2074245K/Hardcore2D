@@ -11,26 +11,35 @@
 #include "../ServiceLocator.h"
 #include "../events/EventCommunicator.h"
 #include "../events/AnnouncePlayerEntityIdEvent.h"
+#include "../events/EntityCollisionEvent.h"
+#include "../components/AnimationComponent.h"
 #include "../components/EntityComponentManager.h"
 #include "../components/TransformComponent.h"
 #include "../components/PhysicsComponent.h"
 #include "../commands/SetEntityCustomVelocityCommand.h"
+#include "../commands/EntityMeleeAttackCommand.h"
 
 const float BasicNinjaEnemyAIComponent::PLAYER_DETECTION_DISTANCE = 400.0f;
 const float BasicNinjaEnemyAIComponent::PATROLLING_MAX_DISTANCE_FROM_INIT_POSITION = 100.0f;
 const float BasicNinjaEnemyAIComponent::PURSUING_MAX_DISTANCE_HORIZONTALLY = 500.0f;
+const float BasicNinjaEnemyAIComponent::FOCUSING_TIMER = 3.0f;
+const float BasicNinjaEnemyAIComponent::CHARGING_TIMER = 1.5f;
 
 BasicNinjaEnemyAIComponent::BasicNinjaEnemyAIComponent(const ServiceLocator& serviceLocator, const EntityId thisEntityId)
-    : mServiceLocator(serviceLocator)
-    , mEntityComponentManager(serviceLocator.ResolveService<EntityComponentManager>())
+    : mEntityComponentManager(serviceLocator.ResolveService<EntityComponentManager>())
     , mThisEntityId(thisEntityId)
     , mState(State::INITIALIZE)
-    , mMovingRight(true)    
+    , mMovingRight(true)
+    , mTimer(0.0f)
     , mEventCommunicator(serviceLocator.ResolveService<EventCommunicationService>().CreateEventCommunicator())
 {
     mEventCommunicator->RegisterEventCallback<AnnouncePlayerEntityIdEvent>([this](const IEvent& event) 
     {
-        mTargetEntityId = static_cast<const AnnouncePlayerEntityIdEvent&>(event).GetPlayerEntityId();
+        OnAnnouncePlayerEntityId(event);
+    });
+    mEventCommunicator->RegisterEventCallback<EntityCollisionEvent>([this](const IEvent& event)
+    {
+        OnEntityCollisionEvent(event);
     });
 }
 
@@ -39,8 +48,13 @@ BasicNinjaEnemyAIComponent::~BasicNinjaEnemyAIComponent()
 
 }
 
-void BasicNinjaEnemyAIComponent::VUpdate(const float)
+void BasicNinjaEnemyAIComponent::VUpdate(const float dt)
 {
+    const auto& physicsComponent = mEntityComponentManager.GetComponent<PhysicsComponent>(mThisEntityId);
+    const auto& targetTransformComponent = mEntityComponentManager.GetComponent<TransformComponent>(mTargetEntityId);
+    const auto& transformComponent = mEntityComponentManager.GetComponent<TransformComponent>(mThisEntityId);
+    auto& animationComponent = mEntityComponentManager.GetComponent<AnimationComponent>(mThisEntityId);
+    
     switch (mState)
     {
         case State::INITIALIZE:
@@ -57,23 +71,21 @@ void BasicNinjaEnemyAIComponent::VUpdate(const float)
             if (distanceFromPlayer < PLAYER_DETECTION_DISTANCE)
             {
                 mState = State::LEAPING_TO_TARGET;
-                const auto& physicsComponent = mEntityComponentManager.GetComponent<PhysicsComponent>(mThisEntityId);                
+                animationComponent.SetFacingDirection(transformComponent.GetTranslation().x > targetTransformComponent.GetTranslation().x ? FacingDirection::RIGHT : FacingDirection::LEFT);
+                mMovingRight = animationComponent.GetCurrentFacingDirection() == FacingDirection::RIGHT;
                 
-                SetEntityCustomVelocityCommand(mEntityComponentManager, mThisEntityId, glm::vec3(physicsComponent.GetMinVelocity().x,
+                SetEntityCustomVelocityCommand(mEntityComponentManager, mThisEntityId, glm::vec3(mMovingRight ? physicsComponent.GetMinVelocity().x * 0.25f : physicsComponent.GetMaxVelocity().x * 0.25f,
                                                                                                  physicsComponent.GetMaxVelocity().y,
                                                                                                  physicsComponent.GetVelocity().z)).Execute();
+                
             }
             else
             {
-                const auto& physicsComponent = mEntityComponentManager.GetComponent<PhysicsComponent>(mThisEntityId);
-                const auto& transformComponent = mEntityComponentManager.GetComponent<TransformComponent>(mThisEntityId);
-                
-                const auto targetVelocity = glm::vec3(mMovingRight ? physicsComponent.GetMaxVelocity().x * 0.5f : physicsComponent.GetMinVelocity().x * 0.5f,
+                const auto targetVelocity = glm::vec3(mMovingRight ? physicsComponent.GetMaxVelocity().x * 0.125f : physicsComponent.GetMinVelocity().x * 0.125f,
                                                       physicsComponent.GetVelocity().y,
                                                       physicsComponent.GetVelocity().z);
 
                 SetEntityCustomVelocityCommand(mEntityComponentManager, mThisEntityId, targetVelocity).Execute();
-
                 
                 if (transformComponent.GetTranslation().x >= mInitPosition.x + PATROLLING_MAX_DISTANCE_FROM_INIT_POSITION)
                 {
@@ -88,18 +100,34 @@ void BasicNinjaEnemyAIComponent::VUpdate(const float)
 
         case State::LEAPING_TO_TARGET:
         {
-            const auto& physicsComponent = mEntityComponentManager.GetComponent<PhysicsComponent>(mThisEntityId);
-            if (Abs(physicsComponent.GetVelocity().y) < 1.0f)
+        } break;
+
+        case State::FOCUSING:
+        {
+            animationComponent.SetFacingDirection(transformComponent.GetTranslation().x < targetTransformComponent.GetTranslation().x ? FacingDirection::RIGHT : FacingDirection::LEFT);
+            mMovingRight = animationComponent.GetCurrentFacingDirection() == FacingDirection::RIGHT;
+            
+            mTimer -= dt;
+            if (mTimer <= 0.0f)
             {
-                mState = State::PURSUING;
+                mTimer = CHARGING_TIMER;
+                mState = State::CHARGING_PLAYER;
             }
         } break;
 
-        case State::PURSUING:
+        case State::CHARGING_PLAYER:
         {
-
+            const auto chargingSpeed = mMovingRight ? physicsComponent.GetMaxVelocity().x * (mTimer * 0.5f) : physicsComponent.GetMinVelocity().x * (mTimer * 0.5f);
+            SetEntityCustomVelocityCommand(mEntityComponentManager, mThisEntityId, glm::vec3(chargingSpeed, physicsComponent.GetVelocity().y, physicsComponent.GetVelocity().z)).Execute();
+            
+            mTimer -= dt;
+            if (mTimer <= 0.0f)
+            {
+                mState = State::PATROLLING;
+                SetEntityCustomVelocityCommand(mEntityComponentManager, mThisEntityId, glm::vec3(0.0f, 0.0f, 0.0f)).Execute();
+            }
         } break;
-
+            
         case State::DEAD:
         {
 
@@ -115,4 +143,37 @@ std::string BasicNinjaEnemyAIComponent::VSerializeToString() const
 bool BasicNinjaEnemyAIComponent::VInitializeFromString(const std::string&)
 {
     return true;
+}
+
+void BasicNinjaEnemyAIComponent::OnAnnouncePlayerEntityId(const IEvent& event)
+{
+    mTargetEntityId = static_cast<const AnnouncePlayerEntityIdEvent&>(event).GetPlayerEntityId();
+}
+
+void BasicNinjaEnemyAIComponent::OnEntityCollisionEvent(const IEvent& event)
+{
+    if (mState == State::LEAPING_TO_TARGET)
+    {
+        const auto& collidedEntitiesPair = static_cast<const EntityCollisionEvent&>(event).GetCollidedEntityIds();
+        if (mThisEntityId == collidedEntitiesPair.first)
+        {
+            const auto& otherEntityPhysicsComponent = mEntityComponentManager.GetComponent<PhysicsComponent>(collidedEntitiesPair.second);
+            OnLeapingComplete(otherEntityPhysicsComponent);
+        }
+        else if (mThisEntityId == collidedEntitiesPair.second)
+        {
+            const auto& otherEntityPhysicsComponent = mEntityComponentManager.GetComponent<PhysicsComponent>(collidedEntitiesPair.first);
+            OnLeapingComplete(otherEntityPhysicsComponent);
+        }
+    }
+}
+
+void BasicNinjaEnemyAIComponent::OnLeapingComplete(const PhysicsComponent& otherEntityPhysicsComponent)
+{
+    if (otherEntityPhysicsComponent.GetBodyType() == PhysicsComponent::BodyType::STATIC)
+    {
+        mTimer = FOCUSING_TIMER;
+        mState = State::FOCUSING;
+        SetEntityCustomVelocityCommand(mEntityComponentManager, mThisEntityId, glm::vec3(0.0f, 0.0f, 0.0f)).Execute();
+    }
 }

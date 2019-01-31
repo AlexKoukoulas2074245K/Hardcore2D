@@ -10,7 +10,6 @@
 #include "../components/PhysicsComponent.h"
 #include "../components/EntityComponentManager.h"
 #include "../components/AnimationComponent.h"
-#include "../commands/MoveEntityByCustomVelocityCommand.h"
 #include "../commands/SetEntityCustomVelocityCommand.h"
 #include "../commands/EntityMeleeAttackCommand.h"
 #include "../events/EventCommunicator.h"
@@ -21,9 +20,9 @@
 
 PlayerInputActionConsumer::PlayerInputActionConsumer(const ServiceLocator& serviceLocator, const EntityId entityId)
     : mServiceLocator(serviceLocator)
-    , mEntityComponentManager(serviceLocator.ResolveService<EntityComponentManager>())
+    , mEntityComponentManager(mServiceLocator.ResolveService<EntityComponentManager>())
     , mEntityId(entityId)
-    , mEventCommunicator(serviceLocator.ResolveService<EventCommunicationService>().CreateEventCommunicator())
+    , mEventCommunicator(mServiceLocator.ResolveService<EventCommunicationService>().CreateEventCommunicator())
 {
     
 }
@@ -47,7 +46,7 @@ bool PlayerInputActionConsumer::VConsumeInputAction(const InputAction& inputActi
                 } break;
 				case InputAction::ActionState::CONTINUE:
                 {
-                    MoveEntityByCustomVelocityCommand(mEntityComponentManager, mEntityId, glm::vec3(-entityPhysicsComponent.GetMaxVelocity().x, 0.0f, 0.0f)).Execute();
+                    SetEntityCustomVelocityCommand(mEntityComponentManager, mEntityId, glm::vec3(-entityPhysicsComponent.GetMaxVelocity().x, entityPhysicsComponent.GetVelocity().y, entityPhysicsComponent.GetVelocity().z)).Execute();
                     return true;
                 } break;
                 case InputAction::ActionState::STOP:
@@ -67,7 +66,7 @@ bool PlayerInputActionConsumer::VConsumeInputAction(const InputAction& inputActi
                 } break;
                 case InputAction::ActionState::CONTINUE:
                 {
-                    MoveEntityByCustomVelocityCommand(mEntityComponentManager, mEntityId, glm::vec3(entityPhysicsComponent.GetMaxVelocity().x, 0.0f, 0.0f)).Execute();
+                    SetEntityCustomVelocityCommand(mEntityComponentManager, mEntityId, glm::vec3(entityPhysicsComponent.GetMaxVelocity().x, entityPhysicsComponent.GetVelocity().y, entityPhysicsComponent.GetVelocity().z)).Execute();
                     return true;
                 } break;
                 case InputAction::ActionState::STOP:

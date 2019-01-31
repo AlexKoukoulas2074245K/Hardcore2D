@@ -13,9 +13,11 @@
 
 #include <vector>
 #include <utility>
+#include <memory>
 
 class ServiceLocator;
 class EntityComponentManager;
+class EventCommunicator;
 
 class PhysicsSystem final: public IService
 {
@@ -32,11 +34,12 @@ private:
         X_AXIS, Y_AXIS
     };
 
-    EntityId CheckAndGetCollidedEntity(const EntityId referenceEntityId, const std::vector<EntityNameIdEntry>& allConsideredEntityIds);
+    std::vector<EntityId> CheckAndGetCollidedEntities(const EntityId referenceEntityId, const std::vector<EntityNameIdEntry>& allConsideredEntityIds);
     void PushEntityOutsideOtherEntityInAxis(const EntityId referenceEntityId, const EntityId collidedWithEntityId, const Axis, const float dt);
 
     const ServiceLocator& mServiceLocator;
     EntityComponentManager* mEntityComponentManager;
+    std::unique_ptr<EventCommunicator> mEventCommunicator;
 };
 
 #endif /* PhysicsSystem_h */

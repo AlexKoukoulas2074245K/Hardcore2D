@@ -34,7 +34,7 @@ public:
     float GetAnimationTimer() const;
     
     void SetFacingDirection(const FacingDirection);
-    void ChangeAnimation(const StringId newAnimation);
+    void PlayAnimation(const StringId newAnimation);
     void PlayAnimationOnce(const StringId newAnimation);
     void SetAnimationTimer(const float animationTimer);
     void AdvanceFrame();

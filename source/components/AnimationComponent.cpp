@@ -66,7 +66,7 @@ void AnimationComponent::SetFacingDirection(const FacingDirection facingDirectio
     mFacingDirection = facingDirection;
 }
 
-void AnimationComponent::ChangeAnimation(const StringId newAnimation)
+void AnimationComponent::PlayAnimation(const StringId newAnimation)
 {
     if (mAnimations.count(newAnimation) == 0) assert(false);    
     if (mCurrentAnimation == newAnimation)
@@ -113,7 +113,7 @@ void AnimationComponent::AdvanceFrame()
     if (mCurrentFrameIndex == 0 && mPlayingOneTimeAnimation)
     {
         mPlayingOneTimeAnimation = false;
-        ChangeAnimation(mPreviousAnimation);
+        PlayAnimation(mPreviousAnimation);
     }
 }
 
@@ -137,6 +137,6 @@ void AnimationComponent::CreateAnimationsMapFromRelativeEntityAnimationsDirector
         
     }
     
-    ChangeAnimation(StringId("idle"));
+    PlayAnimation(StringId("idle"));
 }
 

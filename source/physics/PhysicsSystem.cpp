@@ -12,12 +12,15 @@
 #include "../components/EntityComponentManager.h"
 #include "../components/PhysicsComponent.h"
 #include "../components/TransformComponent.h"
+#include "../events/EventCommunicator.h"
+#include "../events/EntityCollisionEvent.h"
 
 #include <algorithm>
 #include <unordered_map>
 #include <vector>
+#include <set>
 
-static const std::unordered_map<PhysicsComponent::BodyType, std::vector<PhysicsComponent::BodyType>> sCollisionLayers =
+static const std::unordered_map<PhysicsComponent::BodyType, std::vector<PhysicsComponent::BodyType>> sPhysicallyInteractableLayers =
 {
     {PhysicsComponent::BodyType::DYNAMIC, {PhysicsComponent::BodyType::KINEMATIC, PhysicsComponent::BodyType::STATIC}},
     {PhysicsComponent::BodyType::KINEMATIC, {PhysicsComponent::BodyType::KINEMATIC, PhysicsComponent::BodyType::STATIC}},
@@ -33,6 +36,7 @@ PhysicsSystem::PhysicsSystem(const ServiceLocator& serviceLocator)
 void PhysicsSystem::Initialize()
 {
     mEntityComponentManager = &(mServiceLocator.ResolveService<EntityComponentManager>());
+    mEventCommunicator = mServiceLocator.ResolveService<EventCommunicationService>().CreateEventCommunicator();
 }
 
 void PhysicsSystem::UpdateEntities(const std::vector<EntityNameIdEntry>& activeEntities, const float dt)
@@ -56,48 +60,78 @@ void PhysicsSystem::UpdateEntities(const std::vector<EntityNameIdEntry>& activeE
             // Update horizontal position first
             referenceEntityTransformComponent.GetTranslation().x += referenceEntityPhysicsComponent.GetVelocity().x * dt;
             
-            // Find any entity collided with
-            auto otherEntityId = CheckAndGetCollidedEntity(entityId, activeEntities);
-
-            // If any were found, push the current entity outside of them
-            if (otherEntityId != entityId)
+            // Set of all collidedEntities (filtered by layers and not)
+            std::set<EntityId> allCollidedEntities;
+            
+            // Find all entities horizontally colliding with current
+            auto horizontallyCollidingEntityIds = CheckAndGetCollidedEntities(entityId, activeEntities);
+            
+            const auto& collidableBodyTypesWithCurrent = sPhysicallyInteractableLayers.at(referenceEntityPhysicsComponent.GetBodyType());
+            for (const auto otherEntityId: horizontallyCollidingEntityIds)
             {
-                PushEntityOutsideOtherEntityInAxis(entityId, otherEntityId, Axis::X_AXIS, dt);
+                allCollidedEntities.insert(otherEntityId);
+                
+                // Make sure the reference entity has this entity's body type in the collision layers
+                const auto& otherEntityPhysicsComponent = mEntityComponentManager->GetComponent<PhysicsComponent>(otherEntityId);
+                if (std::find(collidableBodyTypesWithCurrent.cbegin(), collidableBodyTypesWithCurrent.cend(), otherEntityPhysicsComponent.GetBodyType()) == collidableBodyTypesWithCurrent.end())
+                {
+                    continue;
+                }
+                else
+                {
+                    // Push reference entity outside of other horizontally colliding entity
+                    PushEntityOutsideOtherEntityInAxis(entityId, otherEntityId, Axis::X_AXIS, dt);
+                }
             }
             
             // Update vertical position next
             referenceEntityTransformComponent.GetTranslation().y += referenceEntityPhysicsComponent.GetVelocity().y * dt;
             
-            // Find any entity collided with
-            otherEntityId = CheckAndGetCollidedEntity(entityId, activeEntities);
+            // Find all entities vertically colliding with current
+            auto verticallyCollidingEntityIds = CheckAndGetCollidedEntities(entityId, activeEntities);
             
-            // If any were found, push the current entity outside of them
-            if (otherEntityId != entityId)
+            for (const auto otherEntityId: verticallyCollidingEntityIds)
             {
+                allCollidedEntities.insert(otherEntityId);
+                
                 const auto& otherEntityPhysicsComponent = mEntityComponentManager->GetComponent<PhysicsComponent>(otherEntityId);
-                
-                PushEntityOutsideOtherEntityInAxis(entityId, otherEntityId, Axis::Y_AXIS, dt);
-                
-                // In the case of a Kinematic object append its deltas to current entity
-                if (otherEntityPhysicsComponent.GetBodyType() == PhysicsComponent::BodyType::KINEMATIC)
+                if (std::find(collidableBodyTypesWithCurrent.cbegin(), collidableBodyTypesWithCurrent.cend(), otherEntityPhysicsComponent.GetBodyType()) == collidableBodyTypesWithCurrent.end())
                 {
-                    const auto& otherEntityTransformComponent = mEntityComponentManager->GetComponent<TransformComponent>(otherEntityId);
+                    continue;
+                }
+                else
+                {
+                    // Push reference entity outside of other vertically colliding entity
+                    PushEntityOutsideOtherEntityInAxis(entityId, otherEntityId, Axis::Y_AXIS, dt);
                     
-                    // Before adding the kinematic object's horizontal velocity, make sure that the kinematic object itself
-                    // is not horizontally blocked by another object
-                    if (Abs(otherEntityTransformComponent.GetPreviousTranslation().x - otherEntityTransformComponent.GetTranslation().x) > 0.01f)
+                    // In the case of a Kinematic object append its deltas to current entity
+                    if (otherEntityPhysicsComponent.GetBodyType() == PhysicsComponent::BodyType::KINEMATIC)
                     {
-                        referenceEntityTransformComponent.GetTranslation().x += otherEntityPhysicsComponent.GetVelocity().x * dt;
-                    }
-                    
-                    // Before adding the kinematic object's vertical velocity, make sure that the kinematic object itself
-                    // is not vertically blocked by another object
-                    if (Abs(otherEntityTransformComponent.GetPreviousTranslation().y - otherEntityTransformComponent.GetTranslation().y) > 0.01f)
-                    {
-                        referenceEntityTransformComponent.GetTranslation().y += otherEntityPhysicsComponent.GetVelocity().y * dt;
+                        const auto& otherEntityTransformComponent = mEntityComponentManager->GetComponent<TransformComponent>(otherEntityId);
+                        
+                        // Before adding the kinematic object's horizontal velocity, make sure that the kinematic object itself
+                        // is not horizontally blocked by another object
+                        if (Abs(otherEntityTransformComponent.GetPreviousTranslation().x - otherEntityTransformComponent.GetTranslation().x) > 0.01f)
+                        {
+                            referenceEntityTransformComponent.GetTranslation().x += otherEntityPhysicsComponent.GetVelocity().x * dt;
+                        }
+                        
+                        // Before adding the kinematic object's vertical velocity, make sure that the kinematic object itself
+                        // is not vertically blocked by another object
+                        if (Abs(otherEntityTransformComponent.GetPreviousTranslation().y - otherEntityTransformComponent.GetTranslation().y) > 0.01f)
+                        {
+                            referenceEntityTransformComponent.GetTranslation().y += otherEntityPhysicsComponent.GetVelocity().y * dt;
+                        }
                     }
                 }
             }
+            
+            // Generate collision events for all collided entities (physically interactable and not)
+            for (const auto otherEntityId: allCollidedEntities)
+            {
+                mEventCommunicator->DispatchEvent(std::make_unique<EntityCollisionEvent>(std::make_pair(entityId, otherEntityId)));
+            }
+            
         }
     }
     
@@ -112,8 +146,10 @@ void PhysicsSystem::UpdateEntities(const std::vector<EntityNameIdEntry>& activeE
     }
 }
 
-EntityId PhysicsSystem::CheckAndGetCollidedEntity(const EntityId referenceEntityId, const std::vector<EntityNameIdEntry>& allConsideredEntityIds)
+std::vector<EntityId> PhysicsSystem::CheckAndGetCollidedEntities(const EntityId referenceEntityId, const std::vector<EntityNameIdEntry>& allConsideredEntityIds)
 {
+    std::vector<EntityId> collidedEntities;
+    
     const auto& referenceEntityPhysicsComponent = mEntityComponentManager->GetComponent<PhysicsComponent>(referenceEntityId);
     const auto& referenceEntityTransformComponent = mEntityComponentManager->GetComponent<TransformComponent>(referenceEntityId);
     const auto& referenceEntityHitBox = referenceEntityPhysicsComponent.GetHitBox();
@@ -121,17 +157,11 @@ EntityId PhysicsSystem::CheckAndGetCollidedEntity(const EntityId referenceEntity
     for (const auto otherEntityEntry: allConsideredEntityIds)
     {
         const auto otherEntityId = otherEntityEntry.mEntityId;
-        const auto& collidableBodyTypesWithCurrent = sCollisionLayers.at(referenceEntityPhysicsComponent.GetBodyType());
+        
         if (referenceEntityId != otherEntityId &&
             mEntityComponentManager->HasComponent<PhysicsComponent>(otherEntityId))
         {
-            // Make sure the reference entity has this entity's body type in the collision layers
             const auto& otherEntityPhysicsComponent = mEntityComponentManager->GetComponent<PhysicsComponent>(otherEntityId);
-            if (std::find(collidableBodyTypesWithCurrent.cbegin(), collidableBodyTypesWithCurrent.cend(), otherEntityPhysicsComponent.GetBodyType()) == collidableBodyTypesWithCurrent.end())
-            {
-                continue;
-            }
-            
             const auto& otherEntityTransformComponentormComponent = mEntityComponentManager->GetComponent<TransformComponent>(otherEntityId);
             const auto& otherEntityHitBox = otherEntityPhysicsComponent.GetHitBox();
 
@@ -146,12 +176,12 @@ EntityId PhysicsSystem::CheckAndGetCollidedEntity(const EntityId referenceEntity
             
             if (xAxisTest < 0 && yAxisTest < 0)
             {
-                return otherEntityId;
+                collidedEntities.push_back(otherEntityId);
             }
         }
     }
     
-    return referenceEntityId;
+    return collidedEntities;
 }
 
 void PhysicsSystem::PushEntityOutsideOtherEntityInAxis(const EntityId referenceEntityId, const EntityId collidedWithEntityId, const PhysicsSystem::Axis axis, const float dt)
