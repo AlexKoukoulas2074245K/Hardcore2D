@@ -91,7 +91,7 @@ bool PlayerInputActionConsumer::VConsumeInputAction(const InputAction& inputActi
                 case InputAction::ActionState::START:
                 {
                     auto& playerAnimationComponent = mEntityComponentManager.GetComponent<AnimationComponent>(mEntityId);
-                    playerAnimationComponent.PlayAnimationOnce(StringId("ground_melee"));
+                    playerAnimationComponent.PlayAnimationOnce(StringId("melee"));
                     return true;
                 } break;
                 case InputAction::ActionState::CONTINUE:
