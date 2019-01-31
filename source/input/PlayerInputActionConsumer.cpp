@@ -12,8 +12,10 @@
 #include "../components/AnimationComponent.h"
 #include "../commands/MoveEntityByCustomVelocityCommand.h"
 #include "../commands/SetEntityCustomVelocityCommand.h"
+#include "../commands/EntityMeleeAttackCommand.h"
 #include "../events/EventCommunicator.h"
 #include "../util/Logging.h"
+#include "../events/PlayerChangedDirectionEvent.h"
 
 #include <glm/glm.hpp>
 
@@ -40,6 +42,9 @@ bool PlayerInputActionConsumer::VConsumeInputAction(const InputAction& inputActi
             switch (inputAction.mActionState)
             {
                 case InputAction::ActionState::START:
+                {
+                    mEventCommunicator->DispatchEvent(std::make_unique<PlayerChangedDirectionEvent>(FacingDirection::LEFT));
+                } break;
 				case InputAction::ActionState::CONTINUE:
                 {
                     MoveEntityByCustomVelocityCommand(mServiceLocator, mEntityId, glm::vec3(-entityPhysicsComponent.GetMaxVelocity().x, 0.0f, 0.0f)).Execute();
@@ -57,6 +62,9 @@ bool PlayerInputActionConsumer::VConsumeInputAction(const InputAction& inputActi
             switch (inputAction.mActionState)
             {
                 case InputAction::ActionState::START:
+                {
+                    mEventCommunicator->DispatchEvent(std::make_unique<PlayerChangedDirectionEvent>(FacingDirection::RIGHT));
+                } break;
                 case InputAction::ActionState::CONTINUE:
                 {
                     MoveEntityByCustomVelocityCommand(mServiceLocator, mEntityId, glm::vec3(entityPhysicsComponent.GetMaxVelocity().x, 0.0f, 0.0f)).Execute();
@@ -90,8 +98,7 @@ bool PlayerInputActionConsumer::VConsumeInputAction(const InputAction& inputActi
             {
                 case InputAction::ActionState::START:
                 {
-                    auto& playerAnimationComponent = mEntityComponentManager.GetComponent<AnimationComponent>(mEntityId);
-                    playerAnimationComponent.PlayAnimationOnce(StringId("melee"));
+                    EntityMeleeAttackCommand(mEntityComponentManager, mEntityId).Execute();
                     return true;
                 } break;
                 case InputAction::ActionState::CONTINUE:

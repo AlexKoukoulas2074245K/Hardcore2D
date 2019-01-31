@@ -26,7 +26,7 @@ void SetEntityCustomVelocityCommand::Execute()
     if (mEntityComponentManager.HasComponent<AnimationComponent>(mEntityId))
     {
         auto& animationComponent = mEntityComponentManager.GetComponent<AnimationComponent>(mEntityId);
-        if (Abs(mVelocity.x) < 1.0f && animationComponent.GetCurrentAnimation() != StringId("idle"))
+        if (Abs(mVelocity.x) < 1.0f)
         {
             animationComponent.ChangeAnimation(StringId("idle"));
         }

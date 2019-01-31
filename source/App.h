@@ -38,9 +38,9 @@ private:
 	void HandleInput();
 
     std::unique_ptr<ServiceLocator> mServiceLocator;
-    std::unique_ptr<AIService> mAIService;
+    std::unique_ptr<EventCommunicationService> mEventCommunicationService;    
     std::unique_ptr<EntityComponentManager> mEntityComponentManager;
-    std::unique_ptr<EventCommunicationService> mEventCommunicationService;
+    std::unique_ptr<AIService> mAIService;
     std::unique_ptr<CoreRenderingService> mCoreRenderingService;
     std::unique_ptr<AnimationService> mAnimationService;
     std::unique_ptr<ResourceManager> mResourceManager;

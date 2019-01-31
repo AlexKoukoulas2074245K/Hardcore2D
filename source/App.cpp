@@ -11,7 +11,9 @@
 #include "input/PlayerInputActionConsumer.h"
 #include "input/DebugInputActionConsumer.h"
 #include "components/EntityComponentManager.h"
-#include "events/EventCommunicationService.h"
+#include "components/IAIComponent.h"
+#include "events/EventCommunicator.h"
+#include "events/AnnouncePlayerEntityIdEvent.h"
 #include "rendering/CoreRenderingService.h"
 #include "rendering/AnimationService.h"
 #include "physics/PhysicsSystem.h"
@@ -28,6 +30,7 @@
 #include "util/StringId.h"
 
 #include <vector>
+
 
 App::App()
 {
@@ -73,7 +76,7 @@ bool App::Initialize()
     // Parse Level
     LevelFactory levelFactory(*mServiceLocator);
     mLevel = levelFactory.CreateLevel("1.json");
-    
+
     // Initialize camera
     mCamera = std::make_unique<Camera>(*mServiceLocator, mCoreRenderingService->GetRenderableDimensions(), mLevel->GetHorizontalBounds(), mLevel->GetVerticalBounds());
     mCoreRenderingService->AttachCamera(mCamera.get());
@@ -82,6 +85,9 @@ bool App::Initialize()
     mInputActionConsumers.push_back(std::make_unique<DebugInputActionConsumer>(*mServiceLocator));
     mInputActionConsumers.push_back(std::make_unique<PlayerInputActionConsumer>(*mServiceLocator, mLevel->GetEntityIdFromName(StringId("player"))));
     
+    // Announce player id to AIs
+    auto eventCommunicator = mEventCommunicationService->CreateEventCommunicator();
+    eventCommunicator->DispatchEvent(std::make_unique<AnnouncePlayerEntityIdEvent>(mLevel->GetEntityIdFromName(StringId("player"))));
     return true;
 }
 

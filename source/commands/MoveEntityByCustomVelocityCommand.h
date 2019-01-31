@@ -15,7 +15,6 @@
 
 class ServiceLocator;
 class EntityComponentManager;
-class EventCommunicator;
 
 class MoveEntityByCustomVelocityCommand final: public ICommand
 {
@@ -27,8 +26,7 @@ public:
 	StringId GetCommandClassId() const override;
 
 private:
-    EntityComponentManager& mEntityComponentManager;
-    std::unique_ptr<EventCommunicator> mEventCommunicator;
+    EntityComponentManager& mEntityComponentManager;    
     
     const EntityId mEntityId;
     const glm::vec3 mVelocity;

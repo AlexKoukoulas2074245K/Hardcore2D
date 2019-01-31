@@ -69,6 +69,10 @@ void AnimationComponent::SetFacingDirection(const FacingDirection facingDirectio
 void AnimationComponent::ChangeAnimation(const StringId newAnimation)
 {
     if (mAnimations.count(newAnimation) == 0) assert(false);    
+    if (mCurrentAnimation == newAnimation)
+    {
+        return;
+    }
     if (mPlayingOneTimeAnimation)
     {
         mPreviousAnimation = newAnimation;
@@ -82,6 +86,10 @@ void AnimationComponent::ChangeAnimation(const StringId newAnimation)
 void AnimationComponent::PlayAnimationOnce(const StringId newAnimation)
 {
     if (mAnimations.count(newAnimation) == 0) assert(false);
+    if (mCurrentAnimation == newAnimation)
+    {
+        return;
+    }
     if (mPlayingOneTimeAnimation)
     {
         mPreviousAnimation = newAnimation;

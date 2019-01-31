@@ -14,7 +14,7 @@ class IAIComponent: public IComponent
 {
 public:
     virtual ~IAIComponent() = default;
-    virtual void VUpdate(const float dt) = 0;
+    virtual void VUpdate(const float dt) = 0;    
 };
 
 #endif /* AIComponent_h */

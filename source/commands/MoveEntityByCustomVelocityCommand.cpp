@@ -7,7 +7,6 @@
 
 #include "MoveEntityByCustomVelocityCommand.h"
 #include "../ServiceLocator.h"
-#include "../events/EventCommunicator.h"
 #include "../events/PlayerChangedDirectionEvent.h"
 #include "../components/EntityComponentManager.h"
 #include "../components/PhysicsComponent.h"
@@ -18,8 +17,7 @@
 const StringId MoveEntityByCustomVelocityCommand::COMMAND_CLASS_ID("MoveEntityByCustomVelocityCommand");
 
 MoveEntityByCustomVelocityCommand::MoveEntityByCustomVelocityCommand(const ServiceLocator& serviceLocator, const EntityId entityId, const glm::vec3& velocity)
-    : mEntityComponentManager(serviceLocator.ResolveService<EntityComponentManager>())
-    , mEventCommunicator(serviceLocator.ResolveService<EventCommunicationService>().CreateEventCommunicator())
+    : mEntityComponentManager(serviceLocator.ResolveService<EntityComponentManager>())    
     , mEntityId(entityId)
     , mVelocity(velocity)
 {
@@ -36,24 +34,18 @@ void MoveEntityByCustomVelocityCommand::Execute()
         {
             if (animationComponent.GetCurrentFacingDirection() != FacingDirection::LEFT)
             {
-                animationComponent.SetFacingDirection(FacingDirection::LEFT);
-                mEventCommunicator->DispatchEvent(std::make_unique<PlayerChangedDirectionEvent>(FacingDirection::LEFT));
-            }
-            
+                animationComponent.SetFacingDirection(FacingDirection::LEFT);                
+            }            
         }
         else
         {
             if (animationComponent.GetCurrentFacingDirection() != FacingDirection::RIGHT)
             {
-                animationComponent.SetFacingDirection(FacingDirection::RIGHT);
-                mEventCommunicator->DispatchEvent(std::make_unique<PlayerChangedDirectionEvent>(FacingDirection::RIGHT));
+                animationComponent.SetFacingDirection(FacingDirection::RIGHT);                
             }
         }
-        
-        if (animationComponent.GetCurrentAnimation() != StringId("running"))
-        {
-            animationComponent.ChangeAnimation(StringId("running"));
-        }
+
+        animationComponent.ChangeAnimation(StringId("running"));       
     }
             
     physicsComponent.GetVelocity() += mVelocity;

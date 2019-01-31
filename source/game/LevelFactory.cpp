@@ -8,7 +8,7 @@
 #include "LevelFactory.h"
 #include "Level.h"
 #include "../components/EntityComponentManager.h"
-#include "../components/LightSamuraiAIComponent.h"
+#include "../components/BasicNinjaEnemyAIComponent.h"
 #include "../components/AnimationComponent.h"
 #include "../components/PhysicsComponent.h"
 #include "../components/ShaderComponent.h"
@@ -68,9 +68,9 @@ std::unique_ptr<Level> LevelFactory::CreateLevel(const std::string& levelPath)
             
             if (StringEndsWith(componentName, "AIComponent"))
             {
-                if (componentName == "LightSamuraiAIComponent")
+                if (componentName == "BasicNinjaEnemyAIComponent")
                 {
-                    entityComponentManager.AddComponent<IAIComponent>(entityId, std::make_unique<LightSamuraiAIComponent>());
+                    entityComponentManager.AddComponent<IAIComponent>(entityId, std::make_unique<BasicNinjaEnemyAIComponent>(mServiceLocator, entityId));
                 }
             }
             else if (componentName == "AnimationComponent")
