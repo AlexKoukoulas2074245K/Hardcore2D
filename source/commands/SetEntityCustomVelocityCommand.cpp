@@ -30,6 +30,20 @@ void SetEntityCustomVelocityCommand::Execute()
         {
             animationComponent.ChangeAnimation(StringId("idle"));
         }
+        else if (mVelocity.x < 0.0f)
+        {
+            if (animationComponent.GetCurrentFacingDirection() != FacingDirection::LEFT)
+            {
+                animationComponent.SetFacingDirection(FacingDirection::LEFT);
+            }
+        }
+        else
+        {
+            if (animationComponent.GetCurrentFacingDirection() != FacingDirection::RIGHT)
+            {
+                animationComponent.SetFacingDirection(FacingDirection::RIGHT);
+            }
+        }
     }
     mEntityComponentManager.GetComponent<PhysicsComponent>(mEntityId).GetVelocity() = mVelocity;
 }

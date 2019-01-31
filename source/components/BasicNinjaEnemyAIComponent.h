@@ -31,14 +31,15 @@ public:
 private:
     enum class State
     {
-        INITIALIZE, PATROLLING, CHARGING, DEAD 
+        INITIALIZE, PATROLLING, LEAPING_TO_TARGET, PURSUING, DEAD 
     };
 
     static const float PLAYER_DETECTION_DISTANCE;
     static const float PATROLLING_MAX_DISTANCE_FROM_INIT_POSITION;
+    static const float PURSUING_MAX_DISTANCE_HORIZONTALLY;
 
     const ServiceLocator& mServiceLocator;
-    const EntityComponentManager& mEntityComponentManager;
+    EntityComponentManager& mEntityComponentManager;
     const EntityId mThisEntityId;        
     EntityId mTargetEntityId;
     State mState;

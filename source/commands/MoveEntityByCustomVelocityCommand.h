@@ -21,7 +21,7 @@ class MoveEntityByCustomVelocityCommand final: public ICommand
 public:
 	static const StringId COMMAND_CLASS_ID;
 
-    MoveEntityByCustomVelocityCommand(const ServiceLocator&, const EntityId, const glm::vec3& velocity);
+    MoveEntityByCustomVelocityCommand(EntityComponentManager&, const EntityId, const glm::vec3& velocity);
     void Execute() override;
 	StringId GetCommandClassId() const override;
 

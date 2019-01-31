@@ -14,10 +14,11 @@
 #include "../components/EntityComponentManager.h"
 #include "../components/TransformComponent.h"
 #include "../components/PhysicsComponent.h"
-#include "../commands/MoveEntityByCustomVelocityCommand.h"
+#include "../commands/SetEntityCustomVelocityCommand.h"
 
 const float BasicNinjaEnemyAIComponent::PLAYER_DETECTION_DISTANCE = 400.0f;
 const float BasicNinjaEnemyAIComponent::PATROLLING_MAX_DISTANCE_FROM_INIT_POSITION = 100.0f;
+const float BasicNinjaEnemyAIComponent::PURSUING_MAX_DISTANCE_HORIZONTALLY = 500.0f;
 
 BasicNinjaEnemyAIComponent::BasicNinjaEnemyAIComponent(const ServiceLocator& serviceLocator, const EntityId thisEntityId)
     : mServiceLocator(serviceLocator)
@@ -55,25 +56,46 @@ void BasicNinjaEnemyAIComponent::VUpdate(const float)
 
             if (distanceFromPlayer < PLAYER_DETECTION_DISTANCE)
             {
-                mState = State::CHARGING;
+                mState = State::LEAPING_TO_TARGET;
+                const auto& physicsComponent = mEntityComponentManager.GetComponent<PhysicsComponent>(mThisEntityId);                
+                
+                SetEntityCustomVelocityCommand(mEntityComponentManager, mThisEntityId, glm::vec3(physicsComponent.GetMinVelocity().x,
+                                                                                                 physicsComponent.GetMaxVelocity().y,
+                                                                                                 physicsComponent.GetVelocity().z)).Execute();
             }
             else
             {
                 const auto& physicsComponent = mEntityComponentManager.GetComponent<PhysicsComponent>(mThisEntityId);
                 const auto& transformComponent = mEntityComponentManager.GetComponent<TransformComponent>(mThisEntityId);
+                
+                const auto targetVelocity = glm::vec3(mMovingRight ? physicsComponent.GetMaxVelocity().x * 0.5f : physicsComponent.GetMinVelocity().x * 0.5f,
+                                                      physicsComponent.GetVelocity().y,
+                                                      physicsComponent.GetVelocity().z);
 
-                MoveEntityByCustomVelocityCommand(mServiceLocator, mThisEntityId, glm::vec3(mMovingRight ? physicsComponent.GetMaxVelocity().x * 0.5f : physicsComponent.GetMinVelocity().x * 0.5f, 0.0f, 0.0f)).Execute();
+                SetEntityCustomVelocityCommand(mEntityComponentManager, mThisEntityId, targetVelocity).Execute();
 
-                const auto distanceFromInitPosition = Abs(transformComponent.GetTranslation().x - mInitPosition.x);
-
-                if (distanceFromInitPosition > PATROLLING_MAX_DISTANCE_FROM_INIT_POSITION)
+                
+                if (transformComponent.GetTranslation().x >= mInitPosition.x + PATROLLING_MAX_DISTANCE_FROM_INIT_POSITION)
                 {
-                    mMovingRight = !mMovingRight;
+                    mMovingRight = false;
+                }
+                else if (transformComponent.GetTranslation().x <= mInitPosition.x - PATROLLING_MAX_DISTANCE_FROM_INIT_POSITION)
+                {
+                    mMovingRight = true;
                 }
             }
         } break;
 
-        case State::CHARGING:
+        case State::LEAPING_TO_TARGET:
+        {
+            const auto& physicsComponent = mEntityComponentManager.GetComponent<PhysicsComponent>(mThisEntityId);
+            if (Abs(physicsComponent.GetVelocity().y) < 1.0f)
+            {
+                mState = State::PURSUING;
+            }
+        } break;
+
+        case State::PURSUING:
         {
 
         } break;

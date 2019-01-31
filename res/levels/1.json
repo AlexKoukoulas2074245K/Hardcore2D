@@ -11,28 +11,7 @@
 			  	"ShaderComponent":    { "shaderName": "background" },
 				"TransformComponent": { "translation": [0.0, 0.0, 0.0], "rotation": [0.0, 0.0, 0.0], "scale": [2.0, 2.0, 2.0] }
 	  		}
-	  	},
-        {
-            "name": "player",
-            "components":
-            {
-                "AnimationComponent": { "path": "characters/light_samurai", "timer": 0.04 },
-                "PhysicsComponent":   { "bodyType": "dynamic", "hitBox": { "centerPoint": [0.0, 0.0], "dimensions": [60.0, 90.0] }, "gravity": [0.0, -1680.0, 0.0], "maxVelocity": [240.0, 560.0, 0.0], "minVelocity": [-240.0, -560.0, 0.0] },
-                "ShaderComponent":    { "shaderName": "basic" },
-                "TransformComponent": { "translation": [240.0, 400.0, 1.0], "rotation": [0.0, 0.0, 0.0], "scale": [240.0, 240.0, 1.0] }
-            }
-        },
-        {
-			"name": "light_samurai",
-			"components": 
-		    	{
-				"AnimationComponent": { "path": "characters/ninja", "timer": 0.04 },
-			  	"PhysicsComponent":   { "bodyType": "dynamic", "hitBox": { "centerPoint": [0.0, 0.0], "dimensions": [60.0, 90.0] }, "gravity": [0.0, -1680.0, 0.0], "maxVelocity": [240.0, 560.0, 0.0], "minVelocity": [-240.0, -560.0, 0.0] },
-			  	"ShaderComponent":    { "shaderName": "basic" },
-				"TransformComponent": { "translation": [1040.0, 400.0, 1.0], "rotation": [0.0, 0.0, 0.0], "scale": [240.0, 240.0, 1.0] },
-                "BasicNinjaEnemyAIComponent": {}
-	  		}
-	  	},
+	  	},        
 		{
 			"name": "ground-platform-0",
 			"components": 
@@ -217,6 +196,27 @@
 				"ShaderComponent":    { "shaderName": "basic" },
 				"TransformComponent": { "translation": [40.0, 40.0, 1.0], "rotation": [0.0, 0.0, 0.0], "scale": [80.0, 80.0, 1.0] }
 	  		}
+        },
+		{
+			"name": "light_samurai",
+			"components": 
+		    	{
+				"AnimationComponent": { "path": "characters/ninja", "timer": 0.04 },
+			  	"PhysicsComponent":   { "bodyType": "dynamic", "hitBox": { "centerPoint": [0.0, 0.0], "dimensions": [60.0, 90.0] }, "gravity": [0.0, -1680.0, 0.0], "maxVelocity": [240.0, 560.0, 0.0], "minVelocity": [-240.0, -560.0, 0.0] },
+			  	"ShaderComponent":    { "shaderName": "basic" },
+				"TransformComponent": { "translation": [1040.0, 400.0, 1.0], "rotation": [0.0, 0.0, 0.0], "scale": [240.0, 240.0, 1.0] },
+                "BasicNinjaEnemyAIComponent": {}
+	  		}
+	  	},
+		{
+            "name": "player",
+            "components":
+            {
+                "AnimationComponent": { "path": "characters/light_samurai", "timer": 0.04 },
+                "PhysicsComponent":   { "bodyType": "dynamic", "hitBox": { "centerPoint": [0.0, 0.0], "dimensions": [60.0, 90.0] }, "gravity": [0.0, -1680.0, 0.0], "maxVelocity": [240.0, 560.0, 0.0], "minVelocity": [-240.0, -560.0, 0.0] },
+                "ShaderComponent":    { "shaderName": "basic" },
+                "TransformComponent": { "translation": [240.0, 400.0, 1.0], "rotation": [0.0, 0.0, 0.0], "scale": [240.0, 240.0, 1.0] }
+            }
         }
 	]
 }

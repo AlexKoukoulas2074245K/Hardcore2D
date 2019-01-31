@@ -6,7 +6,6 @@
 //
 
 #include "MoveEntityByCustomVelocityCommand.h"
-#include "../ServiceLocator.h"
 #include "../events/PlayerChangedDirectionEvent.h"
 #include "../components/EntityComponentManager.h"
 #include "../components/PhysicsComponent.h"
@@ -16,8 +15,8 @@
 
 const StringId MoveEntityByCustomVelocityCommand::COMMAND_CLASS_ID("MoveEntityByCustomVelocityCommand");
 
-MoveEntityByCustomVelocityCommand::MoveEntityByCustomVelocityCommand(const ServiceLocator& serviceLocator, const EntityId entityId, const glm::vec3& velocity)
-    : mEntityComponentManager(serviceLocator.ResolveService<EntityComponentManager>())    
+MoveEntityByCustomVelocityCommand::MoveEntityByCustomVelocityCommand(EntityComponentManager& entityComponentManager, const EntityId entityId, const glm::vec3& velocity)
+    : mEntityComponentManager(entityComponentManager)
     , mEntityId(entityId)
     , mVelocity(velocity)
 {
