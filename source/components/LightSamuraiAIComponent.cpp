@@ -10,7 +10,7 @@
 
 void LightSamuraiAIComponent::VUpdate(const float)
 {
-    Log(LogType::INFO, "Updating light samurai");
+    //Log(LogType::INFO, "Updating light samurai");
 }
 
 std::string LightSamuraiAIComponent::VSerializeToString() const

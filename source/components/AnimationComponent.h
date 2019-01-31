@@ -48,7 +48,7 @@ private:
     FacingDirection mFacingDirection;
     StringId mCurrentAnimation;
     StringId mPreviousAnimation;
-    bool mPlayingPriorityAnimation;
+    bool mPlayingOneTimeAnimation;
     int mCurrentFrameIndex;
     float mAnimationDuration;
     float mAnimationTimer;
