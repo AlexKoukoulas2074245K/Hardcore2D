@@ -6,6 +6,7 @@
 //
 
 #include "SetEntityCustomVelocityCommand.h"
+#include "../commands/SetEntityFacingDirectionCommand.h"
 #include "../components/EntityComponentManager.h"
 #include "../components/PhysicsComponent.h"
 #include "../components/AnimationComponent.h"
@@ -36,14 +37,14 @@ void SetEntityCustomVelocityCommand::Execute()
             {
                 if (animationComponent.GetCurrentFacingDirection() != FacingDirection::LEFT)
                 {
-                    animationComponent.SetFacingDirection(FacingDirection::LEFT);
+                    SetEntityFacingDirectionCommand(mEntityComponentManager, mEntityId, FacingDirection::LEFT).Execute();
                 }
             }
             else
             {
                 if (animationComponent.GetCurrentFacingDirection() != FacingDirection::RIGHT)
                 {
-                    animationComponent.SetFacingDirection(FacingDirection::RIGHT);
+                    SetEntityFacingDirectionCommand(mEntityComponentManager, mEntityId, FacingDirection::RIGHT).Execute();
                 }
             }
             
