@@ -30,6 +30,7 @@ public:
     glm::vec3& GetScale();
     glm::vec3& GetPreviousTranslation();
     
+    const glm::vec3& GetWorldTranslation() const;
     const glm::vec3& GetTranslation() const;
     const glm::vec3& GetRotation() const;
     const glm::vec3& GetScale() const;

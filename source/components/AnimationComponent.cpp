@@ -14,7 +14,7 @@
 #include <cassert>
 
 AnimationComponent::AnimationComponent(const std::string& relativeEntityAnimationsDirectoryPath, const float animationDuration, ResourceManager& resourceManager)
-    : mResourceManager(resourceManager)
+    : mResourceManager(&resourceManager)
     , mFacingDirection(FacingDirection::RIGHT)
     , mCurrentAnimation("")
     , mPreviousAnimation("")
@@ -24,6 +24,20 @@ AnimationComponent::AnimationComponent(const std::string& relativeEntityAnimatio
     , mAnimationTimer(0.0f)
 {
     CreateAnimationsMapFromRelativeEntityAnimationsDirectory(relativeEntityAnimationsDirectoryPath);
+}
+
+AnimationComponent::AnimationComponent(const AnimationsMap& userSuppliedAnimations, const float animationDuration)
+    : mResourceManager(nullptr)
+    , mAnimations(userSuppliedAnimations)
+    , mFacingDirection(FacingDirection::RIGHT)
+    , mCurrentAnimation("")
+    , mPreviousAnimation("")
+    , mPlayingOneTimeAnimation(false)
+    , mCurrentFrameIndex(0)
+    , mAnimationDuration(animationDuration)
+    , mAnimationTimer(0.0f)
+{
+    PlayAnimation(StringId("idle"));
 }
 
 std::string AnimationComponent::VSerializeToString() const
@@ -131,8 +145,8 @@ void AnimationComponent::CreateAnimationsMapFromRelativeEntityAnimationsDirector
         
         for (const auto animationFrameNumber: animationFrameFiles)
         {
-            auto resourceId = mResourceManager.LoadResource(relativeAnimationDirectoryPath + "/" + animationFrameNumber);
-            mAnimations[animationNameStringId].push_back(mResourceManager.GetResource<TextureResource>(resourceId).GetGLTextureId());
+            auto resourceId = mResourceManager->LoadResource(relativeAnimationDirectoryPath + "/" + animationFrameNumber);
+            mAnimations[animationNameStringId].push_back(mResourceManager->GetResource<TextureResource>(resourceId).GetGLTextureId());
         }
         
     }

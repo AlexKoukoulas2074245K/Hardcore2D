@@ -18,6 +18,7 @@
 #include "../resources/ResourceManager.h"
 #include "../util/Logging.h"
 #include "../util/StringUtils.h"
+#include "../util/FileUtils.h"
 #include "../game/GameConstants.h"
 
 #include <glm/vec3.hpp>
@@ -54,8 +55,16 @@ std::unique_ptr<Level> LevelFactory::CreateLevel(const std::string& levelPath)
     const auto levelVerticalBounds = glm::vec2(levelJson["verBounds"]["bottom"].get<float>(),
                                                levelJson["verBounds"]["top"].get<float>());
     
-    std::vector<EntityNameIdEntry> levelEntityEntries;
-    
+    for (const auto& cachedAnimation : levelJson["cached_animations"])
+    {        
+        const auto animationFrameFiles = GetAllFilenamesInDirectory(ResourceManager::RES_ROOT + cachedAnimation.get<std::string>());
+        for (const auto animationFrameNumber : animationFrameFiles)
+        {
+            resourceManager.LoadResource(ResourceManager::RES_ROOT + cachedAnimation.get<std::string>() + "/" + animationFrameNumber);
+        }        
+    }
+
+    std::vector<EntityNameIdEntry> levelEntityEntries;    
     for (auto& entity: levelJson["entities"])
     {
         const auto entityName = entity["name"].get<std::string>();

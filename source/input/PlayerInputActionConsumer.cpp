@@ -97,7 +97,7 @@ bool PlayerInputActionConsumer::VConsumeInputAction(const InputAction& inputActi
             {
                 case InputAction::ActionState::START:
                 {
-                    EntityMeleeAttackCommand(mEntityComponentManager, mEntityId).Execute();
+                    EntityMeleeAttackCommand(mServiceLocator, mEntityId).Execute();
                     return true;
                 } break;
                 case InputAction::ActionState::CONTINUE:

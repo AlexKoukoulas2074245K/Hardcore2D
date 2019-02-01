@@ -67,6 +67,11 @@ glm::vec3& TransformComponent::GetPreviousTranslation()
     return mPreviousTranslation;
 }
 
+const glm::vec3& TransformComponent::GetWorldTranslation() const
+{
+
+}
+
 const glm::vec3& TransformComponent::GetTranslation() const
 {
     return mTranslation;

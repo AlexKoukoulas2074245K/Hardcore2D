@@ -23,7 +23,8 @@ public:
     using AnimationsMap = std::unordered_map<StringId, std::vector<GLuint>>;
     
     AnimationComponent(const std::string& relativeEntityAnimationsDirectoryPath, const float animationDuration, ResourceManager&);
-    
+    AnimationComponent(const AnimationsMap& userSuppliedAnimations, const float animationDuration);
+
     std::string VSerializeToString() const override;
     bool VInitializeFromString(const std::string&) override;
     
@@ -42,7 +43,7 @@ public:
 private:
     void CreateAnimationsMapFromRelativeEntityAnimationsDirectory(const std::string& relativeEntityAnimationsDirectoryPath);
     
-    ResourceManager& mResourceManager;
+    ResourceManager* mResourceManager;
     
     AnimationsMap mAnimations;
     FacingDirection mFacingDirection;

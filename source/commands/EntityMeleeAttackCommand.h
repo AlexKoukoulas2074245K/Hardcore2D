@@ -12,19 +12,22 @@
 #include "../util/TypeTraits.h"
 
 class EntityComponentManager;
+class ResourceManager;
+class ServiceLocator;
 
 class EntityMeleeAttackCommand final: public ICommand
 {
 public:
     static const StringId COMMAND_CLASS_ID;
     
-    EntityMeleeAttackCommand(EntityComponentManager&, const EntityId);
+    EntityMeleeAttackCommand(const ServiceLocator&, const EntityId);
     void Execute() override;
     StringId GetCommandClassId() const override;
     
 private:
     EntityComponentManager& mEntityComponentManager;
-    
+    ResourceManager& mResourceManager;
+
     const EntityId mEntityId;    
 };
 
