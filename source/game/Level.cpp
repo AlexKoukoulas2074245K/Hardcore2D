@@ -6,15 +6,28 @@
 //
 
 #include "Level.h"
+#include "../ServiceLocator.h"
+#include "../events/EventCommunicator.h"
+#include "../events/NewEntityCreatedEvent.h"
 
 #include <algorithm>
 #include <cassert>
 
-Level::Level(const std::vector<EntityNameIdEntry> mLevelEntities, const glm::vec2& horizontalBounds, const glm::vec2& verticalBounds)
+Level::Level(const ServiceLocator& serviceLocator, const std::vector<EntityNameIdEntry> mLevelEntities, const glm::vec2& horizontalBounds, const glm::vec2& verticalBounds)
     : mActiveEntities(mLevelEntities)
     , mLevelHorizontalBounds(horizontalBounds)
     , mLevelVerticalBounds(verticalBounds)
+    , mEventCommunicator(serviceLocator.ResolveService<EventCommunicationService>().CreateEventCommunicator())
 {
+    mEventCommunicator->RegisterEventCallback<NewEntityCreatedEvent>([this](const IEvent& event)
+    {
+        mActiveEntities.push_back(static_cast<const NewEntityCreatedEvent&>(event).GetNewEntityNameIdEntry());
+    });
+}
+
+Level::~Level()
+{
+    
 }
 
 EntityId Level::GetEntityIdFromName(const StringId entityName) const
@@ -30,11 +43,6 @@ EntityId Level::GetEntityIdFromName(const StringId entityName) const
     }
     
     return resultIter->mEntityId;
-}
-
-void Level::AddEntityNameIdEntryToActiveEntities(const EntityNameIdEntry& entityNameIdEntry)
-{
-    mActiveEntities.push_back(entityNameIdEntry);
 }
 
 const std::vector<EntityNameIdEntry>& Level::GetAllActiveEntities() const

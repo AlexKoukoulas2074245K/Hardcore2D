@@ -470,13 +470,13 @@ void CoreRenderingService::RenderEntityInternal(const EntityId entityId)
 
         // Todo move world matrix construction elsewhere        
         glm::mat4 translationMatrix(1.0f);
-        translationMatrix = glm::translate(translationMatrix, transformComponent->GetWorldTranslation());
+        translationMatrix = glm::translate(translationMatrix, transformComponent->GetTranslation());
         
         glm::mat4 rotationMatrix(1.0f);
-        glm::vec3 worldRotation = transformComponent->GetWorldRotation();
-        rotationMatrix = glm::rotate(rotationMatrix, worldRotation.x, glm::vec3(1.0f, 0.0f, 0.0f));
-        rotationMatrix = glm::rotate(rotationMatrix, worldRotation.y, glm::vec3(0.0f, 1.0f, 0.0f));
-        rotationMatrix = glm::rotate(rotationMatrix, worldRotation.z, glm::vec3(0.0f, 0.0f, 1.0f));
+        glm::vec3 rotation = transformComponent->GetRotation();
+        rotationMatrix = glm::rotate(rotationMatrix, rotation.x, glm::vec3(1.0f, 0.0f, 0.0f));
+        rotationMatrix = glm::rotate(rotationMatrix, rotation.y, glm::vec3(0.0f, 1.0f, 0.0f));
+        rotationMatrix = glm::rotate(rotationMatrix, rotation.z, glm::vec3(0.0f, 0.0f, 1.0f));
         
         glm::mat4 scaleMatrix(1.0f);
         scaleMatrix = glm::scale(scaleMatrix, transformComponent->GetScale() * 0.5f);
@@ -494,13 +494,13 @@ void CoreRenderingService::RenderEntityInternal(const EntityId entityId)
         const auto& physicsComponent = mEntityComponentManager->GetComponent<PhysicsComponent>(entityId);
         const auto& transformComponent = mEntityComponentManager->GetComponent<TransformComponent>(entityId);
         glm::mat4 worldMatrix(1.0f);
-        const auto entityWorldTranslation = transformComponent.GetWorldRotation();
-        const auto entityWorldRotation = transformComponent.GetWorldRotation();
+        const auto entityTranslation = transformComponent.GetTranslation();
+        const auto entityRotation = transformComponent.GetRotation();
         
-        worldMatrix = glm::translate(worldMatrix, glm::vec3(entityWorldTranslation.x + physicsComponent.GetHitBox().mCenterPoint.x, entityWorldTranslation.y + physicsComponent.GetHitBox().mCenterPoint.y, 1.0f));
-        worldMatrix = glm::rotate(worldMatrix, entityWorldRotation.x, glm::vec3(1.0f, 0.0f, 0.0f));
-        worldMatrix = glm::rotate(worldMatrix, entityWorldRotation.y, glm::vec3(0.0f, 1.0f, 0.0f));
-        worldMatrix = glm::rotate(worldMatrix, entityWorldRotation.z, glm::vec3(0.0f, 0.0f, 1.0f));        
+        worldMatrix = glm::translate(worldMatrix, glm::vec3(entityTranslation.x + physicsComponent.GetHitBox().mCenterPoint.x, entityTranslation.y + physicsComponent.GetHitBox().mCenterPoint.y, 1.0f));
+        worldMatrix = glm::rotate(worldMatrix, entityRotation.x, glm::vec3(1.0f, 0.0f, 0.0f));
+        worldMatrix = glm::rotate(worldMatrix, entityRotation.y, glm::vec3(0.0f, 1.0f, 0.0f));
+        worldMatrix = glm::rotate(worldMatrix, entityRotation.z, glm::vec3(0.0f, 0.0f, 1.0f));
         worldMatrix = glm::scale(worldMatrix, glm::vec3(physicsComponent.GetHitBox().mDimensions.x * 0.5f, physicsComponent.GetHitBox().mDimensions.y * 0.5f, 1.0));
 
         mCurrentShader = StringId("debug_rect");

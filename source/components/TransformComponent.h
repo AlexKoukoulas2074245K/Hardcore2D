@@ -23,24 +23,24 @@ public:
     bool VInitializeFromString(const std::string&) override;
     
     const TransformComponent* GetParent() const;
-    void SetParent(const TransformComponent* parent);
-
+    void SetParent(const TransformComponent* parent, const glm::vec3& relativeTranslationToParent);
+    
+    void UpdateTranslationComponentsAtEndOfFrame();
+    
     glm::vec3& GetTranslation();
     glm::vec3& GetRotation();
     glm::vec3& GetScale();
     glm::vec3& GetPreviousTranslation();
     
-    glm::vec3 GetWorldTranslation() const;
-    glm::vec3 GetWorldRotation() const;
-    
     const glm::vec3& GetTranslation() const;
     const glm::vec3& GetRotation() const;
     const glm::vec3& GetScale() const;
     const glm::vec3& GetPreviousTranslation() const;
+    const glm::vec3& GetRelativeTranslationToParent() const;
     
 private:
     const TransformComponent* mParent;
-    glm::vec3 mTranslation, mRotation, mScale, mPreviousTranslation;
+    glm::vec3 mTranslation, mRotation, mScale, mPreviousTranslation, mRelativeTranslationToParent;
 };
 
 #endif /* TransformComponent_h */

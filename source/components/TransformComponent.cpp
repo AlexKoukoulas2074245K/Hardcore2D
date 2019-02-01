@@ -12,7 +12,8 @@ TransformComponent::TransformComponent()
     , mTranslation(0.0f, 0.0f, 0.0f)
     , mRotation(0.0f, 0.0f, 0.0f)
     , mScale(1.0f, 1.0f, 1.0f)
-    , mPreviousTranslation(0.0f, 0.0f, 0.0f)    
+    , mPreviousTranslation(0.0f, 0.0f, 0.0f)
+    , mRelativeTranslationToParent(0.0f, 0.0f, 0.0f)
 {
     
 }
@@ -23,6 +24,7 @@ TransformComponent::TransformComponent(const glm::vec3& translation, const glm::
     , mRotation(rotation)
     , mScale(scale)
     , mPreviousTranslation(translation)
+    , mRelativeTranslationToParent(0.0f, 0.0f, 0.0f)
 {
     
 }
@@ -42,9 +44,19 @@ const TransformComponent* TransformComponent::GetParent() const
     return mParent;
 }
 
-void TransformComponent::SetParent(const TransformComponent* parent)
+void TransformComponent::SetParent(const TransformComponent* parent, const glm::vec3& relativeTranslationToParent)
 {
     mParent = parent;
+    mRelativeTranslationToParent = relativeTranslationToParent;
+}
+
+void TransformComponent::UpdateTranslationComponentsAtEndOfFrame()
+{
+    if (mParent != nullptr)
+    {
+        mTranslation = mParent->GetTranslation() + mRelativeTranslationToParent;
+    }
+    mPreviousTranslation = mTranslation;
 }
 
 glm::vec3& TransformComponent::GetTranslation()
@@ -67,28 +79,6 @@ glm::vec3& TransformComponent::GetPreviousTranslation()
     return mPreviousTranslation;
 }
 
-glm::vec3 TransformComponent::GetWorldTranslation() const
-{
-    glm::vec3 worldTranslation(mTranslation);
-    if (mParent != nullptr)
-    {
-        worldTranslation += mParent->GetWorldTranslation();
-    }
-    
-    return worldTranslation;
-}
-
-glm::vec3 TransformComponent::GetWorldRotation() const
-{
-    glm::vec3 worldRotation(mRotation);
-    if (mParent != nullptr)
-    {
-        worldRotation += mParent->GetWorldRotation();
-    }
-    
-    return worldRotation;
-}
-
 const glm::vec3& TransformComponent::GetTranslation() const
 {
     return mTranslation;
@@ -107,4 +97,9 @@ const glm::vec3& TransformComponent::GetScale() const
 const glm::vec3& TransformComponent::GetPreviousTranslation() const
 {
     return mPreviousTranslation;
+}
+
+const glm::vec3& TransformComponent::GetRelativeTranslationToParent() const
+{
+    return mRelativeTranslationToParent;
 }

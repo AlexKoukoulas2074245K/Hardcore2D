@@ -140,8 +140,7 @@ void PhysicsSystem::UpdateEntities(const std::vector<EntityNameIdEntry>& activeE
         const auto entityId = entityEntry.mEntityId;
         if (mEntityComponentManager->HasComponent<TransformComponent>(entityId))
         {
-            auto& referenceEntityTransformComponent = mEntityComponentManager->GetComponent<TransformComponent>(entityId);
-            referenceEntityTransformComponent.GetPreviousTranslation() = referenceEntityTransformComponent.GetTranslation();
+            mEntityComponentManager->GetComponent<TransformComponent>(entityId).UpdateTranslationComponentsAtEndOfFrame();
         }
     }
 }
@@ -165,11 +164,11 @@ std::vector<EntityId> PhysicsSystem::CheckAndGetCollidedEntities(const EntityId 
             const auto& otherEntityTransformComponentormComponent = mEntityComponentManager->GetComponent<TransformComponent>(otherEntityId);
             const auto& otherEntityHitBox = otherEntityPhysicsComponent.GetHitBox();
 
-            const auto rectAX = referenceEntityTransformComponent.GetWorldTranslation().x + referenceEntityHitBox.mCenterPoint.x;
-            const auto rectAY = referenceEntityTransformComponent.GetWorldTranslation().y + referenceEntityHitBox.mCenterPoint.y;
+            const auto rectAX = referenceEntityTransformComponent.GetTranslation().x + referenceEntityHitBox.mCenterPoint.x;
+            const auto rectAY = referenceEntityTransformComponent.GetTranslation().y + referenceEntityHitBox.mCenterPoint.y;
             
-            const auto rectBX = otherEntityTransformComponentormComponent.GetWorldTranslation().x + otherEntityHitBox.mCenterPoint.x;
-            const auto rectBY = otherEntityTransformComponentormComponent.GetWorldTranslation().y + otherEntityHitBox.mCenterPoint.y;
+            const auto rectBX = otherEntityTransformComponentormComponent.GetTranslation().x + otherEntityHitBox.mCenterPoint.x;
+            const auto rectBY = otherEntityTransformComponentormComponent.GetTranslation().y + otherEntityHitBox.mCenterPoint.y;
 
             const auto xAxisTest = Abs(rectAX - rectBX) * 2.0f - (referenceEntityHitBox.mDimensions.x + otherEntityHitBox.mDimensions.x);
             const auto yAxisTest = Abs(rectAY - rectBY) * 2.0f - (referenceEntityHitBox.mDimensions.y + otherEntityHitBox.mDimensions.y);

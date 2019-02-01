@@ -7,13 +7,13 @@
 
 #include "NewEntityCreatedEvent.h"
 
-NewEntityCreatedEvent::NewEntityCreatedEvent(const EntityId entityId)
-    : mNewEntityId(entityId)
+NewEntityCreatedEvent::NewEntityCreatedEvent(const EntityNameIdEntry& entityNameIdEntry)
+    : mEntityNameIdEntry(entityNameIdEntry)
 {
     
 }
 
-EntityId NewEntityCreatedEvent::GetNewEntityId() const
+const EntityNameIdEntry& NewEntityCreatedEvent::GetNewEntityNameIdEntry() const
 {
-    return mNewEntityId;
+    return mEntityNameIdEntry;
 }

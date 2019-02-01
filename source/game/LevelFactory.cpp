@@ -136,5 +136,5 @@ std::unique_ptr<Level> LevelFactory::CreateLevel(const std::string& levelPath)
         levelEntityEntries.emplace_back(EntityNameIdEntry(StringId(entityName), entityId));
     }
     
-    return std::unique_ptr<Level>(new Level(levelEntityEntries, levelHorizontalBounds, levelVerticalBounds));
+    return std::unique_ptr<Level>(new Level(mServiceLocator, levelEntityEntries, levelHorizontalBounds, levelVerticalBounds));
 }

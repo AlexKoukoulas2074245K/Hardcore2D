@@ -9,17 +9,17 @@
 #define NewEntityCreatedEvent_h
 
 #include "IEvent.h"
-#include "../util/TypeTraits.h"
+#include "../game/GameConstants.h"
 
 class NewEntityCreatedEvent final: public IEvent
 {
 public:
-    NewEntityCreatedEvent(const EntityId);
+    NewEntityCreatedEvent(const EntityNameIdEntry&);
     
-    EntityId GetNewEntityId() const;
+    const EntityNameIdEntry& GetNewEntityNameIdEntry() const;
     
 private:
-    const EntityId mNewEntityId;
+    const EntityNameIdEntry mEntityNameIdEntry;
 };
 
 #endif /* NewEntityCreatedEvent_h */
