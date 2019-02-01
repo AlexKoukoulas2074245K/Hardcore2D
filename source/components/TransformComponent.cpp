@@ -8,7 +8,7 @@
 #include "TransformComponent.h"
 
 TransformComponent::TransformComponent()
-    : mParent(nullptr)
+    : mParent(-1)
     , mTranslation(0.0f, 0.0f, 0.0f)
     , mRotation(0.0f, 0.0f, 0.0f)
     , mScale(1.0f, 1.0f, 1.0f)
@@ -19,7 +19,7 @@ TransformComponent::TransformComponent()
 }
 
 TransformComponent::TransformComponent(const glm::vec3& translation, const glm::vec3& rotation, const glm::vec3& scale)
-    : mParent(nullptr)
+    : mParent(-1)
     , mTranslation(translation)
     , mRotation(rotation)
     , mScale(scale)
@@ -39,24 +39,15 @@ bool TransformComponent::VInitializeFromString(const std::string&)
     return true;
 }
 
-const TransformComponent* TransformComponent::GetParent() const
+EntityId TransformComponent::GetParent() const
 {
     return mParent;
 }
 
-void TransformComponent::SetParent(const TransformComponent* parent, const glm::vec3& relativeTranslationToParent)
+void TransformComponent::SetParent(const EntityId parentId, const glm::vec3& relativeTranslationToParent)
 {
-    mParent = parent;
+    mParent = parentId;
     mRelativeTranslationToParent = relativeTranslationToParent;
-}
-
-void TransformComponent::UpdateTranslationComponentsAtEndOfFrame()
-{
-    if (mParent != nullptr)
-    {
-        mTranslation = mParent->GetTranslation() + mRelativeTranslationToParent;
-    }
-    mPreviousTranslation = mTranslation;
 }
 
 glm::vec3& TransformComponent::GetTranslation()

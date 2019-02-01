@@ -9,16 +9,32 @@
 #include "../ServiceLocator.h"
 #include "../components/EntityComponentManager.h"
 #include "../events/EventCommunicator.h"
+#include "../events/EntityDestroyedEvent.h"
 
 MeleeSwingAIComponent::MeleeSwingAIComponent(const ServiceLocator& serviceLocator, const EntityId meleeSwingEntityId, const float timeToLive)
     : mEntityComponentManager(serviceLocator.ResolveService<EntityComponentManager>())
     , mEntityId(meleeSwingEntityId)
     , mTimeToLive(timeToLive)
+    , mEventCommunicator(serviceLocator.ResolveService<EventCommunicationService>().CreateEventCommunicator())
 {
     
 }
 
 void MeleeSwingAIComponent::VUpdate(const float dt)
 {
-    
+    mTimeToLive -= dt;
+    if (mTimeToLive <= 0.0f)
+    {
+        mEventCommunicator->DispatchEvent(std::make_unique<EntityDestroyedEvent>(mEntityId));
+    }
+}
+
+std::string MeleeSwingAIComponent::VSerializeToString() const
+{
+    return "";
+}
+
+bool MeleeSwingAIComponent::VInitializeFromString(const std::string&)
+{
+    return true;
 }

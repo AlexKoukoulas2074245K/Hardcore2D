@@ -26,7 +26,7 @@ void EventCommunicationService::DispatchEvent(EventCommunicator* dispatcher, std
     const auto eventTypeName = typeid(eventImpl).name();
     const auto eventTypeHash = GetTypeHash(eventTypeName);
     
-    Log(LogType::INFO, "Dispatching event: %s", eventTypeName);
+    //Log(LogType::INFO, "Dispatching event: %s", eventTypeName);
     
     mEventDispatchingHistory.emplace_back(std::make_pair(eventTypeName, dispatcher));
     

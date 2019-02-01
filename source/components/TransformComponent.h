@@ -9,6 +9,7 @@
 #define TransformComponent_h
 
 #include "IComponent.h"
+#include "../util/TypeTraits.h"
 
 #include <glm/vec3.hpp>
 #include <glm/mat4x4.hpp>
@@ -22,10 +23,8 @@ public:
     std::string VSerializeToString() const override;
     bool VInitializeFromString(const std::string&) override;
     
-    const TransformComponent* GetParent() const;
-    void SetParent(const TransformComponent* parent, const glm::vec3& relativeTranslationToParent);
-    
-    void UpdateTranslationComponentsAtEndOfFrame();
+    EntityId GetParent() const;
+    void SetParent(const EntityId parent, const glm::vec3& relativeTranslationToParent);
     
     glm::vec3& GetTranslation();
     glm::vec3& GetRotation();
@@ -39,7 +38,7 @@ public:
     const glm::vec3& GetRelativeTranslationToParent() const;
     
 private:
-    const TransformComponent* mParent;
+    EntityId mParent;
     glm::vec3 mTranslation, mRotation, mScale, mPreviousTranslation, mRelativeTranslationToParent;
 };
 

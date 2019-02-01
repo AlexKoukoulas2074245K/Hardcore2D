@@ -140,7 +140,12 @@ void PhysicsSystem::UpdateEntities(const std::vector<EntityNameIdEntry>& activeE
         const auto entityId = entityEntry.mEntityId;
         if (mEntityComponentManager->HasComponent<TransformComponent>(entityId))
         {
-            mEntityComponentManager->GetComponent<TransformComponent>(entityId).UpdateTranslationComponentsAtEndOfFrame();
+            auto& transformComponent = mEntityComponentManager->GetComponent<TransformComponent>(entityId);
+            if (mEntityComponentManager->HasEntityEntry(transformComponent.GetParent()))
+            {
+                transformComponent.GetTranslation() = mEntityComponentManager->GetComponent<TransformComponent>(transformComponent.GetParent()).GetTranslation() + 
+                    transformComponent.GetRelativeTranslationToParent();
+            }            
         }
     }
 }

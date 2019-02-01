@@ -94,6 +94,7 @@ bool App::Initialize()
 
 void App::Update(const float dt)
 {    
+    mLevel->CheckForAdditionsOrRemovalsOfEntities();
     HandleInput();
     mAIService->UpdateAIComponents(mLevel->GetAllActiveEntities(), dt);
     mPhysicsSystem->UpdateEntities(mLevel->GetAllActiveEntities(), dt);

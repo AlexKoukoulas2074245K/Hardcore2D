@@ -27,6 +27,20 @@ public:
         return mEntityCounter++;
     }
 
+    inline bool HasEntityEntry(const EntityId entityId)
+    {
+        return mEntityComponentMap.count(entityId) != 0;
+    }
+
+    inline void RemoveEntityEntry(const EntityId entityId)
+    {
+        if (mEntityComponentMap.count(entityId) == 0)
+        {
+            assert(false);
+        }        
+        mEntityComponentMap.erase(entityId);
+    }
+
     template<class ComponentType>
     inline bool HasComponent(const EntityId entityId) const
     {

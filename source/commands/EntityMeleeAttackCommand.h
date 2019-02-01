@@ -28,6 +28,7 @@ public:
     StringId GetCommandClassId() const override;
     
 private:
+    const ServiceLocator& mServiceLocator;
     EntityComponentManager& mEntityComponentManager;
     ResourceManager& mResourceManager;
     const EntityId mEntityId;
