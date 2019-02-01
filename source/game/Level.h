@@ -22,6 +22,7 @@ public:
     
     
     EntityId GetEntityIdFromName(const StringId entityName) const;
+    void AddEntityNameIdEntryToActiveEntities(const EntityNameIdEntry&);
     
     const std::vector<EntityNameIdEntry>& GetAllActiveEntities() const;
     const glm::vec2& GetHorizontalBounds() const;

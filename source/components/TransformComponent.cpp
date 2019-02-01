@@ -67,9 +67,26 @@ glm::vec3& TransformComponent::GetPreviousTranslation()
     return mPreviousTranslation;
 }
 
-const glm::vec3& TransformComponent::GetWorldTranslation() const
+glm::vec3 TransformComponent::GetWorldTranslation() const
 {
+    glm::vec3 worldTranslation(mTranslation);
+    if (mParent != nullptr)
+    {
+        worldTranslation += mParent->GetWorldTranslation();
+    }
+    
+    return worldTranslation;
+}
 
+glm::vec3 TransformComponent::GetWorldRotation() const
+{
+    glm::vec3 worldRotation(mRotation);
+    if (mParent != nullptr)
+    {
+        worldRotation += mParent->GetWorldRotation();
+    }
+    
+    return worldRotation;
 }
 
 const glm::vec3& TransformComponent::GetTranslation() const

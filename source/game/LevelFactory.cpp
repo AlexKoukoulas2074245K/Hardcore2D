@@ -60,7 +60,7 @@ std::unique_ptr<Level> LevelFactory::CreateLevel(const std::string& levelPath)
         const auto animationFrameFiles = GetAllFilenamesInDirectory(ResourceManager::RES_ROOT + cachedAnimation.get<std::string>());
         for (const auto animationFrameNumber : animationFrameFiles)
         {
-            resourceManager.LoadResource(ResourceManager::RES_ROOT + cachedAnimation.get<std::string>() + "/" + animationFrameNumber);
+            resourceManager.LoadResource(cachedAnimation.get<std::string>() + "/" + animationFrameNumber);
         }        
     }
 

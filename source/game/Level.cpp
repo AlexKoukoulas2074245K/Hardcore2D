@@ -32,6 +32,11 @@ EntityId Level::GetEntityIdFromName(const StringId entityName) const
     return resultIter->mEntityId;
 }
 
+void Level::AddEntityNameIdEntryToActiveEntities(const EntityNameIdEntry& entityNameIdEntry)
+{
+    mActiveEntities.push_back(entityNameIdEntry);
+}
+
 const std::vector<EntityNameIdEntry>& Level::GetAllActiveEntities() const
 {
     return mActiveEntities;
