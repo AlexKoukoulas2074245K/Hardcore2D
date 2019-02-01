@@ -466,16 +466,26 @@ void CoreRenderingService::RenderEntityInternal(const EntityId entityId)
 
     if (mEntityComponentManager->HasComponent<TransformComponent>(entityId))
     {
-        const auto& transformComponent = mEntityComponentManager->GetComponent<TransformComponent>(entityId);
+        const auto* transformComponent = &(mEntityComponentManager->GetComponent<TransformComponent>(entityId));
 
-        // Todo move world matrix construction elsewhere
+        // Todo move world matrix construction elsewhere        
+        glm::mat4 translationMatrix(1.0f);
+        glm::mat4 rotationMatrix(1.0f);
+        glm::mat4 scaleMatrix(1.0f);
+        scaleMatrix = glm::scale(scaleMatrix, transformComponent->GetScale() * 0.5f);
+
+        while (transformComponent != nullptr)
+        {
+            translationMatrix = glm::translate(translationMatrix, transformComponent->GetTranslation());
+            rotationMatrix = glm::rotate(rotationMatrix, transformComponent->GetRotation().x, glm::vec3(1.0f, 0.0f, 0.0f));
+            rotationMatrix = glm::rotate(rotationMatrix, transformComponent->GetRotation().y, glm::vec3(0.0f, 1.0f, 0.0f));
+            rotationMatrix = glm::rotate(rotationMatrix, transformComponent->GetRotation().z, glm::vec3(0.0f, 0.0f, 1.0f));
+
+            transformComponent = transformComponent->GetParent();
+        }
+
         glm::mat4 worldMatrix(1.0f);
-        worldMatrix = glm::translate(worldMatrix, transformComponent.GetTranslation());
-        worldMatrix = glm::rotate(worldMatrix, transformComponent.GetRotation().x, glm::vec3(1.0f, 0.0f, 0.0f));
-        worldMatrix = glm::rotate(worldMatrix, transformComponent.GetRotation().y, glm::vec3(0.0f, 1.0f, 0.0f));
-        worldMatrix = glm::rotate(worldMatrix, transformComponent.GetRotation().z, glm::vec3(0.0f, 0.0f, 1.0f));
-        worldMatrix = glm::scale(worldMatrix, transformComponent.GetScale() * 0.5f);
-
+        worldMatrix = translationMatrix * rotationMatrix * scaleMatrix;
         GL_CHECK(glUniformMatrix4fv(mShaders[mCurrentShader]->GetUniformNamesToLocations().at(StringId("world")), 1, GL_FALSE, (GLfloat*)&worldMatrix));
     }
 

@@ -22,7 +22,9 @@ public:
     std::string VSerializeToString() const override;
     bool VInitializeFromString(const std::string&) override;
     
-    
+    const TransformComponent* GetParent() const;
+    void SetParent(const TransformComponent* parent);
+
     glm::vec3& GetTranslation();
     glm::vec3& GetRotation();
     glm::vec3& GetScale();
@@ -34,6 +36,7 @@ public:
     const glm::vec3& GetPreviousTranslation() const;
     
 private:
+    const TransformComponent* mParent;
     glm::vec3 mTranslation, mRotation, mScale, mPreviousTranslation;
 };
 

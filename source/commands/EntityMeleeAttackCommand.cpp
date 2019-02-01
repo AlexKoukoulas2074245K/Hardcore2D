@@ -22,8 +22,10 @@ EntityMeleeAttackCommand::EntityMeleeAttackCommand(EntityComponentManager& entit
 
 void EntityMeleeAttackCommand::Execute()
 {
-    auto& playerAnimationComponent = mEntityComponentManager.GetComponent<AnimationComponent>(mEntityId);
-    playerAnimationComponent.PlayAnimationOnce(StringId("melee"));
+    auto& entityAnimationComponent = mEntityComponentManager.GetComponent<AnimationComponent>(mEntityId);
+    entityAnimationComponent.PlayAnimationOnce(StringId("melee"));
+
+
 }
 
 StringId EntityMeleeAttackCommand::GetCommandClassId() const
