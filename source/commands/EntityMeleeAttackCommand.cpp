@@ -7,6 +7,8 @@
 
 #include "EntityMeleeAttackCommand.h"
 #include "../ServiceLocator.h"
+#include "../events/EventCommunicator.h"
+#include "../events/NewEntityCreatedEvent.h"
 #include "../resources/ResourceManager.h"
 #include "../resources/TextureResource.h"
 #include "../components/EntityComponentManager.h"
@@ -22,6 +24,7 @@ EntityMeleeAttackCommand::EntityMeleeAttackCommand(const ServiceLocator& service
     : mEntityComponentManager(serviceLocator.ResolveService<EntityComponentManager>())
     , mResourceManager(serviceLocator.ResolveService<ResourceManager>())
     , mEntityId(entityId)
+    , mEventCommunicator(serviceLocator.ResolveService<EventCommunicationService>().CreateEventCommunicator())
 {
     
 }
@@ -32,8 +35,8 @@ void EntityMeleeAttackCommand::Execute()
     auto& entityAnimationComponent = mEntityComponentManager.GetComponent<AnimationComponent>(mEntityId);
     entityAnimationComponent.PlayAnimationOnce(StringId("melee"));
 
-    const auto playerSwingEntityId = mEntityComponentManager.GenerateEntity();    
-    mEntityComponentManager.AddComponent<ShaderComponent>(playerSwingEntityId, std::make_unique<ShaderComponent>(StringId("basic")));
+    const auto swingEntityId = mEntityComponentManager.GenerateEntity();
+    mEntityComponentManager.AddComponent<ShaderComponent>(swingEntityId, std::make_unique<ShaderComponent>(StringId("basic")));
  
     AnimationComponent::AnimationsMap mMeleeAnimations;
     for (auto i = 0; i < 7; ++i)
@@ -42,16 +45,17 @@ void EntityMeleeAttackCommand::Execute()
         mMeleeAnimations[StringId("idle")].push_back(frameTextureResource.GetGLTextureId());
     }
 
-    mEntityComponentManager.AddComponent<AnimationComponent>(playerSwingEntityId, std::make_unique<AnimationComponent>(mMeleeAnimations, 0.04f));
-    mEntityComponentManager.AddComponent<PhysicsComponent>(playerSwingEntityId, std::make_unique<PhysicsComponent>
+    mEntityComponentManager.AddComponent<AnimationComponent>(swingEntityId, std::make_unique<AnimationComponent>(mMeleeAnimations, 0.04f));
+    mEntityComponentManager.AddComponent<PhysicsComponent>(swingEntityId, std::make_unique<PhysicsComponent>
                                                            (PhysicsComponent::BodyType::DYNAMIC, PhysicsComponent::Hitbox(glm::vec2(0.0f, 0.0f), glm::vec2(20.0f, 160.0f)), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(1000.0f, 1000.0f, 0.0f), glm::vec3(-1000.0f, 1000.0f, 0.0f)));
     
     auto swingTransformComponent = std::make_unique<TransformComponent>();
     swingTransformComponent->SetParent(&entityTransformComponent);
     swingTransformComponent->GetScale() = glm::vec3(20.0f, 160.0f, 1.0f);
     swingTransformComponent->GetTranslation() = glm::vec3(100.0f, 0.0f, 0.0f);
-    mEntityComponentManager.AddComponent<TransformComponent>(playerSwingEntityId, std::move(swingTransformComponent));
+    mEntityComponentManager.AddComponent<TransformComponent>(swingEntityId, std::move(swingTransformComponent));
     
+    mEventCommunicator->DispatchEvent(std::make_unique<NewEntityCreatedEvent>(swingEntityId));
 }
 
 StringId EntityMeleeAttackCommand::GetCommandClassId() const

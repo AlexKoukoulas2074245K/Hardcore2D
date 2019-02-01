@@ -11,9 +11,12 @@
 #include "ICommand.h"
 #include "../util/TypeTraits.h"
 
+#include <memory>
+
 class EntityComponentManager;
 class ResourceManager;
 class ServiceLocator;
+class EventCommunicator;
 
 class EntityMeleeAttackCommand final: public ICommand
 {
@@ -27,8 +30,8 @@ public:
 private:
     EntityComponentManager& mEntityComponentManager;
     ResourceManager& mResourceManager;
-
-    const EntityId mEntityId;    
+    const EntityId mEntityId;
+    std::unique_ptr<EventCommunicator> mEventCommunicator;
 };
 
 
