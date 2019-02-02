@@ -13,16 +13,6 @@ ShaderComponent::ShaderComponent(const StringId& shaderName)
     
 }
 
-std::string ShaderComponent::VSerializeToString() const
-{
-    return std::string();
-}
-
-bool ShaderComponent::VInitializeFromString(const std::string&)
-{
-    return true;
-}
-
 const StringId& ShaderComponent::GetShaderName() const
 {
     return mShaderName;

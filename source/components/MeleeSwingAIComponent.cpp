@@ -28,13 +28,3 @@ void MeleeSwingAIComponent::VUpdate(const float dt)
         mEventCommunicator->DispatchEvent(std::make_unique<EntityDestroyedEvent>(mEntityId));
     }
 }
-
-std::string MeleeSwingAIComponent::VSerializeToString() const
-{
-    return "";
-}
-
-bool MeleeSwingAIComponent::VInitializeFromString(const std::string&)
-{
-    return true;
-}

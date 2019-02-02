@@ -25,9 +25,6 @@ public:
     AnimationComponent(const std::string& relativeEntityAnimationsDirectoryPath, const float animationDuration, ResourceManager&);
     AnimationComponent(const AnimationsMap& userSuppliedAnimations, const float animationDuration);
 
-    std::string VSerializeToString() const override;
-    bool VInitializeFromString(const std::string&) override;
-    
     FacingDirection GetCurrentFacingDirection() const;
     StringId GetCurrentAnimation() const;
     GLuint GetCurrentFrameResourceId() const;

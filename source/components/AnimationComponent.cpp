@@ -40,16 +40,6 @@ AnimationComponent::AnimationComponent(const AnimationsMap& userSuppliedAnimatio
     PlayAnimation(StringId("idle"));
 }
 
-std::string AnimationComponent::VSerializeToString() const
-{
-    return std::string();
-}
-
-bool AnimationComponent::VInitializeFromString(const std::string&)
-{
-    return true;
-}
-
 FacingDirection AnimationComponent::GetCurrentFacingDirection() const
 {
     return mFacingDirection;

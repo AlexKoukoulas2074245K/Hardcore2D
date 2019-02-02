@@ -20,9 +20,6 @@ public:
     TransformComponent();
     TransformComponent(const glm::vec3& translation, const glm::vec3& rotation, const glm::vec3& scale);
     
-    std::string VSerializeToString() const override;
-    bool VInitializeFromString(const std::string&) override;
-    
     EntityId GetParent() const;
     void SetParent(const EntityId parent, const glm::vec3& relativeTranslationToParent);
     

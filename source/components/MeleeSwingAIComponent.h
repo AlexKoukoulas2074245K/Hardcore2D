@@ -23,8 +23,6 @@ public:
     MeleeSwingAIComponent(const ServiceLocator&, const EntityId meleeSwingEntityId, const float timeToLive);
     
     void VUpdate(const float dt) override;
-    std::string VSerializeToString() const override;
-    bool VInitializeFromString(const std::string&) override;
     
 private:
     const EntityComponentManager& mEntityComponentManager;

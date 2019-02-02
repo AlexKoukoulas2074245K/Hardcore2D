@@ -17,11 +17,8 @@ class EntityComponentManager;
 class SetEntityCustomVelocityCommand final: public ICommand
 {
 public:
-    static const StringId COMMAND_CLASS_ID;
-    
     SetEntityCustomVelocityCommand(EntityComponentManager&, const EntityId, const glm::vec3& velocity);
     void Execute() override;
-    StringId GetCommandClassId() const override;
     
 private:
     EntityComponentManager& mEntityComponentManager;

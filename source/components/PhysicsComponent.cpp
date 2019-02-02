@@ -31,16 +31,6 @@ PhysicsComponent::PhysicsComponent(const BodyType bodyType, const Hitbox& hitBox
     
 }
 
-std::string PhysicsComponent::VSerializeToString() const
-{
-    return std::string();
-}
-
-bool PhysicsComponent::VInitializeFromString(const std::string&)
-{
-    return true;
-}
-
 void PhysicsComponent::SetBodyType(const BodyType bodyType)
 {
     mBodyType = bodyType;

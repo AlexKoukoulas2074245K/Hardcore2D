@@ -16,11 +16,9 @@ class EntityComponentManager;
 class SetEntityFacingDirectionCommand final: public ICommand
 {
 public:
-    static const StringId COMMAND_CLASS_ID;
     
     SetEntityFacingDirectionCommand(EntityComponentManager&, const EntityId, const FacingDirection);
     void Execute() override;
-    StringId GetCommandClassId() const override;
     
 private:
     EntityComponentManager& mEntityComponentManager;

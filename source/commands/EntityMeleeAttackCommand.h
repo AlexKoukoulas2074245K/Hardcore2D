@@ -21,11 +21,8 @@ class EventCommunicator;
 class EntityMeleeAttackCommand final: public ICommand
 {
 public:
-    static const StringId COMMAND_CLASS_ID;
-    
     EntityMeleeAttackCommand(const ServiceLocator&, const EntityId);
     void Execute() override;
-    StringId GetCommandClassId() const override;
     
 private:
     const ServiceLocator& mServiceLocator;

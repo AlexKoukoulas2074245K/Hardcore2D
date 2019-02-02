@@ -34,9 +34,7 @@ public:
 
     PhysicsComponent(const BodyType, const Hitbox&);
     PhysicsComponent(const BodyType, const Hitbox&, const glm::vec3& gravity, const glm::vec3& maxVelocity, const glm::vec3& minVelocity);
-    std::string VSerializeToString() const override;
-    bool VInitializeFromString(const std::string&) override;
-        
+    
     void SetBodyType(const BodyType);
 
     glm::vec3& GetVelocity();

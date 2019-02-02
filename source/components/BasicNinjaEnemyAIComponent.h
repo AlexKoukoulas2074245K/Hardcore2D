@@ -27,8 +27,6 @@ public:
     ~BasicNinjaEnemyAIComponent();
 
     void VUpdate(const float dt) override;
-    std::string VSerializeToString() const override;
-    bool VInitializeFromString(const std::string&) override;
     
 private:
     enum class State

@@ -17,9 +17,6 @@ public:
 	IComponent(const IComponent&) = delete;
 	const IComponent& operator = (const IComponent&) = delete;
 
-    virtual std::string VSerializeToString() const = 0;
-    virtual bool VInitializeFromString(const std::string&) = 0;
-    
 protected:
     IComponent() = default;
 };

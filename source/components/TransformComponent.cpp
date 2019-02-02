@@ -29,16 +29,6 @@ TransformComponent::TransformComponent(const glm::vec3& translation, const glm::
     
 }
 
-std::string TransformComponent::VSerializeToString() const
-{
-    return std::string();
-}
-
-bool TransformComponent::VInitializeFromString(const std::string&)
-{
-    return true;
-}
-
 EntityId TransformComponent::GetParent() const
 {
     return mParent;

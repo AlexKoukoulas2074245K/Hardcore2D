@@ -142,16 +142,6 @@ void BasicNinjaEnemyAIComponent::VUpdate(const float dt)
     }
 }
 
-std::string BasicNinjaEnemyAIComponent::VSerializeToString() const
-{
-    return "";
-}
-
-bool BasicNinjaEnemyAIComponent::VInitializeFromString(const std::string&)
-{
-    return true;
-}
-
 void BasicNinjaEnemyAIComponent::OnAnnouncePlayerEntityId(const IEvent& event)
 {
     mTargetEntityId = static_cast<const AnnouncePlayerEntityIdEvent&>(event).GetPlayerEntityId();

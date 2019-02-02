@@ -15,9 +15,6 @@ class ShaderComponent final: public IComponent
 {
 public:
     ShaderComponent(const StringId& shaderName);
-    
-    std::string VSerializeToString() const override;
-    bool VInitializeFromString(const std::string&) override;
 
     const StringId& GetShaderName() const;
     

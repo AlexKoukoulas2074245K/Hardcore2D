@@ -20,8 +20,6 @@
 #include "../components/ShaderComponent.h"
 #include "../util/MathUtils.h"
 
-const StringId EntityMeleeAttackCommand::COMMAND_CLASS_ID("EntityMeleeAttackCommand");
-
 EntityMeleeAttackCommand::EntityMeleeAttackCommand(const ServiceLocator& serviceLocator, const EntityId entityId)
     : mServiceLocator(serviceLocator)
     , mEntityComponentManager(serviceLocator.ResolveService<EntityComponentManager>())
@@ -70,9 +68,4 @@ void EntityMeleeAttackCommand::Execute()
     mEntityComponentManager.AddComponent<TransformComponent>(swingEntityId, std::move(swingTransformComponent));
     mEntityComponentManager.AddComponent<IAIComponent>(swingEntityId, std::make_unique<MeleeSwingAIComponent>(mServiceLocator, swingEntityId, 0.15f));
     mEventCommunicator->DispatchEvent(std::make_unique<NewEntityCreatedEvent>(EntityNameIdEntry(StringId("player_swing"), swingEntityId)));
-}
-
-StringId EntityMeleeAttackCommand::GetCommandClassId() const
-{
-    return COMMAND_CLASS_ID;
 }
