@@ -7,10 +7,18 @@
 
 #include "DamageComponent.h"
 
-DamageComponent::DamageComponent(const float damage)
-    : mDamage(damage)
+#include <algorithm>
+
+DamageComponent::DamageComponent(const EntityId ownerEntityId, const float damage)
+    : mOwnerEntityId(ownerEntityId)
+    , mDamage(damage)
 {
     
+}
+
+EntityId DamageComponent::GetOwnerEntityId() const
+{
+    return mOwnerEntityId;
 }
 
 float DamageComponent::GetDamage() const

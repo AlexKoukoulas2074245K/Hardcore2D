@@ -14,6 +14,7 @@
 #include "components/IAIComponent.h"
 #include "events/EventCommunicator.h"
 #include "events/AnnouncePlayerEntityIdEvent.h"
+#include "events/EntityDamagedEvent.h"
 #include "rendering/CoreRenderingService.h"
 #include "rendering/AnimationService.h"
 #include "physics/PhysicsSystem.h"
@@ -89,8 +90,14 @@ bool App::Initialize()
     mInputActionConsumers.push_back(std::make_unique<PlayerInputActionConsumer>(*mServiceLocator, mLevel->GetEntityIdFromName(StringId("player"))));
     
     // Announce player id to AIs
-    auto eventCommunicator = mEventCommunicationService->CreateEventCommunicator();
-    eventCommunicator->DispatchEvent(std::make_unique<AnnouncePlayerEntityIdEvent>(mLevel->GetEntityIdFromName(StringId("player"))));
+    mEventCommunicator = mEventCommunicationService->CreateEventCommunicator();
+    mEventCommunicator->DispatchEvent(std::make_unique<AnnouncePlayerEntityIdEvent>(mLevel->GetEntityIdFromName(StringId("player"))));
+    mEventCommunicator->RegisterEventCallback<EntityDamagedEvent>([](const IEvent& event)
+    {
+        const auto& actualEvent = static_cast<const EntityDamagedEvent&>(event);
+        Log(LogType::INFO, "Entity %d damaged %.2f, now has %.2f health", actualEvent.GetDamagedEntityId(), actualEvent.GetDamageDone(), actualEvent.GetHealthRemaining());
+    });
+    
     return true;
 }
 
@@ -100,6 +107,7 @@ void App::Update(const float dt)
     mLevel->CheckForAdditionsOrRemovalsOfEntities();
     HandleInput();
     mAIService->UpdateAIComponents(mLevel->GetAllActiveEntities(), dt);
+    mDamageSystem->Update(mLevel->GetAllActiveEntities(), dt);
     mPhysicsSystem->UpdateEntities(mLevel->GetAllActiveEntities(), dt);
     mAnimationService->UpdateAnimations(mLevel->GetAllActiveEntities(), dt);
     mCamera->Update(mLevel->GetEntityIdFromName(StringId("player")), dt);

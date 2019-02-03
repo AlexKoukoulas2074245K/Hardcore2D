@@ -16,6 +16,7 @@ class Camera;
 class ServiceLocator;
 class DamageSystem;
 class EntityComponentManager;
+class EventCommunicator;
 class EventCommunicationService;
 class CoreRenderingService;
 class AnimationService;
@@ -51,6 +52,7 @@ private:
     
     std::vector<std::unique_ptr<IInputActionConsumer>> mInputActionConsumers;
     
+    std::unique_ptr<EventCommunicator> mEventCommunicator;
     std::unique_ptr<Camera> mCamera;
     std::unique_ptr<Level> mLevel;
 };

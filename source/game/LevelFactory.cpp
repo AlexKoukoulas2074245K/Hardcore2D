@@ -10,6 +10,8 @@
 #include "../components/EntityComponentManager.h"
 #include "../components/BasicNinjaEnemyAIComponent.h"
 #include "../components/AnimationComponent.h"
+#include "../components/DamageComponent.h"
+#include "../components/HealthComponent.h"
 #include "../components/PhysicsComponent.h"
 #include "../components/ShaderComponent.h"
 #include "../components/TransformComponent.h"
@@ -87,6 +89,16 @@ std::unique_ptr<Level> LevelFactory::CreateLevel(const std::string& levelPath)
                 const auto animationRootDirectory = componentProperties["path"].get<std::string>();
                 const auto animationTimer = componentProperties["timer"].get<float>();
                 entityComponentManager.AddComponent<AnimationComponent>(entityId, std::make_unique<AnimationComponent>(animationRootDirectory, animationTimer, resourceManager));
+            }
+            else if (componentName == "DamageComponent")
+            {
+                const auto damage = componentProperties["damage"].get<float>();
+                entityComponentManager.AddComponent<DamageComponent>(entityId, std::make_unique<DamageComponent>(entityId, damage));
+            }
+            else if (componentName == "HealthComponent")
+            {
+                const auto health = componentProperties["health"].get<float>();
+                entityComponentManager.AddComponent<HealthComponent>(entityId, std::make_unique<HealthComponent>(health));
             }
             else if (componentName == "PhysicsComponent")
             {
