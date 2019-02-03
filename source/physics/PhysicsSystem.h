@@ -23,7 +23,7 @@ class PhysicsSystem final: public IService
 {
     friend class App;
 public:
-    void Initialize();
+    bool VInitialize() override;
     void UpdateEntities(const std::vector<EntityNameIdEntry>& activeEntities, const float dt);
     
 private:

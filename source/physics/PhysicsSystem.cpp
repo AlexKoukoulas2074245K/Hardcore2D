@@ -33,10 +33,11 @@ PhysicsSystem::PhysicsSystem(const ServiceLocator& serviceLocator)
     
 }
 
-void PhysicsSystem::Initialize()
+bool PhysicsSystem::VInitialize()
 {
     mEntityComponentManager = &(mServiceLocator.ResolveService<EntityComponentManager>());
     mEventCommunicator = mServiceLocator.ResolveService<EventCommunicationService>().CreateEventCommunicator();
+    return true;
 }
 
 void PhysicsSystem::UpdateEntities(const std::vector<EntityNameIdEntry>& activeEntities, const float dt)

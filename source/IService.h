@@ -15,6 +15,8 @@ public:
     IService(const IService&) = delete;
     const IService& operator=(const IService&) = delete;
     
+    virtual bool VInitialize() { return true; }
+    
 protected:
     IService() = default;
 };

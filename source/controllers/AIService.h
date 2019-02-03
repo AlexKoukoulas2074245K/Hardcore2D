@@ -21,7 +21,7 @@ class AIService final : public IService
     friend class App;
     
 public:
-    bool Initialize();
+    bool VInitialize() override;
     void UpdateAIComponents(const std::vector<EntityNameIdEntry>&, const float dt);
 
 private:

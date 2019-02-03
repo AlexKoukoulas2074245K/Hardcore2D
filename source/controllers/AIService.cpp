@@ -15,7 +15,7 @@ AIService::AIService(const ServiceLocator& serviceLocator)
 {
 }
 
-bool AIService::Initialize()
+bool AIService::VInitialize()
 {
     mEntityComponentManager = &(mServiceLocator.ResolveService<EntityComponentManager>());
     return true;

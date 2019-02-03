@@ -26,6 +26,7 @@
 #include "input/InputHandler.h"
 #include "game/Level.h"
 #include "game/LevelFactory.h"
+#include "game/DamageSystem.h"
 #include "util/TypeTraits.h"
 #include "util/StringId.h"
 
@@ -57,8 +58,9 @@ bool App::Initialize()
     mCoreRenderingService = std::unique_ptr<CoreRenderingService>(new CoreRenderingService(*mServiceLocator));
     mAnimationService = std::unique_ptr<AnimationService>(new AnimationService(*mServiceLocator));
     mPhysicsSystem = std::unique_ptr<PhysicsSystem>(new PhysicsSystem(*mServiceLocator));
+    mDamageSystem = std::unique_ptr<DamageSystem>(new DamageSystem(*mServiceLocator));
     mInputHandler = std::unique_ptr<InputHandler>(new InputHandler());
-
+    
     // Register services
     mServiceLocator->RegisterService<EntityComponentManager>(mEntityComponentManager.get());
     mServiceLocator->RegisterService<EventCommunicationService>(mEventCommunicationService.get());
@@ -68,10 +70,11 @@ bool App::Initialize()
     mServiceLocator->RegisterService<InputHandler>(mInputHandler.get());
 
     // 2nd step service initialization
-    mPhysicsSystem->Initialize();
-    if (!mAIService->Initialize()) return false;
-    if (!mCoreRenderingService->InitializeEngine()) return false;
-    if (!mResourceManager->InitializeResourceLoaders()) return false;
+    if (!mDamageSystem->VInitialize()) return false;
+    if (!mPhysicsSystem->VInitialize()) return false;
+    if (!mAIService->VInitialize()) return false;
+    if (!mCoreRenderingService->VInitialize()) return false;
+    if (!mResourceManager->VInitialize()) return false;
     
     // Parse Level
     LevelFactory levelFactory(*mServiceLocator);

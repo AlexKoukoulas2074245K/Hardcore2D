@@ -14,6 +14,7 @@
 class AIService;
 class Camera;
 class ServiceLocator;
+class DamageSystem;
 class EntityComponentManager;
 class EventCommunicationService;
 class CoreRenderingService;
@@ -46,6 +47,7 @@ private:
     std::unique_ptr<ResourceManager> mResourceManager;
     std::unique_ptr<InputHandler> mInputHandler;
     std::unique_ptr<PhysicsSystem> mPhysicsSystem;
+    std::unique_ptr<DamageSystem> mDamageSystem;
     
     std::vector<std::unique_ptr<IInputActionConsumer>> mInputActionConsumers;
     

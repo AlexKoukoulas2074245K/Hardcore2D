@@ -29,6 +29,7 @@ private:
     const EntityId mEntityId;
     float mTimeToLive;
     std::unique_ptr<EventCommunicator> mEventCommunicator;
+    
 };
 
 #endif /* MeleeSwingAIComponent_h */

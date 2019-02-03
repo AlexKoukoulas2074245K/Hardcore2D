@@ -36,7 +36,7 @@ ResourceManager::~ResourceManager()
 {
 }
 
-bool ResourceManager::InitializeResourceLoaders()
+bool ResourceManager::VInitialize()
 {
     if (!mTextureLoader->Initialize()) return false;
     if (!mTextFileLoader->Initialize()) return false;

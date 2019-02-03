@@ -73,7 +73,7 @@ CoreRenderingService::~CoreRenderingService()
     SDL_Quit();
 }
 
-bool CoreRenderingService::InitializeEngine()
+bool CoreRenderingService::VInitialize()
 {
     mEntityComponentManager = &(mServiceLocator.ResolveService<EntityComponentManager>());    
     mResourceManager = &(mServiceLocator.ResolveService<ResourceManager>());

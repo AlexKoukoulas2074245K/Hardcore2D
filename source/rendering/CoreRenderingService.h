@@ -37,7 +37,8 @@ public:
     
     ~CoreRenderingService();
     
-    bool InitializeEngine();
+    bool VInitialize() override;
+    
     void AttachCamera(const Camera* camera);
     void GameLoop(std::function<void(const float)> appUpdateMethod);
     void RenderEntities(const std::vector<EntityNameIdEntry>& entityIds);

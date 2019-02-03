@@ -27,7 +27,7 @@ public:
     
     ~ResourceManager();
     
-    bool InitializeResourceLoaders();
+    bool VInitialize() override;
     
     ResourceId LoadResource(const std::string& resourceRelativePath, const bool async = false);
     void LoadResources(const std::vector<std::string>& resourceRelativePaths, const bool async = false);
