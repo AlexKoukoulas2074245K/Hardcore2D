@@ -72,12 +72,12 @@ void BasicNinjaEnemyAIComponent::VUpdate(const float dt)
             if (distanceFromPlayer < PLAYER_DETECTION_DISTANCE)
             {
                 mState = State::LEAPING_TO_TARGET;
-                SetEntityFacingDirectionCommand(mEntityComponentManager, mThisEntityId, transformComponent.GetTranslation().x > targetTransformComponent.GetTranslation().x ? FacingDirection::RIGHT : FacingDirection::LEFT).Execute();
+                SetEntityFacingDirectionCommand(mEntityComponentManager, mThisEntityId, transformComponent.GetTranslation().x > targetTransformComponent.GetTranslation().x ? FacingDirection::RIGHT : FacingDirection::LEFT).VExecute();
                 mMovingRight = animationComponent.GetCurrentFacingDirection() == FacingDirection::RIGHT;
                 
                 SetEntityCustomVelocityCommand(mEntityComponentManager, mThisEntityId, glm::vec3(mMovingRight ? physicsComponent.GetMinVelocity().x * 0.25f : physicsComponent.GetMaxVelocity().x * 0.25f,
                                                                                                  physicsComponent.GetMaxVelocity().y,
-                                                                                                 physicsComponent.GetVelocity().z)).Execute();
+                                                                                                 physicsComponent.GetVelocity().z)).VExecute();
                 
             }
             else
@@ -86,7 +86,7 @@ void BasicNinjaEnemyAIComponent::VUpdate(const float dt)
                                                       physicsComponent.GetVelocity().y,
                                                       physicsComponent.GetVelocity().z);
 
-                SetEntityCustomVelocityCommand(mEntityComponentManager, mThisEntityId, targetVelocity).Execute();
+                SetEntityCustomVelocityCommand(mEntityComponentManager, mThisEntityId, targetVelocity).VExecute();
                 
                 if (transformComponent.GetTranslation().x >= mInitPosition.x + PATROLLING_MAX_DISTANCE_FROM_INIT_POSITION)
                 {
@@ -105,7 +105,7 @@ void BasicNinjaEnemyAIComponent::VUpdate(const float dt)
 
         case State::FOCUSING:
         {
-            SetEntityFacingDirectionCommand(mEntityComponentManager, mThisEntityId, transformComponent.GetTranslation().x < targetTransformComponent.GetTranslation().x ? FacingDirection::RIGHT : FacingDirection::LEFT).Execute();
+            SetEntityFacingDirectionCommand(mEntityComponentManager, mThisEntityId, transformComponent.GetTranslation().x < targetTransformComponent.GetTranslation().x ? FacingDirection::RIGHT : FacingDirection::LEFT).VExecute();
             mMovingRight = animationComponent.GetCurrentFacingDirection() == FacingDirection::RIGHT;
             
             mTimer -= dt;
@@ -119,18 +119,18 @@ void BasicNinjaEnemyAIComponent::VUpdate(const float dt)
         case State::CHARGING_PLAYER:
         {
             const auto chargingSpeed = mMovingRight ? physicsComponent.GetMaxVelocity().x * (mTimer * 0.5f) : physicsComponent.GetMinVelocity().x * (mTimer * 0.5f);
-            SetEntityCustomVelocityCommand(mEntityComponentManager, mThisEntityId, glm::vec3(chargingSpeed, physicsComponent.GetVelocity().y, physicsComponent.GetVelocity().z)).Execute();
+            SetEntityCustomVelocityCommand(mEntityComponentManager, mThisEntityId, glm::vec3(chargingSpeed, physicsComponent.GetVelocity().y, physicsComponent.GetVelocity().z)).VExecute();
             
             mTimer -= dt;
             if (mTimer <= 0.0f)
             {
                 mState = State::LEAPING_TO_TARGET;
-                SetEntityFacingDirectionCommand(mEntityComponentManager, mThisEntityId, transformComponent.GetTranslation().x > targetTransformComponent.GetTranslation().x ? FacingDirection::RIGHT : FacingDirection::LEFT).Execute();
+                SetEntityFacingDirectionCommand(mEntityComponentManager, mThisEntityId, transformComponent.GetTranslation().x > targetTransformComponent.GetTranslation().x ? FacingDirection::RIGHT : FacingDirection::LEFT).VExecute();
                 mMovingRight = animationComponent.GetCurrentFacingDirection() == FacingDirection::RIGHT;
                 
                 SetEntityCustomVelocityCommand(mEntityComponentManager, mThisEntityId, glm::vec3(mMovingRight ? physicsComponent.GetMinVelocity().x * 0.25f : physicsComponent.GetMaxVelocity().x * 0.25f,
                                                                                                  physicsComponent.GetMaxVelocity().y,
-                                                                                                 physicsComponent.GetVelocity().z)).Execute();
+                                                                                                 physicsComponent.GetVelocity().z)).VExecute();
                 
             }
         } break;
@@ -171,6 +171,6 @@ void BasicNinjaEnemyAIComponent::OnLeapingComplete(const PhysicsComponent& other
     {
         mTimer = FOCUSING_TIMER;
         mState = State::FOCUSING;
-        SetEntityCustomVelocityCommand(mEntityComponentManager, mThisEntityId, glm::vec3(0.0f, 0.0f, 0.0f)).Execute();
+        SetEntityCustomVelocityCommand(mEntityComponentManager, mThisEntityId, glm::vec3(0.0f, 0.0f, 0.0f)).VExecute();
     }
 }

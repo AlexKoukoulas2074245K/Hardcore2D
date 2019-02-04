@@ -21,12 +21,13 @@
 #include "../util/Logging.h"
 #include "../util/StringUtils.h"
 #include "../util/FileUtils.h"
-#include "../game/GameConstants.h"
+#include "../game/GameTypeTraits.h"
 
 #include <glm/vec3.hpp>
 #include <json.hpp>
 #include <iostream>
 #include <unordered_map>
+#include <SDL.h>
 
 
 static const std::string LEVEL_DIRECTORY = "levels/";
@@ -45,6 +46,8 @@ LevelFactory::LevelFactory(const ServiceLocator& serviceLocator)
 
 std::unique_ptr<Level> LevelFactory::CreateLevel(const std::string& levelPath)
 {
+    const auto startTime = static_cast<float>(SDL_GetTicks());
+    
     auto& resourceManager = mServiceLocator.ResolveService<ResourceManager>();
     auto& entityComponentManager = mServiceLocator.ResolveService<EntityComponentManager>();
     
@@ -148,5 +151,6 @@ std::unique_ptr<Level> LevelFactory::CreateLevel(const std::string& levelPath)
         levelEntityEntries.emplace_back(EntityNameIdEntry(StringId(entityName), entityId));
     }
     
+    Log(LogType::INFO, "Created level %s in %.6f ms", levelPath.c_str(), (static_cast<float>(SDL_GetTicks()) - startTime));
     return std::unique_ptr<Level>(new Level(mServiceLocator, levelEntityEntries, levelHorizontalBounds, levelVerticalBounds));
 }

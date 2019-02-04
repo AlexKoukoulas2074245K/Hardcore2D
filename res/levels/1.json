@@ -1,7 +1,7 @@
 {
 	"horBounds": { "left": 0.0, "right": 1500.0 },
 	"verBounds": { "bottom": 0.0, "top": 1500.0 },
-	"cached_animations": ["effects/player_swing/idle"],
+	"cached_animations": ["effects/player_swing/idle", "effects/player_shuriken/idle"],
 	"entities": 
 	[
   		{
@@ -203,6 +203,8 @@
 			"components": 
 		    	{
 				"AnimationComponent": { "path": "characters/ninja", "timer": 0.04 },
+				"DamageComponent":    { "damage": 4.0 },
+				"HealthComponent":   { "health": 100.0 },
 			  	"PhysicsComponent":   { "bodyType": "dynamic", "hitBox": { "centerPoint": [0.0, 0.0], "dimensions": [60.0, 90.0] }, "gravity": [0.0, -1680.0, 0.0], "maxVelocity": [1000.0, 700.0, 0.0], "minVelocity": [-1000.0, -700.0, 0.0] },
 			  	"ShaderComponent":    { "shaderName": "basic" },
 				"TransformComponent": { "translation": [1040.0, 400.0, 1.0], "rotation": [0.0, 0.0, 0.0], "scale": [240.0, 240.0, 1.0] },
@@ -210,14 +212,15 @@
 	  		}
 	  	},
 		{
-            "name": "player",
-            "components":
-            {
-                "AnimationComponent": { "path": "characters/light_samurai", "timer": 0.04 },
-                "PhysicsComponent":   { "bodyType": "dynamic", "hitBox": { "centerPoint": [0.0, 0.0], "dimensions": [60.0, 90.0] }, "gravity": [0.0, -1680.0, 0.0], "maxVelocity": [240.0, 560.0, 0.0], "minVelocity": [-240.0, -560.0, 0.0] },
-                "ShaderComponent":    { "shaderName": "basic" },
-                "TransformComponent": { "translation": [240.0, 400.0, 1.0], "rotation": [0.0, 0.0, 0.0], "scale": [240.0, 240.0, 1.0] }
-            }
-        }
+            		"name": "player",
+            		"components":
+            		{
+                		"AnimationComponent": { "path": "characters/light_samurai", "timer": 0.04 },
+				"HealthComponent":    { "health": 100.0 },
+                		"PhysicsComponent":   { "bodyType": "dynamic", "hitBox": { "centerPoint": [0.0, 0.0], "dimensions": [60.0, 90.0] }, "gravity": [0.0, -1680.0, 0.0], "maxVelocity": [240.0, 560.0, 0.0], "minVelocity": [-240.0, -560.0, 0.0] },
+                		"ShaderComponent":    { "shaderName": "basic" },
+                		"TransformComponent": { "translation": [240.0, 400.0, 1.0], "rotation": [0.0, 0.0, 0.0], "scale": [240.0, 240.0, 1.0] }
+            		}
+        	}
 	]
 }

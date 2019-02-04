@@ -10,7 +10,7 @@
 
 #include "IComponent.h"
 #include "../util/StringId.h"
-#include "../game/GameConstants.h"
+#include "../game/GameTypeTraits.h"
 
 #include <unordered_map>
 #include <vector>

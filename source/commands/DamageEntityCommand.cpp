@@ -22,7 +22,7 @@ DamageEntityCommand::DamageEntityCommand(const ServiceLocator& serviceLocator, c
     
 }
 
-void DamageEntityCommand::Execute()
+void DamageEntityCommand::VExecute()
 {
     // Only check first entity to avoid accounting for damage for the other collision event with reverse entity ids
     if (mEntityComponentManager.HasComponent<DamageComponent>(mCollidedEntities.first) == false)

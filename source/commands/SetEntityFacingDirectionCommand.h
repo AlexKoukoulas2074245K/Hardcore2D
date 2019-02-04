@@ -9,7 +9,7 @@
 #define SetEntityFacingDirectionCommand_h
 
 #include "ICommand.h"
-#include "../game/GameConstants.h"
+#include "../game/GameTypeTraits.h"
 
 class EntityComponentManager;
 
@@ -17,7 +17,7 @@ class SetEntityFacingDirectionCommand final: public ICommand
 {
 public:
     SetEntityFacingDirectionCommand(EntityComponentManager&, const EntityId, const FacingDirection);
-    void Execute() override;
+    void VExecute() override;
     
 private:
     EntityComponentManager& mEntityComponentManager;

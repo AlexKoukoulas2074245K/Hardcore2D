@@ -1,12 +1,12 @@
 //
-//  GameConstants.h
+//  GameTypeTraits.h
 //  Hardcore2D
 //
 //  Created by Alex Koukoulas on 26/01/2019.
 //
 
-#ifndef GameConstants_h
-#define GameConstants_h
+#ifndef GameTypeTraits_h
+#define GameTypeTraits_h
 
 #include "../util/StringId.h"
 
@@ -27,4 +27,4 @@ struct EntityNameIdEntry
     EntityId mEntityId;
 };
 
-#endif /* GameConstants_h */
+#endif /* GameTypeTraits_h */

@@ -17,7 +17,7 @@ SetEntityFacingDirectionCommand::SetEntityFacingDirectionCommand(EntityComponent
     
 }
 
-void SetEntityFacingDirectionCommand::Execute()
+void SetEntityFacingDirectionCommand::VExecute()
 {
     mEntityComponentManager.GetComponent<AnimationComponent>(mEntityId).SetFacingDirection(mFacingDirection);
 }

@@ -9,7 +9,7 @@
 #define DamageSystem_h
 
 #include "../IService.h"
-#include "../game/GameConstants.h"
+#include "../game/GameTypeTraits.h"
 
 #include <memory>
 #include <vector>

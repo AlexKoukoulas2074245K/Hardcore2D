@@ -24,7 +24,7 @@ class DamageEntityCommand final: public ICommand
 public:
     DamageEntityCommand(const ServiceLocator&, const std::pair<EntityId, EntityId>& collidedEntityIds);
     
-    void Execute() override;
+    void VExecute() override;
     
 private:
     EntityComponentManager& mEntityComponentManager;

@@ -46,12 +46,12 @@ bool PlayerInputActionConsumer::VConsumeInputAction(const InputAction& inputActi
                 } break;
 				case InputAction::ActionState::CONTINUE:
                 {
-                    SetEntityCustomVelocityCommand(mEntityComponentManager, mEntityId, glm::vec3(-entityPhysicsComponent.GetMaxVelocity().x, entityPhysicsComponent.GetVelocity().y, entityPhysicsComponent.GetVelocity().z)).Execute();
+                    SetEntityCustomVelocityCommand(mEntityComponentManager, mEntityId, glm::vec3(-entityPhysicsComponent.GetMaxVelocity().x, entityPhysicsComponent.GetVelocity().y, entityPhysicsComponent.GetVelocity().z)).VExecute();
                     return true;
                 } break;
                 case InputAction::ActionState::STOP:
                 {
-                    SetEntityCustomVelocityCommand(mEntityComponentManager, mEntityId, glm::vec3(0.0f, entityPhysicsComponent.GetVelocity().y, entityPhysicsComponent.GetVelocity().z)).Execute();
+                    SetEntityCustomVelocityCommand(mEntityComponentManager, mEntityId, glm::vec3(0.0f, entityPhysicsComponent.GetVelocity().y, entityPhysicsComponent.GetVelocity().z)).VExecute();
                     return true;
                 } break;
             }            
@@ -66,12 +66,12 @@ bool PlayerInputActionConsumer::VConsumeInputAction(const InputAction& inputActi
                 } break;
                 case InputAction::ActionState::CONTINUE:
                 {
-                    SetEntityCustomVelocityCommand(mEntityComponentManager, mEntityId, glm::vec3(entityPhysicsComponent.GetMaxVelocity().x, entityPhysicsComponent.GetVelocity().y, entityPhysicsComponent.GetVelocity().z)).Execute();
+                    SetEntityCustomVelocityCommand(mEntityComponentManager, mEntityId, glm::vec3(entityPhysicsComponent.GetMaxVelocity().x, entityPhysicsComponent.GetVelocity().y, entityPhysicsComponent.GetVelocity().z)).VExecute();
                     return true;
                 } break;
                 case InputAction::ActionState::STOP:
                 {
-                    SetEntityCustomVelocityCommand(mEntityComponentManager, mEntityId, glm::vec3(0.0f, entityPhysicsComponent.GetVelocity().y, entityPhysicsComponent.GetVelocity().z)).Execute();
+                    SetEntityCustomVelocityCommand(mEntityComponentManager, mEntityId, glm::vec3(0.0f, entityPhysicsComponent.GetVelocity().y, entityPhysicsComponent.GetVelocity().z)).VExecute();
                     return true;
                 } break;
             }
@@ -84,7 +84,7 @@ bool PlayerInputActionConsumer::VConsumeInputAction(const InputAction& inputActi
             {
                 case InputAction::ActionState::START:
                 {   
-                    SetEntityCustomVelocityCommand(mEntityComponentManager, mEntityId, glm::vec3(entityPhysicsComponent.GetVelocity().x, entityPhysicsComponent.GetMaxVelocity().y, entityPhysicsComponent.GetVelocity().z)).Execute();                   
+                    SetEntityCustomVelocityCommand(mEntityComponentManager, mEntityId, glm::vec3(entityPhysicsComponent.GetVelocity().x, entityPhysicsComponent.GetMaxVelocity().y, entityPhysicsComponent.GetVelocity().z)).VExecute();                   
                     return true;
                 } break;
                 case InputAction::ActionState::CONTINUE:
@@ -97,7 +97,7 @@ bool PlayerInputActionConsumer::VConsumeInputAction(const InputAction& inputActi
             {
                 case InputAction::ActionState::START:
                 {
-                    EntityMeleeAttackCommand(mServiceLocator, mEntityId).Execute();
+                    EntityMeleeAttackCommand(mServiceLocator, mEntityId).VExecute();
                     return true;
                 } break;
                 case InputAction::ActionState::CONTINUE:

@@ -10,7 +10,7 @@
 
 #include "../util/StringId.h"
 #include "../util/MathUtils.h"
-#include "GameConstants.h"
+#include "GameTypeTraits.h"
 
 #include <list>
 #include <vector>

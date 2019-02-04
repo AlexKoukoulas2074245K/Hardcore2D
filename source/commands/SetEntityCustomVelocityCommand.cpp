@@ -20,7 +20,7 @@ SetEntityCustomVelocityCommand::SetEntityCustomVelocityCommand(EntityComponentMa
     
 }
 
-void SetEntityCustomVelocityCommand::Execute()
+void SetEntityCustomVelocityCommand::VExecute()
 {
     if (mEntityComponentManager.HasComponent<AnimationComponent>(mEntityId))
     {
@@ -35,14 +35,14 @@ void SetEntityCustomVelocityCommand::Execute()
             {
                 if (animationComponent.GetCurrentFacingDirection() != FacingDirection::LEFT)
                 {
-                    SetEntityFacingDirectionCommand(mEntityComponentManager, mEntityId, FacingDirection::LEFT).Execute();
+                    SetEntityFacingDirectionCommand(mEntityComponentManager, mEntityId, FacingDirection::LEFT).VExecute();
                 }
             }
             else
             {
                 if (animationComponent.GetCurrentFacingDirection() != FacingDirection::RIGHT)
                 {
-                    SetEntityFacingDirectionCommand(mEntityComponentManager, mEntityId, FacingDirection::RIGHT).Execute();
+                    SetEntityFacingDirectionCommand(mEntityComponentManager, mEntityId, FacingDirection::RIGHT).VExecute();
                 }
             }
             

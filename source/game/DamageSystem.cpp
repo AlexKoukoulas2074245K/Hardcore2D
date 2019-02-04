@@ -59,6 +59,6 @@ void DamageSystem::Update(const std::vector<EntityNameIdEntry>& activeEntities, 
 void DamageSystem::OnEntityCollisionEvent(const IEvent& event)
 {
     const auto& collidedEntities = static_cast<const EntityCollisionEvent&>(event).GetCollidedEntityIds();
-    DamageEntityCommand(mServiceLocator, collidedEntities).Execute();
+    DamageEntityCommand(mServiceLocator, collidedEntities).VExecute();
 }
 

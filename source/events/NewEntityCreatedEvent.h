@@ -9,7 +9,7 @@
 #define NewEntityCreatedEvent_h
 
 #include "IEvent.h"
-#include "../game/GameConstants.h"
+#include "../game/GameTypeTraits.h"
 
 class NewEntityCreatedEvent final: public IEvent
 {

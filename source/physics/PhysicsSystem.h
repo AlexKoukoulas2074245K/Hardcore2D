@@ -9,7 +9,7 @@
 #define PhysicsSystem_h
 
 #include "../IService.h"
-#include "../game/GameConstants.h"
+#include "../game/GameTypeTraits.h"
 
 #include <vector>
 #include <utility>

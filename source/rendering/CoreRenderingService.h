@@ -11,7 +11,7 @@
 #include "../IService.h"
 #include "../util/TypeTraits.h"
 #include "../util/StringId.h"
-#include "../game/GameConstants.h"
+#include "../game/GameTypeTraits.h"
 
 #include <glm/vec2.hpp>
 #include <glm/mat4x4.hpp>

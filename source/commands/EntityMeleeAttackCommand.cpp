@@ -31,7 +31,7 @@ EntityMeleeAttackCommand::EntityMeleeAttackCommand(const ServiceLocator& service
     
 }
 
-void EntityMeleeAttackCommand::Execute()
+void EntityMeleeAttackCommand::VExecute()
 {
     auto& entityAnimationComponent = mEntityComponentManager.GetComponent<AnimationComponent>(mEntityId);
     entityAnimationComponent.PlayAnimationOnce(StringId("melee"));

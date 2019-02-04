@@ -22,7 +22,7 @@ class EntityMeleeAttackCommand final: public ICommand
 {
 public:
     EntityMeleeAttackCommand(const ServiceLocator&, const EntityId);
-    void Execute() override;
+    void VExecute() override;
     
 private:
     const ServiceLocator& mServiceLocator;
