@@ -12,6 +12,7 @@
 #include "../components/AnimationComponent.h"
 #include "../commands/SetEntityCustomVelocityCommand.h"
 #include "../commands/EntityMeleeAttackCommand.h"
+#include "../commands/EntityRangedShurikenAttackCommand.h"
 #include "../events/EventCommunicator.h"
 #include "../util/Logging.h"
 #include "../events/PlayerChangedDirectionEvent.h"
@@ -103,6 +104,19 @@ bool PlayerInputActionConsumer::VConsumeInputAction(const InputAction& inputActi
                 case InputAction::ActionState::CONTINUE:
                 case InputAction::ActionState::STOP: break;
             }                         
+        } break;
+        case InputAction::ActionType::RANGED:
+        {
+            switch (inputAction.mActionState)
+            {
+                case InputAction::ActionState::START:
+                {
+                    EntityRangedShurikenAttackCommand(mServiceLocator, mEntityId).VExecute();
+                    return true;
+                } break;
+                case InputAction::ActionState::CONTINUE:
+                case InputAction::ActionState::STOP: break;
+            }
         } break;
         default : break;
     }

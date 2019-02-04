@@ -40,12 +40,14 @@ public:
     glm::vec3& GetVelocity();
     glm::vec3& GetGravity();
     glm::vec3& GetMaxVelocity();
-    glm::vec3& GetMinVelocity();
-        
+    glm::vec3& GetMinVelocity();    
+    float& GetAngularVelocity();
+
     const glm::vec3& GetVelocity() const;
     const glm::vec3& GetGravity() const;
     const glm::vec3& GetMaxVelocity() const;
-    const glm::vec3& GetMinVelocity() const;
+    const glm::vec3& GetMinVelocity() const;    
+    float GetAngularVelocity() const;
     const Hitbox& GetHitBox() const;
     BodyType GetBodyType() const;
 
@@ -56,6 +58,7 @@ private:
     glm::vec3 mGravity;
     glm::vec3 mMaxVelocity;
     glm::vec3 mMinVelocity;
+    float mAngularVelocity;
 };
 
 #endif /* PhysicsComponent_h */

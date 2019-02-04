@@ -42,6 +42,20 @@ bool PhysicsSystem::VInitialize()
 
 void PhysicsSystem::UpdateEntities(const std::vector<EntityNameIdEntry>& activeEntities, const float dt)
 {
+    static float timeElapsed = 0.0f;
+    static bool goingRight = true;
+
+    timeElapsed += dt;
+    if (timeElapsed > 5.0f)
+    {
+        timeElapsed = 0.0f;
+        goingRight = !goingRight;
+    }
+
+    auto& physicsComponent = mEntityComponentManager->GetComponent<PhysicsComponent>(activeEntities[18].mEntityId);
+    physicsComponent.GetVelocity().x = goingRight ? 60.0f : -60.0f;
+    physicsComponent.GetVelocity().y = goingRight ? 60.0f : -60.0f;
+    
     for (const auto entityEntry: activeEntities)
     {
         const auto entityId = entityEntry.mEntityId;
@@ -51,7 +65,10 @@ void PhysicsSystem::UpdateEntities(const std::vector<EntityNameIdEntry>& activeE
             auto& referenceEntityTransformComponent = mEntityComponentManager->GetComponent<TransformComponent>(entityId);
             auto& referenceEntityPhysicsComponent = mEntityComponentManager->GetComponent<PhysicsComponent>(entityId);
             
-            // Update velocity
+            // Update angular velocity
+            referenceEntityTransformComponent.GetRotation().z += referenceEntityPhysicsComponent.GetAngularVelocity();
+
+            // Update velocity            
             referenceEntityPhysicsComponent.GetVelocity() += referenceEntityPhysicsComponent.GetGravity() * dt;
             
             // Clamp velocity to min/maxes
@@ -59,7 +76,17 @@ void PhysicsSystem::UpdateEntities(const std::vector<EntityNameIdEntry>& activeE
             referenceEntityPhysicsComponent.GetVelocity() = ClampToMin(referenceEntityPhysicsComponent.GetVelocity(), referenceEntityPhysicsComponent.GetMinVelocity());
             
             // Update horizontal position first
-            referenceEntityTransformComponent.GetTranslation().x += referenceEntityPhysicsComponent.GetVelocity().x * dt;
+            if (mEntityComponentManager->HasEntityEntry(referenceEntityTransformComponent.GetParent()))
+            {
+                const auto& parentTransformComponent = mEntityComponentManager->GetComponent<TransformComponent>(referenceEntityTransformComponent.GetParent());
+                referenceEntityTransformComponent.GetRelativeTranslationToParent().x += referenceEntityPhysicsComponent.GetVelocity().x * dt;
+                referenceEntityTransformComponent.GetTranslation().x = parentTransformComponent.GetTranslation().x + referenceEntityTransformComponent.GetRelativeTranslationToParent().x;
+            }
+            else
+            {
+                referenceEntityTransformComponent.GetTranslation().x += referenceEntityPhysicsComponent.GetVelocity().x * dt;
+            }
+            
             
             // Set of all collidedEntities (filtered by layers and not)
             std::set<EntityId> allCollidedEntities;
@@ -86,8 +113,17 @@ void PhysicsSystem::UpdateEntities(const std::vector<EntityNameIdEntry>& activeE
             }
             
             // Update vertical position next
-            referenceEntityTransformComponent.GetTranslation().y += referenceEntityPhysicsComponent.GetVelocity().y * dt;
-            
+            if (mEntityComponentManager->HasEntityEntry(referenceEntityTransformComponent.GetParent()))
+            {
+                const auto& parentTransformComponent = mEntityComponentManager->GetComponent<TransformComponent>(referenceEntityTransformComponent.GetParent());
+                referenceEntityTransformComponent.GetRelativeTranslationToParent().y += referenceEntityPhysicsComponent.GetVelocity().y * dt;
+                referenceEntityTransformComponent.GetTranslation().y = parentTransformComponent.GetTranslation().y + referenceEntityTransformComponent.GetRelativeTranslationToParent().y;
+            }
+            else
+            {
+                referenceEntityTransformComponent.GetTranslation().y += referenceEntityPhysicsComponent.GetVelocity().y * dt;
+            }
+
             // Find all entities vertically colliding with current
             auto verticallyCollidingEntityIds = CheckAndGetCollidedEntities(entityId, activeEntities);
             
@@ -135,18 +171,14 @@ void PhysicsSystem::UpdateEntities(const std::vector<EntityNameIdEntry>& activeE
             
         }
     }
-    
-    for (const auto entityEntry: activeEntities)
+
+    for (const auto entityEntry : activeEntities)
     {
         const auto entityId = entityEntry.mEntityId;
         if (mEntityComponentManager->HasComponent<TransformComponent>(entityId))
         {
             auto& transformComponent = mEntityComponentManager->GetComponent<TransformComponent>(entityId);
-            if (mEntityComponentManager->HasEntityEntry(transformComponent.GetParent()))
-            {
-                transformComponent.GetTranslation() = mEntityComponentManager->GetComponent<TransformComponent>(transformComponent.GetParent()).GetTranslation() + 
-                    transformComponent.GetRelativeTranslationToParent();
-            }            
+            transformComponent.GetPreviousTranslation() = transformComponent.GetTranslation();
         }
     }
 }

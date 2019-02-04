@@ -27,7 +27,8 @@ public:
     glm::vec3& GetRotation();
     glm::vec3& GetScale();
     glm::vec3& GetPreviousTranslation();
-    
+    glm::vec3& GetRelativeTranslationToParent();
+
     const glm::vec3& GetTranslation() const;
     const glm::vec3& GetRotation() const;
     const glm::vec3& GetScale() const;

@@ -16,6 +16,7 @@ PhysicsComponent::PhysicsComponent(const BodyType bodyType, const Hitbox& hitBox
     , mGravity(0.0f, 0.0f, 0.0f)
     , mMaxVelocity(FLT_MAX, FLT_MAX, 0.0f)
     , mMinVelocity(-FLT_MAX, -FLT_MAX, 0.0f)
+    , mAngularVelocity(0.0f)
 {
     
 }
@@ -27,6 +28,7 @@ PhysicsComponent::PhysicsComponent(const BodyType bodyType, const Hitbox& hitBox
     , mGravity(gravity)
     , mMaxVelocity(maxVelocity)
     , mMinVelocity(minVelocity)
+    , mAngularVelocity(0.0f)
 {
     
 }
@@ -56,6 +58,11 @@ glm::vec3& PhysicsComponent::GetMinVelocity()
     return mMinVelocity;
 }
 
+float& PhysicsComponent::GetAngularVelocity()
+{
+    return mAngularVelocity;
+}
+
 const PhysicsComponent::Hitbox& PhysicsComponent::GetHitBox() const
 {
     return mHitBox;
@@ -78,6 +85,11 @@ const glm::vec3& PhysicsComponent::GetMaxVelocity() const
 const glm::vec3& PhysicsComponent::GetMinVelocity() const
 {
     return mMinVelocity;
+}
+
+float PhysicsComponent::GetAngularVelocity() const
+{
+    return mAngularVelocity;
 }
 
 PhysicsComponent::BodyType PhysicsComponent::GetBodyType() const

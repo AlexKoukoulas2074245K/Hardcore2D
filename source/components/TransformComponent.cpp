@@ -60,6 +60,11 @@ glm::vec3& TransformComponent::GetPreviousTranslation()
     return mPreviousTranslation;
 }
 
+glm::vec3& TransformComponent::GetRelativeTranslationToParent()
+{
+    return mRelativeTranslationToParent;
+}
+
 const glm::vec3& TransformComponent::GetTranslation() const
 {
     return mTranslation;

@@ -11,9 +11,12 @@
 #include "ICommand.h"
 #include "../util/TypeTraits.h"
 
+#include <memory>
+
 class ServiceLocator;
 class EntityComponentManager;
 class ResourceManager;
+class EventCommunicator;
 
 class EntityRangedShurikenAttackCommand final: public ICommand
 {
@@ -23,9 +26,10 @@ public:
     void VExecute() override;
 private:
     EntityComponentManager& mEntityComponentManager;
-    ResourceManager& mResourceManager;
-    
+    ResourceManager& mResourceManager;    
     const EntityId mEntityId;
+    
+    std::unique_ptr<EventCommunicator> mEventCommunicator;
 };
 
 #endif /* EntityRangedShurikenAttackCommand_h */
