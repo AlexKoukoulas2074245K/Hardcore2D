@@ -105,11 +105,14 @@ void PhysicsSystem::UpdateEntities(const std::vector<EntityNameIdEntry>& activeE
                 {
                     continue;
                 }
-                else
+                
+                if (mEntityComponentManager->HasEntityEntry(referenceEntityTransformComponent.GetParent()))
                 {
-                    // Push reference entity outside of other horizontally colliding entity
-                    PushEntityOutsideOtherEntityInAxis(entityId, otherEntityId, Axis::X_AXIS, dt);
+                    continue;
                 }
+                
+                // Push reference entity outside of other horizontally colliding entity
+                PushEntityOutsideOtherEntityInAxis(entityId, otherEntityId, Axis::X_AXIS, dt);
             }
             
             // Update vertical position next
@@ -136,29 +139,32 @@ void PhysicsSystem::UpdateEntities(const std::vector<EntityNameIdEntry>& activeE
                 {
                     continue;
                 }
-                else
+                
+                if (mEntityComponentManager->HasEntityEntry(referenceEntityTransformComponent.GetParent()))
                 {
-                    // Push reference entity outside of other vertically colliding entity
-                    PushEntityOutsideOtherEntityInAxis(entityId, otherEntityId, Axis::Y_AXIS, dt);
+                    continue;
+                }
+                
+                // Push reference entity outside of other vertically colliding entity
+                PushEntityOutsideOtherEntityInAxis(entityId, otherEntityId, Axis::Y_AXIS, dt);
                     
-                    // In the case of a Kinematic object append its deltas to current entity
-                    if (otherEntityPhysicsComponent.GetBodyType() == PhysicsComponent::BodyType::KINEMATIC)
+                // In the case of a Kinematic object append its deltas to current entity
+                if (otherEntityPhysicsComponent.GetBodyType() == PhysicsComponent::BodyType::KINEMATIC)
+                {
+                    const auto& otherEntityTransformComponent = mEntityComponentManager->GetComponent<TransformComponent>(otherEntityId);
+                    
+                    // Before adding the kinematic object's horizontal velocity, make sure that the kinematic object itself
+                    // is not horizontally blocked by another object
+                    if (Abs(otherEntityTransformComponent.GetPreviousTranslation().x - otherEntityTransformComponent.GetTranslation().x) > 0.01f)
                     {
-                        const auto& otherEntityTransformComponent = mEntityComponentManager->GetComponent<TransformComponent>(otherEntityId);
-                        
-                        // Before adding the kinematic object's horizontal velocity, make sure that the kinematic object itself
-                        // is not horizontally blocked by another object
-                        if (Abs(otherEntityTransformComponent.GetPreviousTranslation().x - otherEntityTransformComponent.GetTranslation().x) > 0.01f)
-                        {
-                            referenceEntityTransformComponent.GetTranslation().x += otherEntityPhysicsComponent.GetVelocity().x * dt;
-                        }
-                        
-                        // Before adding the kinematic object's vertical velocity, make sure that the kinematic object itself
-                        // is not vertically blocked by another object
-                        if (Abs(otherEntityTransformComponent.GetPreviousTranslation().y - otherEntityTransformComponent.GetTranslation().y) > 0.01f)
-                        {
-                            referenceEntityTransformComponent.GetTranslation().y += otherEntityPhysicsComponent.GetVelocity().y * dt;
-                        }
+                        referenceEntityTransformComponent.GetTranslation().x += otherEntityPhysicsComponent.GetVelocity().x * dt;
+                    }
+                    
+                    // Before adding the kinematic object's vertical velocity, make sure that the kinematic object itself
+                    // is not vertically blocked by another object
+                    if (Abs(otherEntityTransformComponent.GetPreviousTranslation().y - otherEntityTransformComponent.GetTranslation().y) > 0.01f)
+                    {
+                        referenceEntityTransformComponent.GetTranslation().y += otherEntityPhysicsComponent.GetVelocity().y * dt;
                     }
                 }
             }
