@@ -18,9 +18,12 @@
 #include "../components/TransformComponent.h"
 #include "../components/PhysicsComponent.h"
 #include "../components/DamageComponent.h"
+#include "../components/RangedShurikenAIComponent.h"
+
 
 EntityRangedShurikenAttackCommand::EntityRangedShurikenAttackCommand(const ServiceLocator& serviceLocator, const EntityId entityId)
-    : mEntityComponentManager(serviceLocator.ResolveService<EntityComponentManager>())
+    : mServiceLocator(serviceLocator)
+    , mEntityComponentManager(serviceLocator.ResolveService<EntityComponentManager>())
     , mResourceManager(serviceLocator.ResolveService<ResourceManager>())
     , mEntityId(entityId)
     , mEventCommunicator(serviceLocator.ResolveService<EventCommunicationService>().CreateEventCommunicator())
@@ -49,7 +52,7 @@ void EntityRangedShurikenAttackCommand::VExecute()
         shurikenTransformComponent->GetTranslation().x += 15.0f;
         shurikenAnimationComponent->SetFacingDirection(FacingDirection::RIGHT);
         shurikenPhysicsComponent->GetAngularVelocity() = 10.0f;
-        shurikenPhysicsComponent->GetVelocity().x = 1000.0f;
+        shurikenPhysicsComponent->GetVelocity().x = 500.0f;
     }
     else
     {
@@ -57,7 +60,7 @@ void EntityRangedShurikenAttackCommand::VExecute()
         shurikenTransformComponent->GetTranslation().x += -15.0f;
         shurikenAnimationComponent->SetFacingDirection(FacingDirection::LEFT);
         shurikenPhysicsComponent->GetAngularVelocity() = -10.0f;
-        shurikenPhysicsComponent->GetVelocity().x = -1000.0f;
+        shurikenPhysicsComponent->GetVelocity().x = -500.0f;
     }
     
     shurikenTransformComponent->GetScale() = glm::vec3(40.0f, 40.0f, 1.0f);
@@ -66,7 +69,7 @@ void EntityRangedShurikenAttackCommand::VExecute()
     
     mEntityComponentManager.AddComponent<AnimationComponent>(shurikenEntityId, std::move(shurikenAnimationComponent));
     mEntityComponentManager.AddComponent<TransformComponent>(shurikenEntityId, std::move(shurikenTransformComponent));
-    //mEntityComponentManager.AddComponent<IAIComponent>(swingEntityId, std::make_unique<MeleeSwingAIComponent>(mServiceLocator, shurikenEntityId, 0.15f));
+    mEntityComponentManager.AddComponent<IAIComponent>(shurikenEntityId, std::make_unique<RangedShurikenAIComponent>(mServiceLocator, shurikenEntityId, 2.0f));
     mEntityComponentManager.AddComponent<DamageComponent>(shurikenEntityId, std::make_unique<DamageComponent>(mEntityId, 10.0f));
     mEventCommunicator->DispatchEvent(std::make_unique<NewEntityCreatedEvent>(EntityNameIdEntry(StringId("player_shuriken"), shurikenEntityId)));
 }

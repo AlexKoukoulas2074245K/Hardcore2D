@@ -25,6 +25,7 @@ public:
     
     void VExecute() override;
 private:
+    const ServiceLocator& mServiceLocator;
     EntityComponentManager& mEntityComponentManager;
     ResourceManager& mResourceManager;    
     const EntityId mEntityId;

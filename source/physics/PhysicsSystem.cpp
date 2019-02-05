@@ -41,21 +41,7 @@ bool PhysicsSystem::VInitialize()
 }
 
 void PhysicsSystem::UpdateEntities(const std::vector<EntityNameIdEntry>& activeEntities, const float dt)
-{
-    static float timeElapsed = 0.0f;
-    static bool goingRight = true;
-
-    timeElapsed += dt;
-    if (timeElapsed > 5.0f)
-    {
-        timeElapsed = 0.0f;
-        goingRight = !goingRight;
-    }
-
-    auto& physicsComponent = mEntityComponentManager->GetComponent<PhysicsComponent>(activeEntities[18].mEntityId);
-    physicsComponent.GetVelocity().x = goingRight ? 60.0f : -60.0f;
-    physicsComponent.GetVelocity().y = goingRight ? 60.0f : -60.0f;
-    
+{  
     for (const auto entityEntry: activeEntities)
     {
         const auto entityId = entityEntry.mEntityId;
