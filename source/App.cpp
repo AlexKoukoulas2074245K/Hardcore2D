@@ -31,7 +31,6 @@
 #include "util/TypeTraits.h"
 #include "util/StringId.h"
 
-#include <SDL.h>
 #include <vector>
 
 
@@ -106,7 +105,7 @@ bool App::Initialize()
 void App::Update(const float dt)
 {    
     mLevel->CheckForAdditionsOrRemovalsOfEntities();
-    HandleInput();
+    HandleInput();    
     mAIService->UpdateAIComponents(mLevel->GetAllActiveEntities(), dt);
     mDamageSystem->Update(mLevel->GetAllActiveEntities(), dt);
     mPhysicsSystem->UpdateEntities(mLevel->GetAllActiveEntities(), dt);

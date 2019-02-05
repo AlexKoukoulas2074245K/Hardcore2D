@@ -19,6 +19,7 @@
 #include <unordered_map>
 #include <vector>
 #include <set>
+#include <SDL.h>
 
 static const std::unordered_map<PhysicsComponent::BodyType, std::vector<PhysicsComponent::BodyType>> sPhysicallyInteractableLayers =
 {
