@@ -101,7 +101,8 @@ std::unique_ptr<Level> LevelFactory::CreateLevel(const std::string& levelPath)
             else if (componentName == "HealthComponent")
             {
                 const auto health = componentProperties["health"].get<float>();
-                entityComponentManager.AddComponent<HealthComponent>(entityId, std::make_unique<HealthComponent>(health));
+                const auto invincibilityDuration = componentProperties["invincibilityDuration"].get<float>();
+                entityComponentManager.AddComponent<HealthComponent>(entityId, std::make_unique<HealthComponent>(health, invincibilityDuration));
             }
             else if (componentName == "PhysicsComponent")
             {
