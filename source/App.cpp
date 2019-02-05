@@ -31,6 +31,7 @@
 #include "util/TypeTraits.h"
 #include "util/StringId.h"
 
+#include <SDL.h>
 #include <vector>
 
 
@@ -95,7 +96,7 @@ bool App::Initialize()
     mEventCommunicator->RegisterEventCallback<EntityDamagedEvent>([](const IEvent& event)
     {
         const auto& actualEvent = static_cast<const EntityDamagedEvent&>(event);
-        Log(LogType::INFO, "Entity %d damaged %.2f, now has %.2f health", actualEvent.GetDamagedEntityId(), actualEvent.GetDamageDone(), actualEvent.GetHealthRemaining());
+        Log(LogType::INFO, "Entity %d damaged %.2f, now has %.2f health", static_cast<int>(actualEvent.GetDamagedEntityId()), actualEvent.GetDamageDone(), actualEvent.GetHealthRemaining());
     });
     
     return true;
