@@ -18,7 +18,7 @@ class StringId final
 public:
 	StringId(const std::string& str)
 		: mString(str)
-		, mStringId(GetTypeHash(str))
+		, mStringId(GetStringHash(str))
 	{
 	}
 

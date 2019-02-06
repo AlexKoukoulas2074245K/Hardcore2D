@@ -48,7 +48,7 @@ bool ResourceManager::VInitialize()
 
 ResourceId ResourceManager::LoadResource(const std::string& resourceRelativePath, const bool /* false */)
 {
-    const auto resourceId = GetTypeHash(resourceRelativePath);
+    const auto resourceId = GetStringHash(resourceRelativePath);
     
     if (mResourceMap.count(resourceId))
     {
@@ -72,7 +72,7 @@ void ResourceManager::LoadResources(const std::vector<std::string>& resourceRela
 
 void ResourceManager::UnloadResource(const std::string& resourceRelativePath)
 {
-    const auto resourceId = GetTypeHash(resourceRelativePath);
+    const auto resourceId = GetStringHash(resourceRelativePath);
     mResourceMap.erase(resourceId);
 }
 
@@ -83,7 +83,7 @@ void ResourceManager::UnloadResource(const ResourceId resourceId)
 
 IResource& ResourceManager::GetResource(const std::string& resourceRelativePath)
 {
-    const auto resourceId = GetTypeHash(resourceRelativePath);
+    const auto resourceId = GetStringHash(resourceRelativePath);
     return GetResource(resourceId);
 }
 

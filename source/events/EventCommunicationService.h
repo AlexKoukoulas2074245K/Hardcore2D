@@ -29,7 +29,7 @@ public:
     template <class EventType>
     inline void RegisterEventCallback(EventCommunicator* listener, EventCallback eventCallback)
     {
-        const auto eventTypeHash = GetTypeHash<EventType>();
+        const auto eventTypeHash = GetStringHash(typeid(EventType).name());
         mEventCallbackRegistry[eventTypeHash].push_back(std::make_pair(listener, eventCallback));
     }
         
