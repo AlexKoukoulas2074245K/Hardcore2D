@@ -69,5 +69,5 @@ void DamageEntityCommand::VExecute()
     }
     
     // Probably dispatch event
-    mEventCommunicator->DispatchEvent(std::make_unique<EntityDamagedEvent>(mCollidedEntities.second, damageComponent.GetDamage(), healthComponent.GetHealth()));
+    mEventCommunicator->DispatchEvent(std::make_unique<EntityDamagedEvent>(mCollidedEntities.second, mCollidedEntities.first, damageComponent.GetDamage(), healthComponent.GetHealth()));
 }

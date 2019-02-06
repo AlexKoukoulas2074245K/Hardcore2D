@@ -9,6 +9,7 @@
 #include "../ServiceLocator.h"
 #include "../components/EntityComponentManager.h"
 #include "../events/EventCommunicator.h"
+#include "../events/EntityDamagedEvent.h"
 #include "../events/EntityDestroyedEvent.h"
 
 RangedShurikenAIComponent::RangedShurikenAIComponent(const ServiceLocator& serviceLocator, const EntityId meleeSwingEntityId, const float timeToLive)
@@ -17,7 +18,14 @@ RangedShurikenAIComponent::RangedShurikenAIComponent(const ServiceLocator& servi
     , mTimeToLive(timeToLive)
     , mEventCommunicator(serviceLocator.ResolveService<EventCommunicationService>().CreateEventCommunicator())
 {
-    
+    mEventCommunicator->RegisterEventCallback<EntityDamagedEvent>([this](const IEvent& event)
+    {
+        const auto damageSenderEntityId = static_cast<const EntityDamagedEvent&>(event).GetDamageSenderEntityId();
+        if (damageSenderEntityId == mEntityId)
+        {
+            mEventCommunicator->DispatchEvent(std::make_unique<EntityDestroyedEvent>(mEntityId));
+        }
+    });
 }
 
 void RangedShurikenAIComponent::VUpdate(const float dt)

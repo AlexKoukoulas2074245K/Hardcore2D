@@ -14,14 +14,17 @@
 class EntityDamagedEvent final: public IEvent
 {
 public:
-    EntityDamagedEvent(const EntityId damagedEntityId, const float damageDone, const float healthRemaining);
+    EntityDamagedEvent(const EntityId damagedEntityId, const EntityId damageSenderEntityId, const float damageDone, const float healthRemaining);
     
     EntityId GetDamagedEntityId() const;
+    EntityId GetDamageSenderEntityId() const;
+    
     float GetDamageDone() const;
     float GetHealthRemaining() const;
 
 private:
     const EntityId mDamagedEntityId;
+    const EntityId mDamageSenderEntityId;
     const float mDamageDone;
     const float mHealthRemaining;
 };

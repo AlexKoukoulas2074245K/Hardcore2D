@@ -8,8 +8,9 @@
 #include "EntityDamagedEvent.h"
 
 
-EntityDamagedEvent::EntityDamagedEvent(const EntityId damagedEntityId, const float damageDone, const float healthRemaining)
+EntityDamagedEvent::EntityDamagedEvent(const EntityId damagedEntityId, const EntityId damageSenderEntityId, const float damageDone, const float healthRemaining)
     : mDamagedEntityId(damagedEntityId)
+    , mDamageSenderEntityId(damageSenderEntityId)
     , mDamageDone(damageDone)
     , mHealthRemaining(healthRemaining)
 {
@@ -19,6 +20,11 @@ EntityDamagedEvent::EntityDamagedEvent(const EntityId damagedEntityId, const flo
 EntityId EntityDamagedEvent::GetDamagedEntityId() const
 {
     return mDamagedEntityId;
+}
+
+EntityId EntityDamagedEvent::GetDamageSenderEntityId() const
+{
+    return mDamageSenderEntityId;
 }
 
 float EntityDamagedEvent::GetDamageDone() const
