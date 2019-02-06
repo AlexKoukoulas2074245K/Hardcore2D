@@ -96,7 +96,8 @@ std::unique_ptr<Level> LevelFactory::CreateLevel(const std::string& levelPath)
             else if (componentName == "DamageComponent")
             {
                 const auto damage = componentProperties["damage"].get<float>();
-                entityComponentManager.AddComponent<DamageComponent>(entityId, std::make_unique<DamageComponent>(entityId, damage));
+                const auto canDamageSameEntityMultipleTimes = componentProperties["canDamageSameEntityMultipleTimes"].get<bool>();
+                entityComponentManager.AddComponent<DamageComponent>(entityId, std::make_unique<DamageComponent>(entityId, damage, canDamageSameEntityMultipleTimes));
             }
             else if (componentName == "HealthComponent")
             {

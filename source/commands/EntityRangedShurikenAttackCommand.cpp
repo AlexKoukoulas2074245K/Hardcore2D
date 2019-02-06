@@ -70,6 +70,6 @@ void EntityRangedShurikenAttackCommand::VExecute()
     mEntityComponentManager.AddComponent<AnimationComponent>(shurikenEntityId, std::move(shurikenAnimationComponent));
     mEntityComponentManager.AddComponent<TransformComponent>(shurikenEntityId, std::move(shurikenTransformComponent));
     mEntityComponentManager.AddComponent<IAIComponent>(shurikenEntityId, std::make_unique<RangedShurikenAIComponent>(mServiceLocator, shurikenEntityId, 2.0f));
-    mEntityComponentManager.AddComponent<DamageComponent>(shurikenEntityId, std::make_unique<DamageComponent>(mEntityId, 10.0f));
+    mEntityComponentManager.AddComponent<DamageComponent>(shurikenEntityId, std::make_unique<DamageComponent>(mEntityId, 10.0f, false));
     mEventCommunicator->DispatchEvent(std::make_unique<NewEntityCreatedEvent>(EntityNameIdEntry(StringId("player_shuriken"), shurikenEntityId)));
 }

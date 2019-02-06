@@ -52,9 +52,21 @@ void DamageEntityCommand::VExecute()
         return;
     }
     
+    // Make sure the damage component can damage this entity. Don't damage if the damage component can not attack the same entity multiple times
+    // and the entity has already been damaged by this component
+    if (damageComponent.CanDamageSameEntityMultipleTimes() == false && damageComponent.IsEntityWhitelisted(mCollidedEntities.second))
+    {
+        return;
+    }
+
     // Damage entity
     healthComponent.ReduceHealthBy(damageComponent.GetDamage());
     healthComponent.SetTemporarilyInvincible(true);
+    
+    if (damageComponent.CanDamageSameEntityMultipleTimes() == false)
+    {
+        damageComponent.AddEntityToWhitelistedDamagedEntities(mCollidedEntities.second);
+    }
     
     // Probably dispatch event
     mEventCommunicator->DispatchEvent(std::make_unique<EntityDamagedEvent>(mCollidedEntities.second, damageComponent.GetDamage(), healthComponent.GetHealth()));
