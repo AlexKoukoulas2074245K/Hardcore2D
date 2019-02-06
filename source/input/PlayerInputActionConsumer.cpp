@@ -14,6 +14,9 @@
 #include "../commands/EntityMeleeAttackCommand.h"
 #include "../commands/EntityRangedShurikenAttackCommand.h"
 #include "../events/EventCommunicator.h"
+#include "../events/PlayerMeleeAttackEvent.h"
+#include "../events/PlayerRangedAttackEvent.h"
+#include "../game/PlayerAttackRechargeController.h"
 #include "../util/Logging.h"
 #include "../events/PlayerChangedDirectionEvent.h"
 
@@ -21,6 +24,7 @@
 
 PlayerInputActionConsumer::PlayerInputActionConsumer(const ServiceLocator& serviceLocator, const EntityId entityId)
     : mServiceLocator(serviceLocator)
+    , mPlayerAttackRechargeController(mServiceLocator.ResolveService<PlayerAttackRechargeController>())
     , mEntityComponentManager(mServiceLocator.ResolveService<EntityComponentManager>())
     , mEntityId(entityId)
     , mEventCommunicator(mServiceLocator.ResolveService<EventCommunicationService>().CreateEventCommunicator())
@@ -98,7 +102,11 @@ bool PlayerInputActionConsumer::VConsumeInputAction(const InputAction& inputActi
             {
                 case InputAction::ActionState::START:
                 {
-                    EntityMeleeAttackCommand(mServiceLocator, mEntityId).VExecute();
+                    if (mPlayerAttackRechargeController.IsMeleeAttackAvailable())
+                    {
+                        EntityMeleeAttackCommand(mServiceLocator, mEntityId).VExecute();
+                        mEventCommunicator->DispatchEvent(std::make_unique<PlayerMeleeAttackEvent>());
+                    }
                     return true;
                 } break;
                 case InputAction::ActionState::CONTINUE:
@@ -111,7 +119,11 @@ bool PlayerInputActionConsumer::VConsumeInputAction(const InputAction& inputActi
             {
                 case InputAction::ActionState::START:
                 {
-                    EntityRangedShurikenAttackCommand(mServiceLocator, mEntityId).VExecute();
+                    if (mPlayerAttackRechargeController.IsRangedAttackAvailable())
+                    {
+                        EntityRangedShurikenAttackCommand(mServiceLocator, mEntityId).VExecute();
+                        mEventCommunicator->DispatchEvent(std::make_unique<PlayerRangedAttackEvent>());
+                    }
                     return true;
                 } break;
                 case InputAction::ActionState::CONTINUE:

@@ -52,7 +52,7 @@ void EntityRangedShurikenAttackCommand::VExecute()
         shurikenTransformComponent->GetTranslation().x += 15.0f;
         shurikenAnimationComponent->SetFacingDirection(FacingDirection::RIGHT);
         shurikenPhysicsComponent->GetAngularVelocity() = 10.0f;
-        shurikenPhysicsComponent->GetVelocity().x = 500.0f;
+        shurikenPhysicsComponent->GetVelocity().x = 1000.0f;
     }
     else
     {
@@ -60,7 +60,7 @@ void EntityRangedShurikenAttackCommand::VExecute()
         shurikenTransformComponent->GetTranslation().x += -15.0f;
         shurikenAnimationComponent->SetFacingDirection(FacingDirection::LEFT);
         shurikenPhysicsComponent->GetAngularVelocity() = -10.0f;
-        shurikenPhysicsComponent->GetVelocity().x = -500.0f;
+        shurikenPhysicsComponent->GetVelocity().x = -1000.0f;
     }
     
     shurikenTransformComponent->GetScale() = glm::vec3(40.0f, 40.0f, 1.0f);

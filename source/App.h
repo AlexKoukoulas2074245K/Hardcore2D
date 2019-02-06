@@ -25,6 +25,7 @@ class PhysicsSystem;
 class InputHandler;
 class IInputActionConsumer;
 class Level;
+class PlayerAttackRechargeController;
 
 class App final
 {
@@ -49,6 +50,7 @@ private:
     std::unique_ptr<InputHandler> mInputHandler;
     std::unique_ptr<PhysicsSystem> mPhysicsSystem;
     std::unique_ptr<DamageSystem> mDamageSystem;
+    std::unique_ptr<PlayerAttackRechargeController> mPlayerAttackRechargeController;
     
     std::vector<std::unique_ptr<IInputActionConsumer>> mInputActionConsumers;
     

@@ -6,7 +6,8 @@
 //
 
 #include "App.h"
-#include "controllers/AIService.h"
+#include "game/AIService.h"
+#include "game/PlayerAttackRechargeController.h"
 #include "rendering/Camera.h"
 #include "input/PlayerInputActionConsumer.h"
 #include "input/DebugInputActionConsumer.h"
@@ -61,6 +62,7 @@ bool App::Initialize()
     mPhysicsSystem = std::unique_ptr<PhysicsSystem>(new PhysicsSystem(*mServiceLocator));
     mDamageSystem = std::unique_ptr<DamageSystem>(new DamageSystem(*mServiceLocator));
     mInputHandler = std::unique_ptr<InputHandler>(new InputHandler());
+    mPlayerAttackRechargeController = std::unique_ptr<PlayerAttackRechargeController>(new PlayerAttackRechargeController(*mServiceLocator));
     
     // Register services
     mServiceLocator->RegisterService<EntityComponentManager>(mEntityComponentManager.get());
@@ -69,6 +71,7 @@ bool App::Initialize()
     mServiceLocator->RegisterService<PhysicsSystem>(mPhysicsSystem.get());
     mServiceLocator->RegisterService<ResourceManager>(mResourceManager.get());
     mServiceLocator->RegisterService<InputHandler>(mInputHandler.get());
+    mServiceLocator->RegisterService<PlayerAttackRechargeController>(mPlayerAttackRechargeController.get());
 
     // 2nd step service initialization
     if (!mDamageSystem->VInitialize()) return false;
@@ -76,6 +79,7 @@ bool App::Initialize()
     if (!mAIService->VInitialize()) return false;
     if (!mCoreRenderingService->VInitialize()) return false;
     if (!mResourceManager->VInitialize()) return false;
+    if (!mPlayerAttackRechargeController->VInitialize()) return false;
     
     // Parse Level
     LevelFactory levelFactory(*mServiceLocator);
@@ -105,7 +109,8 @@ bool App::Initialize()
 void App::Update(const float dt)
 {    
     mLevel->CheckForAdditionsOrRemovalsOfEntities();
-    HandleInput();    
+    HandleInput();
+    mPlayerAttackRechargeController->Update(dt);
     mAIService->UpdateAIComponents(mLevel->GetAllActiveEntities(), dt);
     mDamageSystem->Update(mLevel->GetAllActiveEntities(), dt);
     mPhysicsSystem->UpdateEntities(mLevel->GetAllActiveEntities(), dt);

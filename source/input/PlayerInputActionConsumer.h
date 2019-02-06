@@ -15,6 +15,7 @@
 
 class ServiceLocator;
 class EntityComponentManager;
+class PlayerAttackRechargeController;
 class EventCommunicator;
 
 class PlayerInputActionConsumer final: public IInputActionConsumer
@@ -27,7 +28,10 @@ public:
     
 private:
     const ServiceLocator& mServiceLocator;
+    const PlayerAttackRechargeController& mPlayerAttackRechargeController;
+    
     EntityComponentManager& mEntityComponentManager;
+    
     EntityId mEntityId;
     std::unique_ptr<EventCommunicator> mEventCommunicator;
 };
