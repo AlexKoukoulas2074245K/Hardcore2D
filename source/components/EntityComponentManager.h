@@ -55,23 +55,13 @@ public:
     template<class ComponentType>
     inline ComponentType& GetComponent(const EntityId entityId)
     {
-        if (!HasComponent<ComponentType>(entityId))
-        {
-            assert(false);
-        }
-        
         const auto componentTypeId = GetTypeHash<ComponentType>();
         return static_cast<ComponentType&>(*(mEntityComponentMap.at(entityId).at(componentTypeId)));
     }
 
     template<class ComponentType>
     inline const ComponentType& GetComponent(const EntityId entityId) const
-    {
-        if (!HasComponent<ComponentType>(entityId))
-        {
-            assert(false);
-        }
-        
+    {   
         const auto componentTypeId = GetTypeHash<ComponentType>();
         return static_cast<const ComponentType&>(*(mEntityComponentMap.at(entityId).at(componentTypeId)));
     }
