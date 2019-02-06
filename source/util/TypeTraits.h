@@ -46,5 +46,29 @@ using ComponentTypeId = int;
 using ResourceId = size_t;
 using GLuint = unsigned int;
 
+struct ComponentTypeIdHasher
+{
+    std::size_t operator()(const ComponentTypeId& key) const
+    {
+        return static_cast<std::size_t>(key);
+    }
+};
+
+struct EntityIdHasher
+{
+    std::size_t operator()(const EntityId& key) const
+    {
+        return static_cast<std::size_t>(key);
+    }
+};
+
+struct ResourceIdHasher
+{
+    std::size_t operator()(const ResourceId& key) const
+    {
+        return static_cast<std::size_t>(key);
+    }
+};
+
 #endif /* TypeTraits_h */
 

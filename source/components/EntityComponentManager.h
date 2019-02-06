@@ -20,7 +20,7 @@ class EntityComponentManager final: public IService
 {
     friend class App;
 public:
-    using ComponentTypeToImplementationMap = std::unordered_map<ComponentTypeId, std::unique_ptr<IComponent>>;
+    using ComponentTypeToImplementationMap = std::unordered_map<ComponentTypeId, std::unique_ptr<IComponent>, ComponentTypeIdHasher>;
     
     EntityId GenerateEntity()
     {
@@ -107,7 +107,7 @@ private:
     EntityComponentManager() = default;
     
     EntityId mEntityCounter = 0;
-    std::unordered_map<EntityId, ComponentTypeToImplementationMap> mEntityComponentMap;
+    std::unordered_map<EntityId, ComponentTypeToImplementationMap, EntityIdHasher> mEntityComponentMap;
     
 };
 

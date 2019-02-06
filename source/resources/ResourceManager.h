@@ -56,7 +56,7 @@ private:
     void MapResourceExtensionsToLoaders();
     void LoadResourceInternal(const std::string& resourceRelativePath, const ResourceId resourceId);
     
-    std::unordered_map<ResourceId, std::unique_ptr<IResource>> mResourceMap;
+    std::unordered_map<ResourceId, std::unique_ptr<IResource>, ResourceIdHasher> mResourceMap;
     std::map<std::string, IResourceLoader*> mResourceExtensionsToLoadersMap;
     
     std::unique_ptr<IResourceLoader> mTextFileLoader;
