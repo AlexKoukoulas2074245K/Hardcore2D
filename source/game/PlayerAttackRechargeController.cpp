@@ -11,7 +11,7 @@
 #include "../events/PlayerMeleeAttackEvent.h"
 #include "../events/PlayerRangedAttackEvent.h"
 
-const float PlayerAttackRechargeController::DEFAULT_PLAYER_MELEE_ATTACK_RECHARGE_DURATION = 0.25f;
+const float PlayerAttackRechargeController::DEFAULT_PLAYER_MELEE_ATTACK_RECHARGE_DURATION = 0.35f;
 const float PlayerAttackRechargeController::DEFAULT_PLAYER_RANGED_ATTACK_RECHARGE_DURATION = 1.0f;
 const int PlayerAttackRechargeController::DEFAULT_RANGED_ATTACK_BATCH_COUNT = 3;
 

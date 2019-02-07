@@ -52,7 +52,7 @@ void Camera::Update(const EntityId focusedEntityId, const float dt)
     const auto targetX = focusedEntityTranslation.x + lookAheadDistance - mRenderableDimensions.x * 0.5f;
     
     // Increase horizontal position by inverse of distance to target
-    mCameraTranslation.x += (-(targetX - mCameraTranslation.x) + focusedEntityVelocity.x) * dt;
+    mCameraTranslation.x += ((targetX - mCameraTranslation.x)/5.0f + 1.5f * focusedEntityVelocity.x) * dt;
     
     // Stop camera if it passes the target position
     if ((mLookingAheadRight && mCameraTranslation.x > targetX) ||
