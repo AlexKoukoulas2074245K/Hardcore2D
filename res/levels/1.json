@@ -190,7 +190,7 @@
             "name": "light_samurai",
             "components": 
             {
-                "AnimationComponent": { "path": "characters/ninja", "timer": 0.04 },
+                "AnimationComponent": { "path": "characters/ninja", "timer": 0.025 },
                 "DamageComponent":    { "damage": 4.0, "canDamageSameEntityMultipleTimes": true },
                 "HealthComponent":   { "health": 100.0, "invincibilityDuration": 0.0 },
                 "PhysicsComponent":   { "bodyType": "dynamic", "hitBox": { "centerPoint": [0.0, 0.0], "dimensions": [60.0, 90.0] }, "gravity": [0.0, -1680.0, 0.0], "maxVelocity": [1000.0, 700.0, 0.0], "minVelocity": [-1000.0, -700.0, 0.0] },
@@ -203,7 +203,7 @@
             "name": "player",
             "components":
             {
-                "AnimationComponent": { "path": "characters/light_samurai", "timer": 0.04 },
+                "AnimationComponent": { "path": "characters/light_samurai", "timer": 0.03 },
                 "HealthComponent":    { "health": 100.0, "invincibilityDuration": 0.5 },
                 "PhysicsComponent":   { "bodyType": "dynamic", "hitBox": { "centerPoint": [0.0, 0.0], "dimensions": [60.0, 90.0] }, "gravity": [0.0, -1680.0, 0.0], "maxVelocity": [240.0, 560.0, 0.0], "minVelocity": [-240.0, -560.0, 0.0] },
                 "ShaderComponent":    { "shaderName": "basic" },
