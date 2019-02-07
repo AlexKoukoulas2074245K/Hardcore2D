@@ -16,6 +16,7 @@
 #include "../components/EntityComponentManager.h"
 #include "../components/TransformComponent.h"
 #include "../components/PhysicsComponent.h"
+#include "../components/HealthComponent.h"
 #include "../commands/SetEntityCustomVelocityCommand.h"
 #include "../commands/EntityMeleeAttackCommand.h"
 #include "../commands/SetEntityFacingDirectionCommand.h"
@@ -193,7 +194,8 @@ void BasicNinjaEnemyAIComponent::OnEntityDamagedEvent(const IEvent& event)
     mState = State::DEAD;
     mEntityComponentManager.GetComponent<AnimationComponent>(mThisEntityId).PlayAnimation(StringId("death"), [this]() 
     {
-        mEntityComponentManager.GetComponent<AnimationComponent>(mThisEntityId).SetPause(true);        
+        mEntityComponentManager.GetComponent<AnimationComponent>(mThisEntityId).SetPause(true);
+        mEntityComponentManager.RemoveComponent<HealthComponent>(mThisEntityId);
     });
 }
 
