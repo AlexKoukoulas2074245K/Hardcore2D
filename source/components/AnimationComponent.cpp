@@ -19,6 +19,7 @@ AnimationComponent::AnimationComponent(const std::string& relativeEntityAnimatio
     , mCurrentAnimation("")
     , mPreviousAnimation("")
     , mPlayingOneTimeAnimation(false)
+    , mIsPaused(false)
     , mCurrentFrameIndex(0)
     , mAnimationDuration(animationDuration)
     , mAnimationTimer(0.0f)
@@ -33,6 +34,7 @@ AnimationComponent::AnimationComponent(const AnimationsMap& userSuppliedAnimatio
     , mCurrentAnimation("")
     , mPreviousAnimation("")
     , mPlayingOneTimeAnimation(false)
+    , mIsPaused(false)
     , mCurrentFrameIndex(0)
     , mAnimationDuration(animationDuration)
     , mAnimationTimer(0.0f)
@@ -70,13 +72,23 @@ void AnimationComponent::SetFacingDirection(const FacingDirection facingDirectio
     mFacingDirection = facingDirection;
 }
 
-void AnimationComponent::PlayAnimation(const StringId newAnimation)
+void AnimationComponent::PlayAnimation(const StringId newAnimation, AnimationCompleteCallback animationCompleteCallback /* nullptr */)
 {
-    if (mAnimations.count(newAnimation) == 0) assert(false);    
+    if (mAnimations.count(newAnimation) == 0)
+    {
+        assert(false);
+    }
+    
+    if (animationCompleteCallback != nullptr)
+    {
+        mAnimationCompleteCallback = animationCompleteCallback;
+    }
+
     if (mCurrentAnimation == newAnimation)
     {
         return;
     }
+
     if (mPlayingOneTimeAnimation)
     {
         mPreviousAnimation = newAnimation;
@@ -87,9 +99,18 @@ void AnimationComponent::PlayAnimation(const StringId newAnimation)
     mCurrentFrameIndex = 0;
 }
 
-void AnimationComponent::PlayAnimationOnce(const StringId newAnimation)
+void AnimationComponent::PlayAnimationOnce(const StringId newAnimation, AnimationCompleteCallback animationCompleteCallback /* nullptr */)
 {
-    if (mAnimations.count(newAnimation) == 0) assert(false);
+    if (mAnimations.count(newAnimation) == 0)
+    {
+        assert(false);
+    }
+
+    if (animationCompleteCallback != nullptr)
+    {
+        mAnimationCompleteCallback = animationCompleteCallback;
+    }
+
     if (mCurrentAnimation == newAnimation)
     {
         return;
@@ -113,12 +134,33 @@ void AnimationComponent::SetAnimationTimer(const float animationTimer)
 
 void AnimationComponent::AdvanceFrame()
 {
-    mCurrentFrameIndex = (mCurrentFrameIndex + 1) % mAnimations.at(mCurrentAnimation).size();
-    if (mCurrentFrameIndex == 0 && mPlayingOneTimeAnimation)
+    if (mCurrentFrameIndex + 1 >= static_cast<int>(mAnimations.at(mCurrentAnimation).size()))
     {
-        mPlayingOneTimeAnimation = false;
-        PlayAnimation(mPreviousAnimation);
+        if (mAnimationCompleteCallback != nullptr)
+        {
+            mAnimationCompleteCallback();
+        }
     }
+
+    if (mIsPaused)
+    {
+        return;
+    }
+
+    mCurrentFrameIndex = (mCurrentFrameIndex + 1) % mAnimations.at(mCurrentAnimation).size();
+    if (mCurrentFrameIndex == 0)
+    {
+        if (mPlayingOneTimeAnimation)
+        {
+            mPlayingOneTimeAnimation = false;
+            PlayAnimation(mPreviousAnimation);
+        }        
+    }
+}
+
+void AnimationComponent::SetPause(const bool paused)
+{
+    mIsPaused = paused;
 }
 
 void AnimationComponent::CreateAnimationsMapFromRelativeEntityAnimationsDirectory(const std::string& relativeEntityAnimationsDirectoryPath)

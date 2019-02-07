@@ -19,6 +19,8 @@
 #include "../commands/SetEntityCustomVelocityCommand.h"
 #include "../commands/EntityMeleeAttackCommand.h"
 #include "../commands/SetEntityFacingDirectionCommand.h"
+#include "../events/EntityDamagedEvent.h"
+#include "../events/EntityDestroyedEvent.h"
 
 const float BasicNinjaEnemyAIComponent::PLAYER_DETECTION_DISTANCE = 400.0f;
 const float BasicNinjaEnemyAIComponent::PATROLLING_MAX_DISTANCE_FROM_INIT_POSITION = 100.0f;
@@ -41,6 +43,10 @@ BasicNinjaEnemyAIComponent::BasicNinjaEnemyAIComponent(const ServiceLocator& ser
     mEventCommunicator->RegisterEventCallback<EntityCollisionEvent>([this](const IEvent& event)
     {
         OnEntityCollisionEvent(event);
+    });
+    mEventCommunicator->RegisterEventCallback<EntityDamagedEvent>([this](const IEvent& event)
+    {
+        OnEntityDamagedEvent(event);
     });
 }
 
@@ -163,6 +169,32 @@ void BasicNinjaEnemyAIComponent::OnEntityCollisionEvent(const IEvent& event)
             OnLeapingComplete(otherEntityPhysicsComponent);
         }
     }
+}
+
+void BasicNinjaEnemyAIComponent::OnEntityDamagedEvent(const IEvent& event)
+{
+    const auto& actualEvent = static_cast<const EntityDamagedEvent&>(event);
+
+    if (mState == State::DEAD)
+    {
+        return;
+    }
+
+    if (actualEvent.GetDamagedEntityId() != mThisEntityId)
+    {
+        return;
+    }
+
+    if (actualEvent.GetHealthRemaining() > 0.0f)
+    {
+        return;
+    }
+
+    mState = State::DEAD;
+    mEntityComponentManager.GetComponent<AnimationComponent>(mThisEntityId).PlayAnimation(StringId("death"), [this]() 
+    {
+        mEntityComponentManager.GetComponent<AnimationComponent>(mThisEntityId).SetPause(true);        
+    });
 }
 
 void BasicNinjaEnemyAIComponent::OnLeapingComplete(const PhysicsComponent& otherEntityPhysicsComponent)

@@ -14,12 +14,14 @@
 
 #include <unordered_map>
 #include <vector>
+#include <functional>
 
 class ResourceManager;
 
 class AnimationComponent final: public IComponent
 {
 public:
+    using AnimationCompleteCallback = std::function<void()>;
     using AnimationsMap = std::unordered_map<StringId, std::vector<GLuint>>;
     
     AnimationComponent(const std::string& relativeEntityAnimationsDirectoryPath, const float animationDuration, ResourceManager&);
@@ -32,10 +34,11 @@ public:
     float GetAnimationTimer() const;
     
     void SetFacingDirection(const FacingDirection);
-    void PlayAnimation(const StringId newAnimation);
-    void PlayAnimationOnce(const StringId newAnimation);
+    void PlayAnimation(const StringId newAnimation, AnimationCompleteCallback animationCompleteCallback = nullptr);
+    void PlayAnimationOnce(const StringId newAnimation, AnimationCompleteCallback animationCompleteCallback = nullptr);
     void SetAnimationTimer(const float animationTimer);
     void AdvanceFrame();
+    void SetPause(const bool paused);
     
 private:
     void CreateAnimationsMapFromRelativeEntityAnimationsDirectory(const std::string& relativeEntityAnimationsDirectoryPath);
@@ -47,9 +50,13 @@ private:
     StringId mCurrentAnimation;
     StringId mPreviousAnimation;
     bool mPlayingOneTimeAnimation;
+    bool mIsPaused;
+
     int mCurrentFrameIndex;
     float mAnimationDuration;
     float mAnimationTimer;
+
+    AnimationCompleteCallback mAnimationCompleteCallback;
 };
 
 #endif /* AnimationComponent_h */

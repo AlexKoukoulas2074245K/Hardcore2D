@@ -42,6 +42,7 @@ private:
     
     void OnAnnouncePlayerEntityId(const IEvent&);
     void OnEntityCollisionEvent(const IEvent&);
+    void OnEntityDamagedEvent(const IEvent&);
     void OnLeapingComplete(const PhysicsComponent&);
     
     EntityComponentManager& mEntityComponentManager;
