@@ -10,11 +10,6 @@
 
 #include "../util/StringId.h"
 
-enum class FacingDirection
-{
-    LEFT, RIGHT
-};
-
 struct EntityNameIdEntry
 {
     EntityNameIdEntry(const StringId entityName, const EntityId entityId)

@@ -10,6 +10,7 @@
 
 #include "IEvent.h"
 #include "../game/GameTypeTraits.h"
+#include "../game/GameConstants.h"
 
 class PlayerChangedDirectionEvent final: public IEvent
 {

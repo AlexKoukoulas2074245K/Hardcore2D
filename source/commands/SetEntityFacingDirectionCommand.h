@@ -10,6 +10,7 @@
 
 #include "ICommand.h"
 #include "../game/GameTypeTraits.h"
+#include "../game/GameConstants.h"
 
 class EntityComponentManager;
 

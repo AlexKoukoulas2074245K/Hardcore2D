@@ -10,6 +10,7 @@
 #include "../components/EntityComponentManager.h"
 #include "../components/PhysicsComponent.h"
 #include "../components/AnimationComponent.h"
+#include "../game/GameConstants.h"
 #include "../util/MathUtils.h"
 
 SetEntityCustomVelocityCommand::SetEntityCustomVelocityCommand(EntityComponentManager& entityComponentManager, const EntityId entityId, const glm::vec3& velocity)
