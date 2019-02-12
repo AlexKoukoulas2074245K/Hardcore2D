@@ -83,7 +83,7 @@ bool App::Initialize()
     
     // Parse Level
     LevelFactory levelFactory(*mServiceLocator);
-    mLevel = levelFactory.CreateLevel("1.json");
+    mLevel = levelFactory.CreateLevel("test.json");
 
     // Initialize camera
     mCamera = std::make_unique<Camera>(*mServiceLocator, mCoreRenderingService->GetRenderableDimensions(), mLevel->GetHorizontalBounds(), mLevel->GetVerticalBounds());

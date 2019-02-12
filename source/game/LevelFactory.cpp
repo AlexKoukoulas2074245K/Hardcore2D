@@ -33,9 +33,9 @@
 static const std::string LEVEL_DIRECTORY = "levels/";
 static const std::unordered_map<std::string, PhysicsComponent::BodyType> sStringToPhysicsBodyType = 
 {
-    { "dynamic", PhysicsComponent::BodyType::DYNAMIC },
-    { "kinematic", PhysicsComponent::BodyType::KINEMATIC },
-    { "static", PhysicsComponent::BodyType::STATIC }
+    { "DYNAMIC", PhysicsComponent::BodyType::DYNAMIC },
+    { "KINEMATIC", PhysicsComponent::BodyType::KINEMATIC },
+    { "STATIC", PhysicsComponent::BodyType::STATIC }
 };
 
 LevelFactory::LevelFactory(const ServiceLocator& serviceLocator)
@@ -90,7 +90,7 @@ std::unique_ptr<Level> LevelFactory::CreateLevel(const std::string& levelPath)
             else if (componentName == "AnimationComponent")
             {
                 const auto animationRootDirectory = componentProperties["path"].get<std::string>();
-                const auto animationTimer = componentProperties["timer"].get<float>();
+                const auto animationTimer = componentProperties["animationFrameDuration"].get<float>();
                 entityComponentManager.AddComponent<AnimationComponent>(entityId, std::make_unique<AnimationComponent>(animationRootDirectory, animationTimer, resourceManager));
             }
             else if (componentName == "DamageComponent")
