@@ -63,7 +63,7 @@ void EntityMeleeAttackCommand::VExecute()
         swingAnimationComponent->SetFacingDirection(FacingDirection::LEFT);
     }
     
-    swingTransformComponent->GetScale() = glm::vec3(80.0f, 200.0f, 1.0f);    
+    swingTransformComponent->GetScale() = glm::vec3(80.0f, 160.0f, 1.0f);
     
     mEntityComponentManager.AddComponent<AnimationComponent>(swingEntityId, std::move(swingAnimationComponent));
     mEntityComponentManager.AddComponent<TransformComponent>(swingEntityId, std::move(swingTransformComponent));

@@ -110,7 +110,8 @@ std::unique_ptr<Level> LevelFactory::CreateLevel(const std::string& levelPath)
                 const auto bodyType = sStringToPhysicsBodyType.at(componentProperties["bodyType"].get<std::string>());
                 
                 const auto hitBoxCenter = glm::vec2(componentProperties["hitBox"]["centerPoint"][0].get<float>(), componentProperties["hitBox"]["centerPoint"][1].get<float>());
-                const auto hitBoxDimensions = glm::vec2(componentProperties["hitBox"]["dimensions"][0].get<float>(), componentProperties["hitBox"]["dimensions"][1].get<float>());
+                const auto scaleMultiplier = StringStartsWith(entityName, "char-") ? 2.5f : 1.0f;
+                const auto hitBoxDimensions = glm::vec2(componentProperties["hitBox"]["dimensions"][0].get<float>() * scaleMultiplier, componentProperties["hitBox"]["dimensions"][1].get<float>() * scaleMultiplier);
                 const PhysicsComponent::Hitbox hitBox(hitBoxCenter, hitBoxDimensions);
 
                 const auto gravity = glm::vec3(componentProperties["gravity"][0].get<float>(),
@@ -141,10 +142,11 @@ std::unique_ptr<Level> LevelFactory::CreateLevel(const std::string& levelPath)
                 const auto rotation = glm::vec3(componentProperties["rotation"][0].get<float>(),
                                                 componentProperties["rotation"][1].get<float>(),
                                                 componentProperties["rotation"][2].get<float>());
-
-                const auto scale  = glm::vec3(componentProperties["scale"][0].get<float>(),
-                                              componentProperties["scale"][1].get<float>(),
-                                              componentProperties["scale"][2].get<float>());
+                
+                const auto scaleMultiplier = StringStartsWith(entityName, "char-") ? 2.5f : 1.0f;
+                const auto scale  = glm::vec3(componentProperties["scale"][0].get<float>() * scaleMultiplier,
+                                              componentProperties["scale"][1].get<float>() * scaleMultiplier,
+                                              componentProperties["scale"][2].get<float>() * scaleMultiplier);
 
                 entityComponentManager.AddComponent<TransformComponent>(entityId, std::make_unique<TransformComponent>(translation, rotation, scale));
             } 
