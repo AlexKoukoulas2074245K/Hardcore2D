@@ -11,6 +11,7 @@
 #include "rendering/Camera.h"
 #include "input/PlayerInputActionConsumer.h"
 #include "input/DebugInputActionConsumer.h"
+#include "commands/SetEntityCustomVelocityCommand.h"
 #include "components/EntityComponentManager.h"
 #include "components/IAIComponent.h"
 #include "events/EventCommunicator.h"
@@ -104,7 +105,6 @@ bool App::Initialize()
     
     return true;
 }
-
 
 void App::Update(const float dt)
 {    

@@ -47,7 +47,10 @@ void SetEntityCustomVelocityCommand::VExecute()
                 }
             }
             
-            animationComponent.PlayAnimation(StringId("running"));
+            if (animationComponent.HasAnimation(StringId("running")))
+            {
+                animationComponent.PlayAnimation(StringId("running"));
+            }            
         }
         
     }

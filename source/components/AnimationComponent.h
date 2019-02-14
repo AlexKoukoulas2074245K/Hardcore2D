@@ -33,7 +33,8 @@ public:
     GLuint GetCurrentFrameResourceId() const;
     float GetAnimationDuration() const;
     float GetAnimationTimer() const;
-    
+    bool HasAnimation(const StringId animation);
+
     void SetFacingDirection(const FacingDirection);
     void PlayAnimation(const StringId newAnimation, AnimationCompleteCallback animationCompleteCallback = nullptr);
     void PlayAnimationOnce(const StringId newAnimation, AnimationCompleteCallback animationCompleteCallback = nullptr);

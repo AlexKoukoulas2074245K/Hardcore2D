@@ -67,6 +67,11 @@ float AnimationComponent::GetAnimationTimer() const
     return mAnimationTimer;
 }
 
+bool AnimationComponent::HasAnimation(const StringId animation)
+{
+    return mAnimations.count(animation) != 0;
+}
+
 void AnimationComponent::SetFacingDirection(const FacingDirection facingDirection)
 {
     mFacingDirection = facingDirection;
