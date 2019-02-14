@@ -63,7 +63,7 @@ void EntityRangedShurikenAttackCommand::VExecute()
         shurikenPhysicsComponent->GetVelocity().x = -1000.0f;
     }
     
-    shurikenTransformComponent->GetScale() = glm::vec3(40.0f, 40.0f, 1.0f);
+    shurikenTransformComponent->GetScale() = glm::vec3(30.0f, 30.0f, 1.0f);
 
     mEntityComponentManager.AddComponent<PhysicsComponent>(shurikenEntityId, std::move(shurikenPhysicsComponent));
     

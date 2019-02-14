@@ -83,7 +83,7 @@ bool App::Initialize()
     
     // Parse Level
     LevelFactory levelFactory(*mServiceLocator);
-    mLevel = levelFactory.CreateLevel("test.json");
+    mLevel = levelFactory.CreateLevel("editornew.json");
 
     // Initialize camera
     mCamera = std::make_unique<Camera>(*mServiceLocator, mCoreRenderingService->GetRenderableDimensions(), mLevel->GetHorizontalBounds(), mLevel->GetVerticalBounds());
@@ -91,11 +91,11 @@ bool App::Initialize()
     
     // Initialized in order of priority
     mInputActionConsumers.push_back(std::make_unique<DebugInputActionConsumer>(*mServiceLocator));
-    mInputActionConsumers.push_back(std::make_unique<PlayerInputActionConsumer>(*mServiceLocator, mLevel->GetEntityIdFromName(StringId("player"))));
+    mInputActionConsumers.push_back(std::make_unique<PlayerInputActionConsumer>(*mServiceLocator, mLevel->GetEntityIdFromName(StringId("char-player"))));
     
     // Announce player id to AIs
     mEventCommunicator = mEventCommunicationService->CreateEventCommunicator();
-    mEventCommunicator->DispatchEvent(std::make_unique<AnnouncePlayerEntityIdEvent>(mLevel->GetEntityIdFromName(StringId("player"))));
+    mEventCommunicator->DispatchEvent(std::make_unique<AnnouncePlayerEntityIdEvent>(mLevel->GetEntityIdFromName(StringId("char-player"))));
     mEventCommunicator->RegisterEventCallback<EntityDamagedEvent>([](const IEvent& event)
     {
         const auto& actualEvent = static_cast<const EntityDamagedEvent&>(event);
@@ -115,7 +115,7 @@ void App::Update(const float dt)
     mDamageSystem->Update(mLevel->GetAllActiveEntities(), dt);
     mPhysicsSystem->UpdateEntities(mLevel->GetAllActiveEntities(), dt);
     mAnimationService->UpdateAnimations(mLevel->GetAllActiveEntities(), dt);
-    mCamera->Update(mLevel->GetEntityIdFromName(StringId("player")), dt);
+    mCamera->Update(mLevel->GetEntityIdFromName(StringId("char-player")), dt);
     mCoreRenderingService->RenderEntities(mLevel->GetAllActiveEntities());
 }
 
