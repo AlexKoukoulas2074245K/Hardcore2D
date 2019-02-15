@@ -30,6 +30,7 @@
 #include <SDL.h>
 
 
+static const float CHARACTER_SCALE_MULTIPLIER = 2.5f;
 static const std::string LEVEL_DIRECTORY = "levels/";
 static const std::unordered_map<std::string, PhysicsComponent::BodyType> sStringToPhysicsBodyType = 
 {
@@ -109,9 +110,8 @@ std::unique_ptr<Level> LevelFactory::CreateLevel(const std::string& levelPath)
             {
                 const auto bodyType = sStringToPhysicsBodyType.at(componentProperties["bodyType"].get<std::string>());
                 
-                const auto hitBoxCenter = glm::vec2(componentProperties["hitBox"]["centerPoint"][0].get<float>(), componentProperties["hitBox"]["centerPoint"][1].get<float>());
-                const auto scaleMultiplier = StringStartsWith(entityName, "char-") ? 2.5f : 1.0f;
-                const auto hitBoxDimensions = glm::vec2(componentProperties["hitBox"]["dimensions"][0].get<float>() * scaleMultiplier, componentProperties["hitBox"]["dimensions"][1].get<float>() * scaleMultiplier);
+                const auto hitBoxCenter = glm::vec2(componentProperties["hitBox"]["centerPoint"][0].get<float>(), componentProperties["hitBox"]["centerPoint"][1].get<float>());                
+                const auto hitBoxDimensions = glm::vec2(componentProperties["hitBox"]["dimensions"][0].get<float>(), componentProperties["hitBox"]["dimensions"][1].get<float>());
                 const PhysicsComponent::Hitbox hitBox(hitBoxCenter, hitBoxDimensions);
 
                 const auto gravity = glm::vec3(componentProperties["gravity"][0].get<float>(),
@@ -142,16 +142,32 @@ std::unique_ptr<Level> LevelFactory::CreateLevel(const std::string& levelPath)
                 const auto rotation = glm::vec3(componentProperties["rotation"][0].get<float>(),
                                                 componentProperties["rotation"][1].get<float>(),
                                                 componentProperties["rotation"][2].get<float>());
-                
-                const auto scaleMultiplier = StringStartsWith(entityName, "char-") ? 2.5f : 1.0f;
-                const auto scale  = glm::vec3(componentProperties["scale"][0].get<float>() * scaleMultiplier,
-                                              componentProperties["scale"][1].get<float>() * scaleMultiplier,
-                                              componentProperties["scale"][2].get<float>() * scaleMultiplier);
+                                
+                const auto scale  = glm::vec3(componentProperties["scale"][0].get<float>(),
+                                              componentProperties["scale"][1].get<float>(),
+                                              componentProperties["scale"][2].get<float>());
 
                 entityComponentManager.AddComponent<TransformComponent>(entityId, std::make_unique<TransformComponent>(translation, rotation, scale));
             } 
         }
         
+        // Apply scale (and hitbox) multiplier to character entities due to level loading
+        if (entityComponentManager.HasComponent<AnimationComponent>(entityId) && StringStartsWith(entityComponentManager.GetComponent<AnimationComponent>(entityId).GetRootAnimationsPath(), "characters"))
+        {
+            if (entityComponentManager.HasComponent<PhysicsComponent>(entityId))
+            {
+                auto& physicsComponent = entityComponentManager.GetComponent<PhysicsComponent>(entityId);
+                physicsComponent.GetHitBox() = PhysicsComponent::Hitbox(physicsComponent.GetHitBox().mCenterPoint, physicsComponent.GetHitBox().mDimensions * CHARACTER_SCALE_MULTIPLIER);
+            }
+
+            if (entityComponentManager.HasComponent<TransformComponent>(entityId))
+            {
+                auto& transformComponent = entityComponentManager.GetComponent<TransformComponent>(entityId);
+                transformComponent.GetScale().x *= CHARACTER_SCALE_MULTIPLIER;
+                transformComponent.GetScale().y *= CHARACTER_SCALE_MULTIPLIER;
+            }
+        }
+
         levelEntityEntries.emplace_back(EntityNameIdEntry(StringId(entityName), entityId));
     }
     

@@ -28,6 +28,8 @@ public:
     AnimationComponent(const std::string& relativeEntityAnimationsDirectoryPath, const float animationDuration, ResourceManager&);
     AnimationComponent(const AnimationsMap& userSuppliedAnimations, const float animationDuration);
 
+    const std::string& GetRootAnimationsPath() const;
+
     FacingDirection GetCurrentFacingDirection() const;
     StringId GetCurrentAnimation() const;
     GLuint GetCurrentFrameResourceId() const;
@@ -47,6 +49,8 @@ private:
     
     ResourceManager* mResourceManager;
     
+    const std::string mRootAnimationsPath;
+
     AnimationsMap mAnimations;
     FacingDirection mFacingDirection;
     StringId mCurrentAnimation;

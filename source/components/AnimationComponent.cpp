@@ -15,6 +15,7 @@
 
 AnimationComponent::AnimationComponent(const std::string& relativeEntityAnimationsDirectoryPath, const float animationDuration, ResourceManager& resourceManager)
     : mResourceManager(&resourceManager)
+    , mRootAnimationsPath(relativeEntityAnimationsDirectoryPath)
     , mFacingDirection(FacingDirection::RIGHT)
     , mCurrentAnimation("")
     , mPreviousAnimation("")
@@ -29,6 +30,7 @@ AnimationComponent::AnimationComponent(const std::string& relativeEntityAnimatio
 
 AnimationComponent::AnimationComponent(const AnimationsMap& userSuppliedAnimations, const float animationDuration)
     : mResourceManager(nullptr)
+    , mRootAnimationsPath("")
     , mAnimations(userSuppliedAnimations)
     , mFacingDirection(FacingDirection::RIGHT)
     , mCurrentAnimation("")
@@ -40,6 +42,11 @@ AnimationComponent::AnimationComponent(const AnimationsMap& userSuppliedAnimatio
     , mAnimationTimer(0.0f)
 {
     PlayAnimation(StringId("idle"));
+}
+
+const std::string& AnimationComponent::GetRootAnimationsPath() const
+{
+    return mRootAnimationsPath;
 }
 
 FacingDirection AnimationComponent::GetCurrentFacingDirection() const

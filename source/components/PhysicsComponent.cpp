@@ -63,6 +63,11 @@ float& PhysicsComponent::GetAngularVelocity()
     return mAngularVelocity;
 }
 
+PhysicsComponent::Hitbox& PhysicsComponent::GetHitBox()
+{
+    return mHitBox;
+}
+
 const PhysicsComponent::Hitbox& PhysicsComponent::GetHitBox() const
 {
     return mHitBox;

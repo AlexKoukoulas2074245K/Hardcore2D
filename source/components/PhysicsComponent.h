@@ -42,6 +42,7 @@ public:
     glm::vec3& GetMaxVelocity();
     glm::vec3& GetMinVelocity();    
     float& GetAngularVelocity();
+    Hitbox& GetHitBox();
 
     const glm::vec3& GetVelocity() const;
     const glm::vec3& GetGravity() const;
