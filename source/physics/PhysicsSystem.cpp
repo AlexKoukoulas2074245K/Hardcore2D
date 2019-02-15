@@ -229,7 +229,7 @@ void PhysicsSystem::PushEntityOutsideOtherEntityInAxis(const EntityId referenceE
         // Collided with entity to the right
         if (referenceEntityTransformComponent.GetTranslation().x < otherEntityTransformComponent.GetTranslation().x)
         {
-            const auto horizontalPushDelta = otherEntityTransformComponent.GetTranslation().x -
+            const auto horizontalPushDelta = otherEntityTransformComponent.GetTranslation().x +
                                              otherEntityHitBox.mCenterPoint.x -
                                              otherEntityHitBox.mDimensions.x * 0.5f -
                                              referenceEntityHitBox.mCenterPoint.x -
@@ -244,7 +244,7 @@ void PhysicsSystem::PushEntityOutsideOtherEntityInAxis(const EntityId referenceE
         // Collided with entity to the left
         else
         {
-            const auto horizontalPushDelta = otherEntityTransformComponent.GetTranslation().x -
+            const auto horizontalPushDelta = otherEntityTransformComponent.GetTranslation().x +
                                              otherEntityHitBox.mCenterPoint.x +
                                              otherEntityHitBox.mDimensions.x * 0.5f -
                                              referenceEntityHitBox.mCenterPoint.x +
@@ -269,7 +269,7 @@ void PhysicsSystem::PushEntityOutsideOtherEntityInAxis(const EntityId referenceE
             }
             else
             {
-                referenceEntityTransformComponent.GetTranslation().y = otherEntityTransformComponent.GetTranslation().y -
+                referenceEntityTransformComponent.GetTranslation().y = otherEntityTransformComponent.GetTranslation().y +
                                                                        otherEntityHitBox.mCenterPoint.y -
                                                                        otherEntityHitBox.mDimensions.y * 0.5f -
                                                                        referenceEntityHitBox.mCenterPoint.y -
@@ -286,7 +286,7 @@ void PhysicsSystem::PushEntityOutsideOtherEntityInAxis(const EntityId referenceE
             }
             else
             {
-                referenceEntityTransformComponent.GetTranslation().y = otherEntityTransformComponent.GetTranslation().y -
+                referenceEntityTransformComponent.GetTranslation().y = otherEntityTransformComponent.GetTranslation().y +
                                                                        otherEntityHitBox.mCenterPoint.y +
                                                                        otherEntityHitBox.mDimensions.y * 0.5f -
                                                                        referenceEntityHitBox.mCenterPoint.y +
