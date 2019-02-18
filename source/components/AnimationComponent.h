@@ -23,7 +23,7 @@ class AnimationComponent final: public IComponent
 {
 public:
     using AnimationCompleteCallback = std::function<void()>;
-    using AnimationsMap = std::unordered_map<StringId, std::vector<GLuint>>;
+    using AnimationsMap = std::unordered_map<StringId, std::vector<GLuint>, StringIdHasher>;
     
     AnimationComponent(const std::string& relativeEntityAnimationsDirectoryPath, const float animationDuration, ResourceManager&);
     AnimationComponent(const AnimationsMap& userSuppliedAnimations, const float animationDuration);

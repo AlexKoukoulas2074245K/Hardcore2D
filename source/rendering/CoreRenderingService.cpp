@@ -379,7 +379,7 @@ void CoreRenderingService::CompileAllShaders()
             shaderUniformNames.insert(shaderUniformNames.end(), uniformNames.begin(), uniformNames.end());
             
             // Extract uniform locations
-            std::unordered_map<StringId, GLuint> shaderUniformNamesToLocations;
+            std::unordered_map<StringId, GLuint, StringIdHasher> shaderUniformNamesToLocations;
             for (const auto uniformName: shaderUniformNames)
             {
                 shaderUniformNamesToLocations[uniformName] = GL_NO_CHECK(glGetUniformLocation(currentProgramId, uniformName.c_str()));

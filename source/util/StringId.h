@@ -38,16 +38,12 @@ inline bool operator < (const StringId& lhs, const StringId& rhs)
     return lhs.GetStringId() < rhs.GetStringId();
 }
 
-namespace std
+struct StringIdHasher
 {
-    template <>
-    struct hash<StringId>
+    std::size_t operator()(const StringId& key) const
     {
-        std::size_t operator()(const StringId& key) const
-        {
-            return key.GetStringId();
-        }
-    };
-}
+        return key.GetStringId();
+    }
+};
 
 #endif /* StringId_h */

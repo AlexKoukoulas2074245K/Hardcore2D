@@ -80,7 +80,7 @@ private:
     
     GLuint mVAO, mVBO, mFrameBufferId, mScreenRenderingTexture;
 
-    std::unordered_map<StringId, std::unique_ptr<Shader>> mShaders;
+    std::unordered_map<StringId, std::unique_ptr<Shader>, StringIdHasher> mShaders;
     StringId mCurrentShader;
 };
 

@@ -16,14 +16,14 @@
 class Shader final
 {
 public:
-    Shader(const GLuint shaderId, const std::unordered_map<StringId, GLuint> uniformNamesToLocations);
+    Shader(const GLuint shaderId, const std::unordered_map<StringId, GLuint, StringIdHasher> uniformNamesToLocations);
     
     GLuint GetShaderId() const;
-    const std::unordered_map<StringId, GLuint>& GetUniformNamesToLocations() const;
+    const std::unordered_map<StringId, GLuint, StringIdHasher>& GetUniformNamesToLocations() const;
     
 private:
     GLuint mShaderId;
-    std::unordered_map<StringId, GLuint> mShaderUniformNamesToLocations;
+    std::unordered_map<StringId, GLuint, StringIdHasher> mShaderUniformNamesToLocations;
 };
 
 #endif /* Shader_h */
