@@ -16,7 +16,7 @@ class FactionComponent final: public IComponent
 public:
     FactionComponent(const FactionGroup factionGroup);
 
-    const FactionGroup GetFactionGroup() const;
+    FactionGroup GetFactionGroup() const;
     
 private:
     const FactionGroup mFactionGroup;

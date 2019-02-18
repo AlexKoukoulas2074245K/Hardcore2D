@@ -13,7 +13,7 @@ FactionComponent::FactionComponent(const FactionGroup factionGroup)
 
 }
 
-const FactionGroup FactionComponent::GetFactionGroup() const
+FactionGroup FactionComponent::GetFactionGroup() const
 {
     return mFactionGroup;
 }
