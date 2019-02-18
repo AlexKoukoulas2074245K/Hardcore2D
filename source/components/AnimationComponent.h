@@ -25,15 +25,15 @@ public:
     using AnimationCompleteCallback = std::function<void()>;
     using AnimationsMap = std::unordered_map<StringId, std::vector<GLuint>, StringIdHasher>;
     
-    AnimationComponent(const std::string& relativeEntityAnimationsDirectoryPath, const float animationDuration, ResourceManager&);
-    AnimationComponent(const AnimationsMap& userSuppliedAnimations, const float animationDuration);
+    AnimationComponent(const std::string& relativeEntityAnimationsDirectoryPath, const float animationFrameDuration, ResourceManager&);
+    AnimationComponent(const AnimationsMap& userSuppliedAnimations, const float animationFrameDuration);
 
     const std::string& GetRootAnimationsPath() const;
 
     FacingDirection GetCurrentFacingDirection() const;
     StringId GetCurrentAnimation() const;
     GLuint GetCurrentFrameResourceId() const;
-    float GetAnimationDuration() const;
+    float GetAnimationFrameDuration() const;
     float GetAnimationTimer() const;
     bool HasAnimation(const StringId animation);
 
@@ -59,7 +59,7 @@ private:
     bool mIsPaused;
 
     int mCurrentFrameIndex;
-    float mAnimationDuration;
+    float mAnimationFrameDuration;
     float mAnimationTimer;
 
     AnimationCompleteCallback mAnimationCompleteCallback;

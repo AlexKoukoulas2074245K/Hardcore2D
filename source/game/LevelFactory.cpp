@@ -95,8 +95,8 @@ std::unique_ptr<Level> LevelFactory::CreateLevel(const std::string& levelPath)
             else if (componentName == "AnimationComponent")
             {
                 const auto animationRootDirectory = componentProperties["path"].get<std::string>();
-                const auto animationTimer = componentProperties["animationFrameDuration"].get<float>();
-                entityComponentManager.AddComponent<AnimationComponent>(entityId, std::make_unique<AnimationComponent>(animationRootDirectory, animationTimer, resourceManager));
+                const auto animationFrameDuration = componentProperties["animationFrameDuration"].get<float>();
+                entityComponentManager.AddComponent<AnimationComponent>(entityId, std::make_unique<AnimationComponent>(animationRootDirectory, animationFrameDuration, resourceManager));
             }
             else if (componentName == "DamageComponent")
             {

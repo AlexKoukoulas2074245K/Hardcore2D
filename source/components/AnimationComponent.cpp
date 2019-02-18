@@ -13,7 +13,7 @@
 
 #include <cassert>
 
-AnimationComponent::AnimationComponent(const std::string& relativeEntityAnimationsDirectoryPath, const float animationDuration, ResourceManager& resourceManager)
+AnimationComponent::AnimationComponent(const std::string& relativeEntityAnimationsDirectoryPath, const float animationFrameDuration, ResourceManager& resourceManager)
     : mResourceManager(&resourceManager)
     , mRootAnimationsPath(relativeEntityAnimationsDirectoryPath)
     , mFacingDirection(FacingDirection::RIGHT)
@@ -22,13 +22,13 @@ AnimationComponent::AnimationComponent(const std::string& relativeEntityAnimatio
     , mPlayingOneTimeAnimation(false)
     , mIsPaused(false)
     , mCurrentFrameIndex(0)
-    , mAnimationDuration(animationDuration)
+    , mAnimationFrameDuration(animationFrameDuration)
     , mAnimationTimer(0.0f)
 {
     CreateAnimationsMapFromRelativeEntityAnimationsDirectory(relativeEntityAnimationsDirectoryPath);
 }
 
-AnimationComponent::AnimationComponent(const AnimationsMap& userSuppliedAnimations, const float animationDuration)
+AnimationComponent::AnimationComponent(const AnimationsMap& userSuppliedAnimations, const float animationFrameDuration)
     : mResourceManager(nullptr)
     , mRootAnimationsPath("")
     , mAnimations(userSuppliedAnimations)
@@ -38,7 +38,7 @@ AnimationComponent::AnimationComponent(const AnimationsMap& userSuppliedAnimatio
     , mPlayingOneTimeAnimation(false)
     , mIsPaused(false)
     , mCurrentFrameIndex(0)
-    , mAnimationDuration(animationDuration)
+    , mAnimationFrameDuration(animationFrameDuration)
     , mAnimationTimer(0.0f)
 {
     PlayAnimation(StringId("idle"));
@@ -64,9 +64,9 @@ GLuint AnimationComponent::GetCurrentFrameResourceId() const
     return mAnimations.at(mCurrentAnimation)[mCurrentFrameIndex];
 }
 
-float AnimationComponent::GetAnimationDuration() const
+float AnimationComponent::GetAnimationFrameDuration() const
 {
-    return mAnimationDuration;
+    return mAnimationFrameDuration;
 }
 
 float AnimationComponent::GetAnimationTimer() const

@@ -27,7 +27,7 @@ void AnimationService::UpdateAnimations(const std::vector<EntityNameIdEntry>& en
         {
             auto& animationComponent = entityComponentManager.GetComponent<AnimationComponent>(entityId);
             animationComponent.SetAnimationTimer(animationComponent.GetAnimationTimer() + dt);
-            if (animationComponent.GetAnimationTimer() > animationComponent.GetAnimationDuration())
+            if (animationComponent.GetAnimationTimer() > animationComponent.GetAnimationFrameDuration())
             {
                 animationComponent.SetAnimationTimer(0.0f);
                 animationComponent.AdvanceFrame();
