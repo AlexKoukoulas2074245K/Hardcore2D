@@ -36,10 +36,10 @@ static const std::string SHADER_DIRECTORY = "shaders/";
 
 static const GLfloat QUAD_VERTICES[] =
 {
-    -1.0f, -1.0f, 0.0f, 0.0f, 0.0f,
-     1.0f, -1.0f, 0.0f, 1.0f, 0.0f,
-     1.0f,  1.0f, 0.0f, 1.0f, 1.0f,
-    -1.0f,  1.0f, 0.0f, 0.0f, 1.0f
+    -1.01f, -1.01f, 0.0f, 0.01f, 0.01f,
+     1.01f, -1.01f, 0.0f, 0.99f, 0.01f,
+     1.01f,  1.01f, 0.0f, 0.99f, 0.99f,
+    -1.01f,  1.01f, 0.0f, 0.01f, 0.99f
 };
 
 CoreRenderingService::CoreRenderingService(const ServiceLocator& serviceLocator)
