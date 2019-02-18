@@ -9,6 +9,7 @@
 #include "../ServiceLocator.h"
 #include "../components/EntityComponentManager.h"
 #include "../components/HealthComponent.h"
+#include "../components/FactionComponent.h"
 #include "../components/DamageComponent.h"
 #include "../events/EventCommunicator.h"
 #include "../events/EntityDamagedEvent.h"
@@ -55,6 +56,15 @@ void DamageEntityCommand::VExecute()
     // Make sure the damage component can damage this entity. Don't damage if the damage component can not attack the same entity multiple times
     // and the entity has already been damaged by this component
     if (damageComponent.CanDamageSameEntityMultipleTimes() == false && damageComponent.IsEntityWhitelisted(mCollidedEntities.second))
+    {
+        return;
+    }
+
+    // Make sure the damage component won't damage entities of the same faction
+    const auto& damageSourceEntityFaction = mEntityComponentManager.GetComponent<FactionComponent>(mCollidedEntities.first).GetFactionGroup();
+    const auto& damageReceiverEntityFaction = mEntityComponentManager.GetComponent<FactionComponent>(mCollidedEntities.second).GetFactionGroup();
+
+    if (damageSourceEntityFaction == damageReceiverEntityFaction)
     {
         return;
     }

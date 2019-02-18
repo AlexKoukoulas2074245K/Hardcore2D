@@ -784,7 +784,7 @@
 			}
 		},
 		{
-			"name": "char-player",
+			"name": "player",
 			"components":
 			{
 				"AnimationComponent": { "path": "characters/light_samurai", "animationFrameDuration": 0.03 },

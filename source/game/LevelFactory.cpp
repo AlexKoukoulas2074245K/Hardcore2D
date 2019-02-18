@@ -11,6 +11,7 @@
 #include "../components/BasicNinjaEnemyAIComponent.h"
 #include "../components/AnimationComponent.h"
 #include "../components/DamageComponent.h"
+#include "../components/FactionComponent.h"
 #include "../components/HealthComponent.h"
 #include "../components/PhysicsComponent.h"
 #include "../components/ShaderComponent.h"
@@ -76,6 +77,9 @@ std::unique_ptr<Level> LevelFactory::CreateLevel(const std::string& levelPath)
         const auto entityName = entity["name"].get<std::string>();
         const auto entityId = entityComponentManager.GenerateEntity();
         
+        const auto entityFaction = (StringStartsWith(entityName, "player") || StringStartsWith(entityName, "ally-")) ? FactionGroup::ALLIES : FactionGroup::ENEMIES;
+        entityComponentManager.AddComponent<FactionComponent>(entityId, std::make_unique<FactionComponent>(entityFaction));
+
         for (auto& componentEntry: entity["components"].items())
         {
             const auto& componentName = componentEntry.key();

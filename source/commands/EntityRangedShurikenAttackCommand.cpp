@@ -10,6 +10,7 @@
 #include "../events/NewEntityCreatedEvent.h"
 #include "../events/EventCommunicator.h"
 #include "../components/EntityComponentManager.h"
+#include "../components/FactionComponent.h"
 #include "../components/ShaderComponent.h"
 #include "../events/NewEntityCreatedEvent.h"
 #include "../components/AnimationComponent.h"
@@ -25,7 +26,7 @@ EntityRangedShurikenAttackCommand::EntityRangedShurikenAttackCommand(const Servi
     : mServiceLocator(serviceLocator)
     , mEntityComponentManager(serviceLocator.ResolveService<EntityComponentManager>())
     , mResourceManager(serviceLocator.ResolveService<ResourceManager>())
-    , mEntityId(entityId)
+    , mParentEntityId(entityId)
     , mEventCommunicator(serviceLocator.ResolveService<EventCommunicationService>().CreateEventCommunicator())
 {
     
@@ -33,7 +34,7 @@ EntityRangedShurikenAttackCommand::EntityRangedShurikenAttackCommand(const Servi
 
 void EntityRangedShurikenAttackCommand::VExecute()
 {
-    const auto& entityTransformComponent = mEntityComponentManager.GetComponent<TransformComponent>(mEntityId);
+    const auto& entityTransformComponent = mEntityComponentManager.GetComponent<TransformComponent>(mParentEntityId);
     
     const auto shurikenEntityId = mEntityComponentManager.GenerateEntity();
     mEntityComponentManager.AddComponent<ShaderComponent>(shurikenEntityId, std::make_unique<ShaderComponent>(StringId("basic")));
@@ -46,7 +47,7 @@ void EntityRangedShurikenAttackCommand::VExecute()
     auto shurikenTransformComponent = std::make_unique<TransformComponent>();
     auto shurikenPhysicsComponent = std::make_unique<PhysicsComponent>(PhysicsComponent::BodyType::DYNAMIC, PhysicsComponent::Hitbox(glm::vec2(0.0f, 0.0f), glm::vec2(40.0f, 40.0f)), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(1000.0f, 1000.0f, 0.0f), glm::vec3(-1000.0f, -1000.0f, 0.0f));
     
-    if (mEntityComponentManager.GetComponent<AnimationComponent>(mEntityId).GetCurrentFacingDirection() == FacingDirection::RIGHT)
+    if (mEntityComponentManager.GetComponent<AnimationComponent>(mParentEntityId).GetCurrentFacingDirection() == FacingDirection::RIGHT)
     {
         shurikenTransformComponent->GetTranslation() = entityTransformComponent.GetTranslation();
         shurikenTransformComponent->GetTranslation().x += 15.0f;
@@ -65,11 +66,13 @@ void EntityRangedShurikenAttackCommand::VExecute()
     
     shurikenTransformComponent->GetScale() = glm::vec3(30.0f, 30.0f, 1.0f);
 
+    const auto& parentEntityFactionGroup = mEntityComponentManager.GetComponent<FactionComponent>(mParentEntityId).GetFactionGroup();
+
     mEntityComponentManager.AddComponent<PhysicsComponent>(shurikenEntityId, std::move(shurikenPhysicsComponent));
-    
+    mEntityComponentManager.AddComponent<FactionComponent>(shurikenEntityId, std::make_unique<FactionComponent>(parentEntityFactionGroup));
     mEntityComponentManager.AddComponent<AnimationComponent>(shurikenEntityId, std::move(shurikenAnimationComponent));
     mEntityComponentManager.AddComponent<TransformComponent>(shurikenEntityId, std::move(shurikenTransformComponent));
     mEntityComponentManager.AddComponent<IAIComponent>(shurikenEntityId, std::make_unique<RangedShurikenAIComponent>(mServiceLocator, shurikenEntityId, 20.0f));
-    mEntityComponentManager.AddComponent<DamageComponent>(shurikenEntityId, std::make_unique<DamageComponent>(mEntityId, 10.0f, false));
+    mEntityComponentManager.AddComponent<DamageComponent>(shurikenEntityId, std::make_unique<DamageComponent>(mParentEntityId, 10.0f, false));
     mEventCommunicator->DispatchEvent(std::make_unique<NewEntityCreatedEvent>(EntityNameIdEntry(StringId("player_shuriken"), shurikenEntityId)));
 }

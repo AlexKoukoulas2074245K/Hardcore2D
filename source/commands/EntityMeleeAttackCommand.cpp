@@ -14,6 +14,7 @@
 #include "../commands/SetEntityFacingDirectionCommand.h"
 #include "../components/MeleeSwingAIComponent.h"
 #include "../components/EntityComponentManager.h"
+#include "../components/FactionComponent.h"
 #include "../components/PhysicsComponent.h"
 #include "../components/TransformComponent.h"
 #include "../components/AnimationComponent.h"
@@ -25,7 +26,7 @@ EntityMeleeAttackCommand::EntityMeleeAttackCommand(const ServiceLocator& service
     : mServiceLocator(serviceLocator)
     , mEntityComponentManager(serviceLocator.ResolveService<EntityComponentManager>())
     , mResourceManager(serviceLocator.ResolveService<ResourceManager>())
-    , mEntityId(entityId)
+    , mParentEntityId(entityId)
     , mEventCommunicator(serviceLocator.ResolveService<EventCommunicationService>().CreateEventCommunicator())
 {
     
@@ -33,7 +34,7 @@ EntityMeleeAttackCommand::EntityMeleeAttackCommand(const ServiceLocator& service
 
 void EntityMeleeAttackCommand::VExecute()
 {
-    auto& entityAnimationComponent = mEntityComponentManager.GetComponent<AnimationComponent>(mEntityId);
+    auto& entityAnimationComponent = mEntityComponentManager.GetComponent<AnimationComponent>(mParentEntityId);
     entityAnimationComponent.PlayAnimationOnce(StringId("melee"));
 
     const auto swingEntityId = mEntityComponentManager.GenerateEntity();
@@ -54,20 +55,23 @@ void EntityMeleeAttackCommand::VExecute()
     
     if (entityAnimationComponent.GetCurrentFacingDirection() == FacingDirection::RIGHT)
     {
-        swingTransformComponent->SetParent(mEntityId, glm::vec3(80.0f, 0.0f, 0.0f));
+        swingTransformComponent->SetParent(mParentEntityId, glm::vec3(80.0f, 0.0f, 0.0f));
         swingAnimationComponent->SetFacingDirection(FacingDirection::RIGHT);
     }
     else
     {
-        swingTransformComponent->SetParent(mEntityId, glm::vec3(-80.0f, 0.0f, 0.0f));
+        swingTransformComponent->SetParent(mParentEntityId, glm::vec3(-80.0f, 0.0f, 0.0f));
         swingAnimationComponent->SetFacingDirection(FacingDirection::LEFT);
     }
     
     swingTransformComponent->GetScale() = glm::vec3(80.0f, 160.0f, 1.0f);
     
+    const auto& parentEntityFactionGroup = mEntityComponentManager.GetComponent<FactionComponent>(mParentEntityId).GetFactionGroup();
+
     mEntityComponentManager.AddComponent<AnimationComponent>(swingEntityId, std::move(swingAnimationComponent));
+    mEntityComponentManager.AddComponent<FactionComponent>(swingEntityId, std::make_unique<FactionComponent>(parentEntityFactionGroup));
     mEntityComponentManager.AddComponent<TransformComponent>(swingEntityId, std::move(swingTransformComponent));
     mEntityComponentManager.AddComponent<IAIComponent>(swingEntityId, std::make_unique<MeleeSwingAIComponent>(mServiceLocator, swingEntityId, 0.10f));
-    mEntityComponentManager.AddComponent<DamageComponent>(swingEntityId, std::make_unique<DamageComponent>(mEntityId, 25.0f, false));
+    mEntityComponentManager.AddComponent<DamageComponent>(swingEntityId, std::make_unique<DamageComponent>(mParentEntityId, 25.0f, false));
     mEventCommunicator->DispatchEvent(std::make_unique<NewEntityCreatedEvent>(EntityNameIdEntry(StringId("player_swing"), swingEntityId)));
 }

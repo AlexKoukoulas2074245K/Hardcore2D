@@ -28,7 +28,7 @@ private:
     const ServiceLocator& mServiceLocator;
     EntityComponentManager& mEntityComponentManager;
     ResourceManager& mResourceManager;    
-    const EntityId mEntityId;
+    const EntityId mParentEntityId;
     
     std::unique_ptr<EventCommunicator> mEventCommunicator;
 };
