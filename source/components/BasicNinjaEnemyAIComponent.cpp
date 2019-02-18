@@ -13,6 +13,7 @@
 #include "../events/AnnouncePlayerEntityIdEvent.h"
 #include "../events/EntityCollisionEvent.h"
 #include "../components/AnimationComponent.h"
+#include "../components/DamageComponent.h"
 #include "../components/EntityComponentManager.h"
 #include "../components/TransformComponent.h"
 #include "../components/PhysicsComponent.h"
@@ -195,6 +196,7 @@ void BasicNinjaEnemyAIComponent::OnEntityDamagedEvent(const IEvent& event)
     mEntityComponentManager.GetComponent<AnimationComponent>(mThisEntityId).PlayAnimation(StringId("death"), [this]() 
     {
         mEntityComponentManager.GetComponent<AnimationComponent>(mThisEntityId).SetPause(true);
+        mEntityComponentManager.RemoveComponent<DamageComponent>(mThisEntityId);
         mEntityComponentManager.RemoveComponent<HealthComponent>(mThisEntityId);
     });
 }
