@@ -30,6 +30,7 @@ public:
     Camera(const Camera&) = delete;
     const Camera& operator = (const Camera&) = delete;
 
+
     void Update(const EntityId focusedEntityId, const float dt);
     const glm::mat4x4& GetViewMatrix() const;
 

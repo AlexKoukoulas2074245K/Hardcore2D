@@ -437,18 +437,40 @@ void CoreRenderingService::RenderEntityInternal(const EntityId entityId)
     {
         mCurrentShader = mEntityComponentManager->GetComponent<ShaderComponent>(entityId).GetShaderName();
         GL_CHECK(glUseProgram(mShaders[mCurrentShader]->GetShaderId()));
-        
+
         const auto& shaderUniforms = mShaders[mCurrentShader]->GetUniformNamesToLocations();
-        
+
         if (shaderUniforms.count(StringId("view")) != 0)
         {
             GL_CHECK(glUniformMatrix4fv(mShaders[mCurrentShader]->GetUniformNamesToLocations().at(StringId("view")), 1, GL_FALSE, (GLfloat*)&(mAttachedCamera->GetViewMatrix())));
         }
-        
+
         if (shaderUniforms.count(StringId("proj")) != 0)
         {
             GL_CHECK(glUniformMatrix4fv(mShaders[mCurrentShader]->GetUniformNamesToLocations().at(StringId("proj")), 1, GL_FALSE, (GLfloat*)&mProjectionMatrix));
         }
+    }
+
+    if (mEntityComponentManager->HasComponent<TransformComponent>(entityId))
+    {
+        const auto& transformComponent = mEntityComponentManager->GetComponent<TransformComponent>(entityId);
+
+        // Todo move world matrix construction elsewhere        
+        glm::mat4 translationMatrix(1.0f);
+        translationMatrix = glm::translate(translationMatrix, transformComponent.GetTranslation());
+
+        glm::mat4 rotationMatrix(1.0f);
+        glm::vec3 rotation = transformComponent.GetRotation();
+        rotationMatrix = glm::rotate(rotationMatrix, rotation.x, glm::vec3(1.0f, 0.0f, 0.0f));
+        rotationMatrix = glm::rotate(rotationMatrix, rotation.y, glm::vec3(0.0f, 1.0f, 0.0f));
+        rotationMatrix = glm::rotate(rotationMatrix, rotation.z, glm::vec3(0.0f, 0.0f, 1.0f));
+
+        glm::mat4 scaleMatrix(1.0f);
+        scaleMatrix = glm::scale(scaleMatrix, transformComponent.GetScale() * 0.5f);
+
+        glm::mat4 worldMatrix(1.0f);
+        worldMatrix = translationMatrix * rotationMatrix * scaleMatrix;
+        GL_CHECK(glUniformMatrix4fv(mShaders[mCurrentShader]->GetUniformNamesToLocations().at(StringId("world")), 1, GL_FALSE, (GLfloat*)&worldMatrix));
     }
 
     if (mEntityComponentManager->HasComponent<AnimationComponent>(entityId))
@@ -462,28 +484,6 @@ void CoreRenderingService::RenderEntityInternal(const EntityId entityId)
             const auto textureFlip = animationComponent.GetCurrentFacingDirection() == FacingDirection::LEFT ? 1 : 0;
             GL_CHECK(glUniform1i(mShaders[mCurrentShader]->GetUniformNamesToLocations().at(StringId("flip_tex_hor")), textureFlip));
         }
-    }
-
-    if (mEntityComponentManager->HasComponent<TransformComponent>(entityId))
-    {
-        const auto* transformComponent = &(mEntityComponentManager->GetComponent<TransformComponent>(entityId));
-
-        // Todo move world matrix construction elsewhere        
-        glm::mat4 translationMatrix(1.0f);
-        translationMatrix = glm::translate(translationMatrix, transformComponent->GetTranslation());
-        
-        glm::mat4 rotationMatrix(1.0f);
-        glm::vec3 rotation = transformComponent->GetRotation();
-        rotationMatrix = glm::rotate(rotationMatrix, rotation.x, glm::vec3(1.0f, 0.0f, 0.0f));
-        rotationMatrix = glm::rotate(rotationMatrix, rotation.y, glm::vec3(0.0f, 1.0f, 0.0f));
-        rotationMatrix = glm::rotate(rotationMatrix, rotation.z, glm::vec3(0.0f, 0.0f, 1.0f));
-        
-        glm::mat4 scaleMatrix(1.0f);
-        scaleMatrix = glm::scale(scaleMatrix, transformComponent->GetScale() * 0.5f);
-
-        glm::mat4 worldMatrix(1.0f);
-        worldMatrix = translationMatrix * rotationMatrix * scaleMatrix;
-        GL_CHECK(glUniformMatrix4fv(mShaders[mCurrentShader]->GetUniformNamesToLocations().at(StringId("world")), 1, GL_FALSE, (GLfloat*)&worldMatrix));
     }
 
     GL_CHECK(glDrawArrays(GL_TRIANGLE_FAN, 0, 4));

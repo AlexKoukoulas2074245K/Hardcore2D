@@ -13,6 +13,8 @@
 #include "../components/TransformComponent.h"
 #include "../components/PhysicsComponent.h"
 #include "../util/MathUtils.h"
+#include "../util/Logging.h"
+#include "../game/GameConstants.h"
 
 #include <glm/gtc/matrix_transform.hpp>
 
@@ -65,14 +67,16 @@ void Camera::Update(const EntityId focusedEntityId, const float dt)
     mCameraTranslation.y = focusedEntityTranslation.y - mRenderableDimensions.y * 0.5f;
     
     // Stop camera if it passes the level boundaries
-    if (mCameraTranslation.x < mLevelHorBounds.x) mCameraTranslation.x = mLevelHorBounds.x;
+    if (mCameraTranslation.x < mLevelHorBounds.x - CELL_SIZE/4) mCameraTranslation.x = mLevelHorBounds.x - CELL_SIZE/4;
     if (mCameraTranslation.y < mLevelVerBounds.x) mCameraTranslation.y = mLevelVerBounds.x;
-    if (mCameraTranslation.x > mLevelHorBounds.y) mCameraTranslation.x = mLevelHorBounds.y;
-    if (mCameraTranslation.y > mLevelVerBounds.y) mCameraTranslation.y = mLevelVerBounds.y;
+    if (mCameraTranslation.x + mRenderableDimensions.x > mLevelHorBounds.y + CELL_SIZE/4) mCameraTranslation.x = mLevelHorBounds.y - mRenderableDimensions.x + CELL_SIZE/4;
+    if (mCameraTranslation.y + mRenderableDimensions.y > mLevelVerBounds.y) mCameraTranslation.y = mLevelVerBounds.y - mRenderableDimensions.y;
 
     mViewMatrix = glm::lookAtLH(mCameraTranslation,
                                 glm::vec3(mCameraTranslation.x, mCameraTranslation.y, 0.0f),
                                 glm::vec3(0.0f, 1.0f, 0.0f));
+
+    Log(LogType::INFO, "camera translation: %.2f, %.2f", mCameraTranslation.x, mCameraTranslation.y);
 }
 
 const glm::mat4x4& Camera::GetViewMatrix() const
