@@ -89,8 +89,8 @@ bool Camera::IsTransformInsideViewRect(const TransformComponent& transformCompon
     const auto& translation = transformComponent.GetTranslation();
     const auto& scale = transformComponent.GetScale();
 
-    return translation.x >= mTranslation.x &&
-        translation.y >= mTranslation.y - CELL_SIZE &&
-        translation.x + scale.x * 0.5f <= mTranslation.x + mRenderableDimensions.x &&
-        translation.y + scale.y * 0.5f <= mTranslation.y + mRenderableDimensions.y + CELL_SIZE;
+    return translation.x + scale.x >= mTranslation.x &&
+        translation.y + scale.y >= mTranslation.y &&
+        translation.x - scale.x <= mTranslation.x + mRenderableDimensions.x &&
+        translation.y - scale.y <= mTranslation.y + mRenderableDimensions.y;
 }
