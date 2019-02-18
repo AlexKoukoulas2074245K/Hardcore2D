@@ -454,13 +454,13 @@ void CoreRenderingService::RenderEntityInternal(const EntityId entityId)
     if (mEntityComponentManager->HasComponent<TransformComponent>(entityId))
     {
         const auto& transformComponent = mEntityComponentManager->GetComponent<TransformComponent>(entityId);
-
-        if (mAttachedCamera->IsTransformInsideViewRect(transformComponent) == false)
+        
+        // Camera view rect rejection test (with backgrounds excluded from test)
+        if (mCurrentShader != StringId("background") && mAttachedCamera->IsTransformInsideViewRect(transformComponent) == false)
         {
             return;
         }
 
-        // Todo move world matrix construction elsewhere        
         glm::mat4 translationMatrix(1.0f);
         translationMatrix = glm::translate(translationMatrix, transformComponent.GetTranslation());
 
