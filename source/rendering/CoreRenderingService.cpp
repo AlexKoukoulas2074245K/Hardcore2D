@@ -455,6 +455,11 @@ void CoreRenderingService::RenderEntityInternal(const EntityId entityId)
     {
         const auto& transformComponent = mEntityComponentManager->GetComponent<TransformComponent>(entityId);
 
+        if (mAttachedCamera->IsTransformInsideViewRect(transformComponent) == false)
+        {
+            return;
+        }
+
         // Todo move world matrix construction elsewhere        
         glm::mat4 translationMatrix(1.0f);
         translationMatrix = glm::translate(translationMatrix, transformComponent.GetTranslation());

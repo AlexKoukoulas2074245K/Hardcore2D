@@ -18,6 +18,7 @@
 class EntityComponentManager;
 class EventCommunicator;
 class ServiceLocator;
+class TransformComponent;
 
 class Camera final
 {
@@ -33,6 +34,7 @@ public:
 
     void Update(const EntityId focusedEntityId, const float dt);
     const glm::mat4x4& GetViewMatrix() const;
+    bool IsTransformInsideViewRect(const TransformComponent&) const;
 
 private:
     const EntityComponentManager& mEntityComponentManager;
@@ -42,7 +44,7 @@ private:
     const glm::vec2& mLevelVerBounds;
     const glm::vec2& mRenderableDimensions;
     
-    glm::vec3 mCameraTranslation;
+    glm::vec3 mTranslation;
     glm::mat4x4 mViewMatrix;
     bool mLookingAheadRight;
 };

@@ -59,7 +59,7 @@ private:
 
     void RenderEntityInternal(const EntityId);
     void PreparePostProcessingPass();
-    
+        
     const ServiceLocator& mServiceLocator;
     EntityComponentManager* mEntityComponentManager;
     ResourceManager* mResourceManager;
