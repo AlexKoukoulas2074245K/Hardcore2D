@@ -75,8 +75,6 @@ void Camera::Update(const EntityId focusedEntityId, const float dt)
     mViewMatrix = glm::lookAtLH(mTranslation,
                                 glm::vec3(mTranslation.x, mTranslation.y, 0.0f),
                                 glm::vec3(0.0f, 1.0f, 0.0f));
-
-    Log(LogType::INFO, "camera translation: %.2f, %.2f", mTranslation.x, mTranslation.y);
 }
 
 const glm::mat4x4& Camera::GetViewMatrix() const

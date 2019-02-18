@@ -160,15 +160,9 @@ void BasicNinjaEnemyAIComponent::OnEntityCollisionEvent(const IEvent& event)
     if (mState == State::LEAPING_TO_TARGET)
     {
         const auto& collidedEntitiesPair = static_cast<const EntityCollisionEvent&>(event).GetCollidedEntityIds();
-        if (mThisEntityId == collidedEntitiesPair.first)
+        if (mThisEntityId == collidedEntitiesPair.first && mEntityComponentManager.GetComponent<PhysicsComponent>(collidedEntitiesPair.second).GetBodyType() == PhysicsComponent::BodyType::STATIC)
         {
-            const auto& otherEntityPhysicsComponent = mEntityComponentManager.GetComponent<PhysicsComponent>(collidedEntitiesPair.second);
-            OnLeapingComplete(otherEntityPhysicsComponent);
-        }
-        else if (mThisEntityId == collidedEntitiesPair.second)
-        {
-            const auto& otherEntityPhysicsComponent = mEntityComponentManager.GetComponent<PhysicsComponent>(collidedEntitiesPair.first);
-            OnLeapingComplete(otherEntityPhysicsComponent);
+            OnLeapingComplete();
         }
     }
 }
@@ -201,12 +195,9 @@ void BasicNinjaEnemyAIComponent::OnEntityDamagedEvent(const IEvent& event)
     });
 }
 
-void BasicNinjaEnemyAIComponent::OnLeapingComplete(const PhysicsComponent& otherEntityPhysicsComponent)
+void BasicNinjaEnemyAIComponent::OnLeapingComplete()
 {
-    if (otherEntityPhysicsComponent.GetBodyType() == PhysicsComponent::BodyType::STATIC)
-    {
-        mTimer = FOCUSING_TIMER;
-        mState = State::FOCUSING;
-        SetEntityCustomVelocityCommand(mEntityComponentManager, mThisEntityId, glm::vec3(0.0f, 0.0f, 0.0f)).VExecute();
-    }
+    mTimer = FOCUSING_TIMER;
+    mState = State::FOCUSING;
+    SetEntityCustomVelocityCommand(mEntityComponentManager, mThisEntityId, glm::vec3(0.0f, 0.0f, 0.0f)).VExecute();
 }
