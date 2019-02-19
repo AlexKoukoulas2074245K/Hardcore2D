@@ -31,4 +31,4 @@ private:
     EntityComponentManager* mEntityComponentManager;
 };
 
-#endif
+#endif /* AIService_h */

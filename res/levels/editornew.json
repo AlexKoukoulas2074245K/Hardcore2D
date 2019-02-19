@@ -1,7 +1,7 @@
 {
 	"horBounds": { "left": 0.0, "right": 8000.0 },
 	"verBounds": { "bottom": 0.0, "top": 1600.0 },
-	"cached_animations": ["effects/player_swing/idle", "effects/player_shuriken/idle"],
+	"cached_animation_directories": ["effects/", "misc/"],
 	"entities": 
 	[
 		{

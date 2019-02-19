@@ -1,33 +1,30 @@
 //
-//  AIService.cpp
+//  UIElementManager.cpp
 //  Hardcore2D
 //
-//  Created by Alex Koukoulas on 10/01/2019.
+//  Created by Alex Koukoulas on 19/02/2019.
 //
 
-#include "AIService.h"
-#include "../components/EntityComponentManager.h"
-#include "../components/IAIComponent.h"
-#include "../ServiceLocator.h"
+#include "UIElementManager.h"
+#include "IUIElement.h"
+#include "../../components/EntityComponentManager.h"
+#include "../../ServiceLocator.h"
 
-AIService::AIService(const ServiceLocator& serviceLocator)
+UIElementManager::UIElementManager(const ServiceLocator& serviceLocator)
     : mServiceLocator(serviceLocator)
 {
 }
 
-bool AIService::VInitialize()
+bool UIElementManager::VInitialize()
 {
     mEntityComponentManager = &(mServiceLocator.ResolveService<EntityComponentManager>());
     return true;
 }
 
-void AIService::UpdateAIComponents(const std::vector<EntityNameIdEntry>& entityIds, const float dt)
+void UIElementManager::UpdateUIElements(const std::vector<std::unique_ptr<IUIElement>>& uiElements, const float dt)
 {
-    for (const auto entityEntry: entityIds)
+    for (const auto& uiElement: uiElements)
     {
-        if (mEntityComponentManager->HasComponent<IAIComponent>(entityEntry.mEntityId))
-        {
-            mEntityComponentManager->GetComponent<IAIComponent>(entityEntry.mEntityId).VUpdate(dt);
-        }
+        uiElement->VUpdate(dt);
     }
 }

@@ -78,6 +78,5 @@ void DamageEntityCommand::VExecute()
         damageComponent.AddEntityToWhitelistedDamagedEntities(mCollidedEntities.second);
     }
     
-    // Probably dispatch event
     mEventCommunicator->DispatchEvent(std::make_unique<EntityDamagedEvent>(mCollidedEntities.second, mCollidedEntities.first, damageComponent.GetDamage(), healthComponent.GetHealth()));
 }

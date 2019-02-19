@@ -1,34 +1,35 @@
 //
-//  AIService.h
+//  UIElementManager.h
 //  Hardcore2D
 //
-//  Created by Alex Koukoulas on 29/01/2019.
+//  Created by Alex Koukoulas on 19/02/2019.
 //
 
-#ifndef AIService_h
-#define AIService_h
+#ifndef UIElementManager_h
+#define UIElementManager_h
 
-#include "../IService.h"
-#include "../game/GameTypeTraits.h"
+#include "../../IService.h"
 
+#include <memory>
 #include <vector>
 
 class ServiceLocator;
 class EntityComponentManager;
+class IUIElement;
 
-class AIService final : public IService
+class UIElementManager final : public IService
 {
     friend class App;
     
 public:
     bool VInitialize() override;
-    void UpdateAIComponents(const std::vector<EntityNameIdEntry>&, const float dt);
+    void UpdateUIElements(const std::vector<std::unique_ptr<IUIElement>>&, const float dt);
 
 private:
-    AIService(const ServiceLocator&);
+    UIElementManager(const ServiceLocator&);
 
     const ServiceLocator& mServiceLocator;
     EntityComponentManager* mEntityComponentManager;
 };
 
-#endif
+#endif /* UIElementManager_h */

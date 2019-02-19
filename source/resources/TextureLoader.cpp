@@ -13,6 +13,7 @@
 
 #include <SDL.h>
 #include <SDL_image.h>
+#include <fstream>
 
 bool TextureLoader::Initialize()
 {
@@ -40,6 +41,14 @@ bool TextureLoader::Initialize()
 
 std::unique_ptr<IResource> TextureLoader::VCreateAndLoadResource(const std::string& resourcePath)
 {
+    std::ifstream file(resourcePath);
+    
+    if (!file.good())
+    {
+        ShowMessageBox(SDL_MESSAGEBOX_ERROR, "File could not be found", resourcePath.c_str());
+        return nullptr;
+    }
+    
     auto* sdlSurface = IMG_Load(resourcePath.c_str());
     if (!sdlSurface)
     {

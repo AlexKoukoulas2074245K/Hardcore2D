@@ -62,12 +62,16 @@ std::unique_ptr<Level> LevelFactory::CreateLevel(const std::string& levelPath)
     const auto levelVerticalBounds = glm::vec2(levelJson["verBounds"]["bottom"].get<float>(),
                                                levelJson["verBounds"]["top"].get<float>());
     
-    for (const auto& cachedAnimation : levelJson["cached_animations"])
+    for (const auto& cachedAnimationRootDirectory : levelJson["cached_animation_directories"])
     {        
-        const auto animationFrameFiles = GetAllFilenamesInDirectory(ResourceManager::RES_ROOT + cachedAnimation.get<std::string>());
-        for (const auto animationFrameNumber : animationFrameFiles)
+        const auto animationRootDirectories = GetAllFilenamesInDirectory(ResourceManager::RES_ROOT + cachedAnimationRootDirectory.get<std::string>());
+        for (const auto& animationDirectory : animationRootDirectories)
         {
-            resourceManager.LoadResource(cachedAnimation.get<std::string>() + "/" + animationFrameNumber);
+            const auto animationFrameFiles = GetAllFilenamesInDirectory(ResourceManager::RES_ROOT + cachedAnimationRootDirectory.get<std::string>() + "/" + animationDirectory + "/idle/");
+            for (const auto& animationFrameFile: animationFrameFiles)
+            {
+                resourceManager.LoadResource(cachedAnimationRootDirectory.get<std::string>() + animationDirectory + "/idle/" + animationFrameFile);
+            }
         }        
     }
 
