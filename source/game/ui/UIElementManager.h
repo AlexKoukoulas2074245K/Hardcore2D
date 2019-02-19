@@ -9,12 +9,12 @@
 #define UIElementManager_h
 
 #include "../../IService.h"
+#include "../../util/TypeTraits.h"
 
 #include <memory>
 #include <vector>
 
 class ServiceLocator;
-class EntityComponentManager;
 class IUIElement;
 
 class UIElementManager final : public IService
@@ -22,14 +22,20 @@ class UIElementManager final : public IService
     friend class App;
     
 public:
+    ~UIElementManager();
+    
     bool VInitialize() override;
-    void UpdateUIElements(const std::vector<std::unique_ptr<IUIElement>>&, const float dt);
-
+    
+    void InitializeUIElements();
+    void Update(const float dt);
+    std::vector<EntityId> GetUIEntities() const;
+    
 private:
     UIElementManager(const ServiceLocator&);
 
     const ServiceLocator& mServiceLocator;
-    EntityComponentManager* mEntityComponentManager;
+
+    std::vector<std::unique_ptr<IUIElement>> mUIElements;
 };
 
 #endif /* UIElementManager_h */

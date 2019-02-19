@@ -8,6 +8,10 @@
 #ifndef IUIElement_h
 #define IUIElement_h
 
+#include <vector>
+
+#include "../../util/TypeTraits.h"
+
 class IUIElement
 {
 public:
@@ -16,6 +20,10 @@ public:
     IUIElement& operator = (const IUIElement&) = delete;
     
     virtual void VUpdate(const float dt) = 0;
+    virtual const std::vector<EntityId>& VGetEntityIds() const = 0;
+    
+protected:
+    IUIElement() = default;
 };
 
 #endif /* IUIElement_h */

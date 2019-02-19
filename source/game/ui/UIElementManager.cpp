@@ -6,8 +6,7 @@
 //
 
 #include "UIElementManager.h"
-#include "IUIElement.h"
-#include "../../components/EntityComponentManager.h"
+#include "PlayerHealthbarUIElement.h"
 #include "../../ServiceLocator.h"
 
 UIElementManager::UIElementManager(const ServiceLocator& serviceLocator)
@@ -15,16 +14,35 @@ UIElementManager::UIElementManager(const ServiceLocator& serviceLocator)
 {
 }
 
+UIElementManager::~UIElementManager()
+{    
+}
+
 bool UIElementManager::VInitialize()
 {
-    mEntityComponentManager = &(mServiceLocator.ResolveService<EntityComponentManager>());
     return true;
 }
 
-void UIElementManager::UpdateUIElements(const std::vector<std::unique_ptr<IUIElement>>& uiElements, const float dt)
+void UIElementManager::Update(const float dt)
 {
-    for (const auto& uiElement: uiElements)
+    for (const auto& uiElement: mUIElements)
     {
         uiElement->VUpdate(dt);
     }
+}
+
+std::vector<EntityId> UIElementManager::GetUIEntities() const
+{
+    std::vector<EntityId> uiEntities;
+    for (const auto& uiElement: mUIElements)
+    {
+        uiEntities.insert(uiEntities.end(), uiElement->VGetEntityIds().begin(), uiElement->VGetEntityIds().end());
+    }
+    
+    return uiEntities;
+}
+
+void UIElementManager::InitializeUIElements()
+{
+    mUIElements.emplace_back(std::make_unique<PlayerHealthbarUIElement>(mServiceLocator));
 }

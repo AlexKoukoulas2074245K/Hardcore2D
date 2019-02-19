@@ -165,6 +165,14 @@ void CoreRenderingService::GameLoop(std::function<void(const float)> appUpdateMe
     }
 }
 
+void CoreRenderingService::RenderEntities(const std::vector<EntityId>& entityIds)
+{
+    for (const auto entityId: entityIds)
+    {
+        RenderEntityInternal(entityId);
+    }
+}
+
 void CoreRenderingService::RenderEntities(const std::vector<EntityNameIdEntry>& entityIds)
 {
     for (const auto entityEntry: entityIds)
@@ -176,6 +184,11 @@ void CoreRenderingService::RenderEntities(const std::vector<EntityNameIdEntry>& 
 const glm::vec2& CoreRenderingService::GetRenderableDimensions() const
 {
     return mRenderableDimensions;
+}
+
+float CoreRenderingService::GetAspectRatio() const
+{
+    return mRenderableDimensions.x/mRenderableDimensions.y;
 }
 
 bool CoreRenderingService::InitializeContext()

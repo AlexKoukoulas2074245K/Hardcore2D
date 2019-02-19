@@ -30,6 +30,7 @@
 #include "game/Level.h"
 #include "game/LevelFactory.h"
 #include "game/DamageSystem.h"
+#include "game/ui/UIElementManager.h"
 #include "util/TypeTraits.h"
 #include "util/StringId.h"
 
@@ -61,6 +62,7 @@ bool App::Initialize()
     mCoreRenderingService = std::unique_ptr<CoreRenderingService>(new CoreRenderingService(*mServiceLocator));
     mAnimationService = std::unique_ptr<AnimationService>(new AnimationService(*mServiceLocator));
     mPhysicsSystem = std::unique_ptr<PhysicsSystem>(new PhysicsSystem(*mServiceLocator));
+    mUIElementManager = std::unique_ptr<UIElementManager>(new UIElementManager(*mServiceLocator));
     mDamageSystem = std::unique_ptr<DamageSystem>(new DamageSystem(*mServiceLocator));
     mInputHandler = std::unique_ptr<InputHandler>(new InputHandler());
     mPlayerAttackRechargeController = std::unique_ptr<PlayerAttackRechargeController>(new PlayerAttackRechargeController(*mServiceLocator));
@@ -70,6 +72,7 @@ bool App::Initialize()
     mServiceLocator->RegisterService<EventCommunicationService>(mEventCommunicationService.get());
     mServiceLocator->RegisterService<CoreRenderingService>(mCoreRenderingService.get());
     mServiceLocator->RegisterService<PhysicsSystem>(mPhysicsSystem.get());
+    mServiceLocator->RegisterService<UIElementManager>(mUIElementManager.get());
     mServiceLocator->RegisterService<ResourceManager>(mResourceManager.get());
     mServiceLocator->RegisterService<InputHandler>(mInputHandler.get());
     mServiceLocator->RegisterService<PlayerAttackRechargeController>(mPlayerAttackRechargeController.get());
@@ -77,6 +80,7 @@ bool App::Initialize()
     // 2nd step service initialization
     if (!mDamageSystem->VInitialize()) return false;
     if (!mPhysicsSystem->VInitialize()) return false;
+    if (!mUIElementManager->VInitialize()) return false;
     if (!mAIService->VInitialize()) return false;
     if (!mCoreRenderingService->VInitialize()) return false;
     if (!mResourceManager->VInitialize()) return false;
@@ -85,16 +89,19 @@ bool App::Initialize()
     // Parse Level
     LevelFactory levelFactory(*mServiceLocator);
     mLevel = levelFactory.CreateLevel("editornew.json");
-
+    
+    // Initialize UI elements
+    mUIElementManager->InitializeUIElements();
+    
     // Initialize camera
     mCamera = std::make_unique<Camera>(*mServiceLocator, mCoreRenderingService->GetRenderableDimensions(), mLevel->GetHorizontalBounds(), mLevel->GetVerticalBounds());
     mCoreRenderingService->AttachCamera(mCamera.get());
     
     // Initialized in order of priority
-    mInputActionConsumers.push_back(std::make_unique<DebugInputActionConsumer>(*mServiceLocator));
-    mInputActionConsumers.push_back(std::make_unique<PlayerInputActionConsumer>(*mServiceLocator, mLevel->GetEntityIdFromName(StringId("player"))));
+    mInputActionConsumers.emplace_back(std::make_unique<DebugInputActionConsumer>(*mServiceLocator));
+    mInputActionConsumers.emplace_back(std::make_unique<PlayerInputActionConsumer>(*mServiceLocator, mLevel->GetEntityIdFromName(StringId("player"))));
     
-    // Announce player id to AIs
+    // Announce player id
     mEventCommunicator = mEventCommunicationService->CreateEventCommunicator();
     mEventCommunicator->DispatchEvent(std::make_unique<AnnouncePlayerEntityIdEvent>(mLevel->GetEntityIdFromName(StringId("player"))));
     mEventCommunicator->RegisterEventCallback<EntityDamagedEvent>([](const IEvent& event)
@@ -114,9 +121,11 @@ void App::Update(const float dt)
     mAIService->UpdateAIComponents(mLevel->GetAllActiveEntities(), dt);
     mDamageSystem->Update(mLevel->GetAllActiveEntities(), dt);
     mPhysicsSystem->UpdateEntities(mLevel->GetAllActiveEntities(), dt);
+    mUIElementManager->Update(dt);
     mAnimationService->UpdateAnimations(mLevel->GetAllActiveEntities(), dt);
     mCamera->Update(mLevel->GetEntityIdFromName(StringId("player")), dt);
     mCoreRenderingService->RenderEntities(mLevel->GetAllActiveEntities());
+    mCoreRenderingService->RenderEntities(mUIElementManager->GetUIEntities());
 }
 
 void App::HandleInput()

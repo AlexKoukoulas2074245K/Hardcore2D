@@ -42,9 +42,11 @@ public:
     void AttachCamera(const Camera* camera);
     void GameLoop(std::function<void(const float)> appUpdateMethod);
     void RenderEntities(const std::vector<EntityNameIdEntry>& entityIds);
+    void RenderEntities(const std::vector<EntityId>& entityIds);
     void UpdateCamera(const EntityId focusedEntity, const float dt);
     
     const glm::vec2& GetRenderableDimensions() const;
+    float GetAspectRatio() const;
     
 private:
     using SDL_GLContext = void*;

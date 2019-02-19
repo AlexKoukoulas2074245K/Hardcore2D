@@ -22,6 +22,7 @@ class CoreRenderingService;
 class AnimationService;
 class ResourceManager;
 class PhysicsSystem;
+class UIElementManager;
 class InputHandler;
 class IInputActionConsumer;
 class Level;
@@ -49,6 +50,7 @@ private:
     std::unique_ptr<ResourceManager> mResourceManager;
     std::unique_ptr<InputHandler> mInputHandler;
     std::unique_ptr<PhysicsSystem> mPhysicsSystem;
+    std::unique_ptr<UIElementManager> mUIElementManager;
     std::unique_ptr<DamageSystem> mDamageSystem;
     std::unique_ptr<PlayerAttackRechargeController> mPlayerAttackRechargeController;
     
