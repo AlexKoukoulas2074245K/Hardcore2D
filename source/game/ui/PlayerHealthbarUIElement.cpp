@@ -17,6 +17,9 @@
 #include "../../components/HealthComponent.h"
 #include "../../components/AnimationComponent.h"
 #include "../../components/TransformComponent.h"
+#include "../../util/MathUtils.h"
+
+const float PlayerHealthbarUIElement::HEALTH_DEPLETION_ANIMATION_DURATION = 0.5f;
 
 PlayerHealthbarUIElement::PlayerHealthbarUIElement(const ServiceLocator& serviceLocator)
     : mCoreRenderingService(serviceLocator.ResolveService<CoreRenderingService>())
@@ -25,8 +28,9 @@ PlayerHealthbarUIElement::PlayerHealthbarUIElement(const ServiceLocator& service
     , mEventCommunicator(serviceLocator.ResolveService<EventCommunicationService>().CreateEventCommunicator())
     , mPlayerId(-1)
     , mStartingHealth(0.0f)
-    , mActualCurrentHealth(0.0f)
-    , mAnimationCurrentHealth(0.0f)
+    , mCurrentHealth(0.0f)
+    , mAnimationStartingHealth(0.0f)    
+    , mAnimationTimer(0.0f)
 {
     InitializeHealthbarEntities();
     RegisterEventCallbacks();
@@ -39,8 +43,15 @@ PlayerHealthbarUIElement::~PlayerHealthbarUIElement()
 
 void PlayerHealthbarUIElement::VUpdate(const float dt)
 {
-    
-    const auto healthRatio = mAnimationCurrentHealth / mStartingHealth;
+    mAnimationTimer += dt;
+    if (mAnimationTimer > HEALTH_DEPLETION_ANIMATION_DURATION)
+    {
+        mAnimationTimer = HEALTH_DEPLETION_ANIMATION_DURATION;
+    }
+
+    const auto animationCurrentHealth = lerp(mAnimationStartingHealth, mCurrentHealth, mAnimationTimer/HEALTH_DEPLETION_ANIMATION_DURATION);
+    const auto healthRatio = animationCurrentHealth / mStartingHealth;
+
     mEntityComponentManager.GetComponent<TransformComponent>(mEntityIds[0]).GetScale().x = healthRatio / mCoreRenderingService.GetAspectRatio();
     mEntityComponentManager.GetComponent<TransformComponent>(mEntityIds[0]).GetTranslation().x = -0.69f - (0.21f * (1.0f - healthRatio));
 }
@@ -78,8 +89,8 @@ void PlayerHealthbarUIElement::RegisterEventCallbacks()
     {
         mPlayerId = static_cast<const AnnouncePlayerEntityIdEvent&>(event).GetPlayerEntityId();
         mStartingHealth = mEntityComponentManager.GetComponent<HealthComponent>(mPlayerId).GetHealth();
-        mActualCurrentHealth = mStartingHealth;
-        mAnimationCurrentHealth = mStartingHealth;
+        mCurrentHealth = mStartingHealth;        
+        mAnimationStartingHealth = mCurrentHealth;
     });
 
     mEventCommunicator->RegisterEventCallback<EntityDamagedEvent>([this](const IEvent& event)
@@ -87,7 +98,9 @@ void PlayerHealthbarUIElement::RegisterEventCallbacks()
         const auto& actualEvent = static_cast<const EntityDamagedEvent&>(event);
         if (actualEvent.GetDamagedEntityId() == mPlayerId)
         {
-            mActualCurrentHealth = actualEvent.GetHealthRemaining();
+            mAnimationStartingHealth = mCurrentHealth;
+            mCurrentHealth = actualEvent.GetHealthRemaining();            
+            mAnimationTimer = 0.0f;
         }
     });
 }

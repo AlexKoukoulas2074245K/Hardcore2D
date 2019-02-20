@@ -28,6 +28,8 @@ public:
     const std::vector<EntityId>& VGetEntityIds() const override;
     
 private:
+    static const float HEALTH_DEPLETION_ANIMATION_DURATION;
+
     void InitializeHealthbarEntities();
     void RegisterEventCallbacks();
 
@@ -39,9 +41,10 @@ private:
     EntityId mPlayerId;
     std::vector<EntityId> mEntityIds;
 
-    float mStartingHealth;
-    float mAnimationCurrentHealth;
-    float mActualCurrentHealth;
+    float mStartingHealth;    
+    float mAnimationStartingHealth;
+    float mCurrentHealth;
+    float mAnimationTimer;
 };
 
 #endif /* PlayerHealthbarUIElement_h */

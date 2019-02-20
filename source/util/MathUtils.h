@@ -109,7 +109,7 @@ inline float ElasticFunction(const float t)
     return std::sinf(13.0f * PI * 0.5f * t) * std::powf(2.0f, 10.0f * (t - 1));
 }
 
-inline float TweenValue(const float val, const std::function<float(const float)> tweeningFunc, const TweeningMode tweeningMode);
+inline float TweenValue(const float val, const std::function<float(const float)> tweeningFunc = LinearFunction , const TweeningMode tweeningMode = TweeningMode::EASE_OUT)
 {
     switch (tweeningMode)
     {
