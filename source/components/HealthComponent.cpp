@@ -51,4 +51,9 @@ void HealthComponent::SetInvincibilityTimer(const float invincibilityTimer)
 void HealthComponent::ReduceHealthBy(const float health)
 {
     mHealth -= health;
+
+    if (mHealth <= 0.0f)
+    {
+        mHealth = 0.0f;
+    }
 }
