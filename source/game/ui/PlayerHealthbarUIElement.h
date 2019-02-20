@@ -29,13 +29,18 @@ public:
     
 private:
     void InitializeHealthbarEntities();
-    
+    void RegisterEventCallbacks();
+
     const CoreRenderingService& mCoreRenderingService;
     EntityComponentManager& mEntityComponentManager;
     ResourceManager& mResourceManager;
     std::unique_ptr<EventCommunicator> mEventCommunicator;
     
+    EntityId mPlayerId;
     std::vector<EntityId> mEntityIds;
+
+    float mStartingHealth;
+    float mCurrentHealth;
 };
 
 #endif /* PlayerHealthbarUIElement_h */

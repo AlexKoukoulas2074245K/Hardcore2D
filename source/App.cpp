@@ -107,7 +107,7 @@ bool App::Initialize()
     mEventCommunicator->RegisterEventCallback<EntityDamagedEvent>([](const IEvent& event)
     {
         const auto& actualEvent = static_cast<const EntityDamagedEvent&>(event);
-        Log(LogType::INFO, "Entity %d damaged %.2f by entity %d, now has %.2f health", static_cast<int>(actualEvent.GetDamagedEntityId()), actualEvent.GetDamageDone(), actualEvent.GetDamageSenderEntityId(), actualEvent.GetHealthRemaining());
+        Log(LogType::INFO, "Entity %d damaged %.2f by entity %d, now has %.2f health", static_cast<int>(actualEvent.GetDamagedEntityId()), actualEvent.GetDamageDone(), static_cast<int>(actualEvent.GetDamageSenderEntityId()), actualEvent.GetHealthRemaining());
     });
     
     return true;

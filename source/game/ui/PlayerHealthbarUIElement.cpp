@@ -10,8 +10,11 @@
 #include "../../resources/ResourceManager.h"
 #include "../../rendering/CoreRenderingService.h"
 #include "../../events/EventCommunicator.h"
+#include "../../events/AnnouncePlayerEntityIdEvent.h"
+#include "../../events/EntityDamagedEvent.h"
 #include "../../components/EntityComponentManager.h"
 #include "../../components/ShaderComponent.h"
+#include "../../components/HealthComponent.h"
 #include "../../components/AnimationComponent.h"
 #include "../../components/TransformComponent.h"
 
@@ -20,8 +23,11 @@ PlayerHealthbarUIElement::PlayerHealthbarUIElement(const ServiceLocator& service
     , mEntityComponentManager(serviceLocator.ResolveService<EntityComponentManager>())
     , mResourceManager(serviceLocator.ResolveService<ResourceManager>())
     , mEventCommunicator(serviceLocator.ResolveService<EventCommunicationService>().CreateEventCommunicator())
+    , mPlayerId(-1)
+    , mStartingHealth(0.0f)
 {
     InitializeHealthbarEntities();
+    RegisterEventCallbacks();
 }
 
 PlayerHealthbarUIElement::~PlayerHealthbarUIElement()
@@ -30,8 +36,7 @@ PlayerHealthbarUIElement::~PlayerHealthbarUIElement()
 }
 
 void PlayerHealthbarUIElement::VUpdate(const float dt)
-{
-    mEntityComponentManager.GetComponent<TransformComponent>(mEntityIds[0]).GetScale().x -= 0.2f * dt;
+{    
 }
 
 const std::vector<EntityId>& PlayerHealthbarUIElement::VGetEntityIds() const
@@ -59,4 +64,26 @@ void PlayerHealthbarUIElement::InitializeHealthbarEntities()
     
     mEntityIds.push_back(healthbarFlowEntityId);
     mEntityIds.push_back(healthbarLayoutEntityId);
+}
+
+void PlayerHealthbarUIElement::RegisterEventCallbacks()
+{
+    mEventCommunicator->RegisterEventCallback<AnnouncePlayerEntityIdEvent>([this](const IEvent& event)
+    {
+        mPlayerId = static_cast<const AnnouncePlayerEntityIdEvent&>(event).GetPlayerEntityId();
+        mStartingHealth = mEntityComponentManager.GetComponent<HealthComponent>(mPlayerId).GetHealth();
+    });
+
+    mEventCommunicator->RegisterEventCallback<EntityDamagedEvent>([this](const IEvent& event)
+    {
+        const auto& actualEvent = static_cast<const EntityDamagedEvent&>(event);
+        if (actualEvent.GetDamagedEntityId() == mPlayerId)
+        {
+            mCurrentHealth = actualEvent.GetHealthRemaining();
+
+            const auto healthRatio = mCurrentHealth / mStartingHealth;
+            mEntityComponentManager.GetComponent<TransformComponent>(mEntityIds[0]).GetScale().x = healthRatio / mCoreRenderingService.GetAspectRatio();
+            mEntityComponentManager.GetComponent<TransformComponent>(mEntityIds[0]).GetTranslation().x = -0.7f - (0.220f * (1.0f - healthRatio));
+        }
+    });
 }

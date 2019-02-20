@@ -813,7 +813,7 @@
 			{
 				"BasicNinjaEnemyAIComponent": {},
 				"AnimationComponent": { "path": "characters/heavy_samurai", "animationFrameDuration": 0.03 },
-				"DamageComponent": { "damage": 4.0, "canDamageSameEntityMultipleTimes": true },
+				"DamageComponent": { "damage": 10.0, "canDamageSameEntityMultipleTimes": true },
 				"HealthComponent": { "health": 100.0, "invincibilityDuration": 0.0 },
 				"PhysicsComponent": { "bodyType": "DYNAMIC", "hitBox": { "centerPoint": [0.0, 0.0], "dimensions": [20.0, 30.0] }, "gravity": [0.0, -1680.0, 0.0], "maxVelocity": [1000.0, 720.0, 0.0], "minVelocity": [-1000.0, -720.0, 0.0] },
 				"ShaderComponent": { "shaderName": "basic" },
@@ -826,7 +826,7 @@
 			{
 				"BasicNinjaEnemyAIComponent": {},
 				"AnimationComponent": { "path": "characters/heavy_samurai", "animationFrameDuration": 0.03 },
-				"DamageComponent": { "damage": 4.0, "canDamageSameEntityMultipleTimes": true },
+				"DamageComponent": { "damage": 8.0, "canDamageSameEntityMultipleTimes": true },
 				"HealthComponent": { "health": 100.0, "invincibilityDuration": 0.0 },
 				"PhysicsComponent": { "bodyType": "DYNAMIC", "hitBox": { "centerPoint": [0.0, 0.0], "dimensions": [20.0, 30.0] }, "gravity": [0.0, -1680.0, 0.0], "maxVelocity": [1000.0, 720.0, 0.0], "minVelocity": [-1000.0, -720.0, 0.0] },
 				"ShaderComponent": { "shaderName": "basic" },
