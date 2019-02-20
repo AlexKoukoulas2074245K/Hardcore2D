@@ -10,6 +10,10 @@
 
 #include <glm/vec2.hpp>
 #include <glm/vec3.hpp>
+#include <cmath>
+#include <functional>
+
+static constexpr float PI = 3.141592f;
 
 template<class T>
 inline T Min(T a, T b)
@@ -29,6 +33,12 @@ inline T Abs(const T val)
     return val < 0 ? -val : val;
 }
 
+template <class T>
+inline T lerp(const T x, const T y, const float t)
+{
+    return (T)(x * (1.0f - t) + y * t);
+}
+
 inline glm::vec3 ClampToMax(const glm::vec3& vec, const glm::vec3& maxVec)
 {
     return glm::vec3(Min(vec.x, maxVec.x), Min(vec.y, maxVec.y), Min(vec.z, maxVec.z));
@@ -37,6 +47,78 @@ inline glm::vec3 ClampToMax(const glm::vec3& vec, const glm::vec3& maxVec)
 inline glm::vec3 ClampToMin(const glm::vec3& vec, const glm::vec3& minVec)
 {
     return glm::vec3(Max(vec.x, minVec.x), Max(vec.y, minVec.y), Max(vec.z, minVec.z));
+}
+
+enum class TweeningMode
+{
+    EASE_IN, EASE_OUT, EASE_IN_OUT
+};
+
+inline float LinearFunction(const float t)
+{
+    return t;
+}
+
+inline float QuadFunction(const float t)
+{
+    return std::powf(t, 2.0f);
+}
+
+inline float CubicFunction(const float t)
+{
+    return std::powf(t, 3.0f);
+}
+
+inline float QuartFunction(const float t)
+{
+    return std::powf(t, 4.0f);
+}
+
+inline float QuintFunction(const float t)
+{
+    return std::powf(t, 5.0f);
+}
+
+inline float BackFunction(const float t)
+{
+    return std::powf(t, 2.0f) * (2.70158f * t - 1.70158f);
+}
+
+inline float BounceFunction(const float t)
+{
+    if (t < 4.0f/11.0f)
+    {
+        return (121.0f * t * t)/16.0f;
+    }
+    else if (t < 8.0f/11.0f)
+    {
+        return (363.0f/40.0f * t * t) - (99.0f/10.0f * t) + 17.0f/5.0f;
+    }
+    else if (t < 9.0f/10.0f)
+    {
+        return (4356.0f/361.0f * t * t) - (35442.0f/1805.0f * t) + 16061.0f/1805.0f;
+    }
+    else
+    {
+        return (54.0f/5.0f * t * t) - (513.0f/25.0f * t) + 268.0f/25.0f;
+    }
+}
+
+inline float ElasticFunction(const float t)
+{
+    return std::sinf(13.0f * PI * 0.5f * t) * std::powf(2.0f, 10.0f * (t - 1));
+}
+
+inline float TweenValue(const float val, const std::function<float(const float)> tweeningFunc, const TweeningMode tweeningMode);
+{
+    switch (tweeningMode)
+    {
+        case TweeningMode::EASE_IN: return tweeningFunc(val); break;
+        case TweeningMode::EASE_OUT: return 1.0f - tweeningFunc(1.0f - val); break;
+        case TweeningMode::EASE_IN_OUT: return (val < 0.5f) ? TweenValue(val * 2.0f, tweeningFunc, TweeningMode::EASE_IN)/2.0f : 0.5f + (TweenValue((val - 0.5f) * 2.0f, tweeningFunc, TweeningMode::EASE_OUT)/2.0f);
+    }
+    
+    return 0.0f;
 }
 
 #endif /* MathUtils_h */

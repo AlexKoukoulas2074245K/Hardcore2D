@@ -40,7 +40,8 @@ private:
     std::vector<EntityId> mEntityIds;
 
     float mStartingHealth;
-    float mCurrentHealth;
+    float mAnimationCurrentHealth;
+    float mActualCurrentHealth;
 };
 
 #endif /* PlayerHealthbarUIElement_h */

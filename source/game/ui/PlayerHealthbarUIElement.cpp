@@ -25,6 +25,8 @@ PlayerHealthbarUIElement::PlayerHealthbarUIElement(const ServiceLocator& service
     , mEventCommunicator(serviceLocator.ResolveService<EventCommunicationService>().CreateEventCommunicator())
     , mPlayerId(-1)
     , mStartingHealth(0.0f)
+    , mActualCurrentHealth(0.0f)
+    , mAnimationCurrentHealth(0.0f)
 {
     InitializeHealthbarEntities();
     RegisterEventCallbacks();
@@ -36,7 +38,11 @@ PlayerHealthbarUIElement::~PlayerHealthbarUIElement()
 }
 
 void PlayerHealthbarUIElement::VUpdate(const float dt)
-{    
+{
+    
+    const auto healthRatio = mAnimationCurrentHealth / mStartingHealth;
+    mEntityComponentManager.GetComponent<TransformComponent>(mEntityIds[0]).GetScale().x = healthRatio / mCoreRenderingService.GetAspectRatio();
+    mEntityComponentManager.GetComponent<TransformComponent>(mEntityIds[0]).GetTranslation().x = -0.69f - (0.21f * (1.0f - healthRatio));
 }
 
 const std::vector<EntityId>& PlayerHealthbarUIElement::VGetEntityIds() const
@@ -72,6 +78,8 @@ void PlayerHealthbarUIElement::RegisterEventCallbacks()
     {
         mPlayerId = static_cast<const AnnouncePlayerEntityIdEvent&>(event).GetPlayerEntityId();
         mStartingHealth = mEntityComponentManager.GetComponent<HealthComponent>(mPlayerId).GetHealth();
+        mActualCurrentHealth = mStartingHealth;
+        mAnimationCurrentHealth = mStartingHealth;
     });
 
     mEventCommunicator->RegisterEventCallback<EntityDamagedEvent>([this](const IEvent& event)
@@ -79,11 +87,7 @@ void PlayerHealthbarUIElement::RegisterEventCallbacks()
         const auto& actualEvent = static_cast<const EntityDamagedEvent&>(event);
         if (actualEvent.GetDamagedEntityId() == mPlayerId)
         {
-            mCurrentHealth = actualEvent.GetHealthRemaining();
-
-            const auto healthRatio = mCurrentHealth / mStartingHealth;
-            mEntityComponentManager.GetComponent<TransformComponent>(mEntityIds[0]).GetScale().x = healthRatio / mCoreRenderingService.GetAspectRatio();
-            mEntityComponentManager.GetComponent<TransformComponent>(mEntityIds[0]).GetTranslation().x = -0.7f - (0.220f * (1.0f - healthRatio));
+            mActualCurrentHealth = actualEvent.GetHealthRemaining();
         }
     });
 }
