@@ -789,7 +789,7 @@
 			{
 				"AnimationComponent": { "path": "characters/light_samurai", "animationFrameDuration": 0.03 },
 				"HealthComponent": { "health": 100.0, "invincibilityDuration": 0.5 },
-				"PhysicsComponent": { "bodyType": "DYNAMIC", "hitBox": { "centerPoint": [0.0, 0.0], "dimensions": [10.0, 30.0] }, "gravity": [0.0, -1680.0, 0.0], "maxVelocity": [240.0, 560.0, 0.0], "minVelocity": [-240.0, -560.0, 0.0] },
+				"PhysicsComponent": { "bodyType": "DYNAMIC", "hitBox": { "centerPoint": [0.0, 0.0], "dimensions": [10.0, 30.0] }, "gravity": [0.0, -1680.0, 0.0], "maxVelocity": [240.0, 640.0, 0.0], "minVelocity": [-240.0, -460.0, 0.0] },
 				"ShaderComponent": { "shaderName": "basic" },
 				"TransformComponent": { "translation": [440.0, 520.0, 1.0], "rotation": [0.0, 0.0, 0.0], "scale": [80.0, 80.0, 1.0] }
 			}

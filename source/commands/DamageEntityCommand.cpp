@@ -79,6 +79,10 @@ void DamageEntityCommand::VExecute()
         damageComponent.AddEntityToWhitelistedDamagedEntities(mCollidedEntities.second);
     }
     
-    mEntityComponentManager.GetComponent<AnimationComponent>(mCollidedEntities.second).PlayAnimationOnce(StringId("hit"));
+    if (healthComponent.GetHealth() > 0.0f)
+    {
+        mEntityComponentManager.GetComponent<AnimationComponent>(mCollidedEntities.second).PlayAnimationOnce(StringId("hit"));
+    }
+    
     mEventCommunicator->DispatchEvent(std::make_unique<EntityDamagedEvent>(mCollidedEntities.second, mCollidedEntities.first, damageComponent.GetDamage(), healthComponent.GetHealth()));
 }
