@@ -291,6 +291,7 @@ void PhysicsSystem::PushEntityOutsideOtherEntityInAxis(const EntityId referenceE
                                                                        otherEntityHitBox.mDimensions.y * 0.5f -
                                                                        referenceEntityHitBox.mCenterPoint.y +
                                                                        referenceEntityHitBox.mDimensions.y * 0.5f;
+                referenceEntityPhysicsComponent.GetVelocity().y = 0.0f;
             }
         }
     }

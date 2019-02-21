@@ -49,7 +49,7 @@ void PlayerHealthbarUIElement::VUpdate(const float dt)
         mAnimationTimer = HEALTH_DEPLETION_ANIMATION_DURATION;
     }
 
-    const auto animationCurrentHealth = lerp(mAnimationStartingHealth, mCurrentHealth, mAnimationTimer/HEALTH_DEPLETION_ANIMATION_DURATION);
+    const auto animationCurrentHealth = Lerp(mAnimationStartingHealth, mCurrentHealth, mAnimationTimer/HEALTH_DEPLETION_ANIMATION_DURATION);
     const auto healthRatio = animationCurrentHealth / mStartingHealth;
 
     mEntityComponentManager.GetComponent<TransformComponent>(mEntityIds[0]).GetScale().x = healthRatio / mCoreRenderingService.GetAspectRatio();

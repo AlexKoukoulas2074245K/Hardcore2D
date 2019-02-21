@@ -19,6 +19,7 @@
 #include "../game/PlayerBehaviorController.h"
 #include "../util/Logging.h"
 #include "../events/PlayerChangedDirectionEvent.h"
+#include "../events/PlayerJumpEvent.h"
 
 #include <glm/glm.hpp>
 
@@ -89,7 +90,12 @@ bool PlayerInputActionConsumer::VConsumeInputAction(const InputAction& inputActi
             {
                 case InputAction::ActionState::START:
                 {   
-                    SetEntityCustomVelocityCommand(mEntityComponentManager, mEntityId, glm::vec3(entityPhysicsComponent.GetVelocity().x, entityPhysicsComponent.GetMaxVelocity().y, entityPhysicsComponent.GetVelocity().z)).VExecute();                   
+                    if (mPlayerBehaviorController.CanJump())
+                    {
+                        SetEntityCustomVelocityCommand(mEntityComponentManager, mEntityId, glm::vec3(entityPhysicsComponent.GetVelocity().x, entityPhysicsComponent.GetMaxVelocity().y, entityPhysicsComponent.GetVelocity().z)).VExecute();
+                        mEventCommunicator->DispatchEvent(std::make_unique<PlayerJumpEvent>());
+                    }
+                    
                     return true;
                 } break;
                 case InputAction::ActionState::CONTINUE:

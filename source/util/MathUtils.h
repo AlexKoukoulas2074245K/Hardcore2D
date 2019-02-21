@@ -34,7 +34,7 @@ inline T Abs(const T val)
 }
 
 template <class T>
-inline T lerp(const T x, const T y, const float t)
+inline T Lerp(const T x, const T y, const float t)
 {
     return (T)(x * (1.0f - t) + y * t);
 }
