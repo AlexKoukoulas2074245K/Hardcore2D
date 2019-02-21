@@ -25,11 +25,11 @@ Level::Level(const ServiceLocator& serviceLocator, const std::vector<EntityNameI
 {
     mEventCommunicator->RegisterEventCallback<NewEntityCreatedEvent>([this](const IEvent& event)
     {
-        mEntityIdsToAdd.push_back(static_cast<const NewEntityCreatedEvent&>(event).GetNewEntityNameIdEntry());        
+        mEntityIdsToAdd.insert(static_cast<const NewEntityCreatedEvent&>(event).GetNewEntityNameIdEntry());        
     });
     mEventCommunicator->RegisterEventCallback<EntityDestroyedEvent>([this](const IEvent& event)
     {
-        mEntityIdsToRemove.push_back(static_cast<const EntityDestroyedEvent&>(event).GetDestroyedEntityId());
+        mEntityIdsToRemove.insert(static_cast<const EntityDestroyedEvent&>(event).GetDestroyedEntityId());
     });
 }
 
@@ -57,16 +57,17 @@ void Level::CheckForAdditionsOrRemovalsOfEntities()
 {    
     while (!mEntityIdsToRemove.empty())
     {
-        const auto destroyedEntityId = mEntityIdsToRemove.front();
+        const auto destroyedEntityId = *(mEntityIdsToRemove.begin());
         mEntityComponentManager.RemoveEntityEntry(destroyedEntityId);
         RemoveEntityFromActiveEntities(destroyedEntityId);
-        mEntityIdsToRemove.pop_front();
+        mEntityIdsToRemove.erase(destroyedEntityId);
     }
 
     while (!mEntityIdsToAdd.empty())
     {
-        mActiveEntities.push_back(mEntityIdsToAdd.front());
-        mEntityIdsToAdd.pop_front();
+        const auto newEntityId = *(mEntityIdsToAdd.begin());
+        mActiveEntities.push_back(newEntityId);
+        mEntityIdsToAdd.erase(newEntityId);
     }
 }
 

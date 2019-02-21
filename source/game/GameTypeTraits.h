@@ -18,8 +18,19 @@ struct EntityNameIdEntry
     {
     };
 
+    operator size_t () { return static_cast<size_t>(mEntityId); }
+    bool operator == (const EntityNameIdEntry& other) const { return mEntityId == other.mEntityId; }
+
     StringId mEntityName;
     EntityId mEntityId;
+};
+
+struct EntityNameIdEntryHasher
+{
+    std::size_t operator()(const EntityNameIdEntry& key) const
+    {
+        return static_cast<std::size_t>(key.mEntityId);
+    }
 };
 
 #endif /* GameTypeTraits_h */

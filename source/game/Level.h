@@ -12,7 +12,7 @@
 #include "../util/MathUtils.h"
 #include "GameTypeTraits.h"
 
-#include <list>
+#include <unordered_set>
 #include <vector>
 #include <memory>
 
@@ -40,8 +40,8 @@ private:
 
     EntityComponentManager& mEntityComponentManager;
 
-    std::list<EntityNameIdEntry> mEntityIdsToAdd;
-    std::list<EntityId> mEntityIdsToRemove;
+    std::unordered_set<EntityNameIdEntry, EntityNameIdEntryHasher> mEntityIdsToAdd;
+    std::unordered_set<EntityId, EntityIdHasher> mEntityIdsToRemove;
 
     std::vector<EntityNameIdEntry> mActiveEntities;
     const glm::vec2 mLevelHorizontalBounds;

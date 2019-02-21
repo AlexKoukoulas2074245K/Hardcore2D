@@ -1,21 +1,22 @@
 //
-//  PlayerAttackRechargeController.h
+//  PlayerBehaviorController.h
 //  Hardcore2D
 //
 //  Created by Alex Koukoulas on 06/02/2019.
 //
 
-#ifndef PlayerAttackRechargeController_h
-#define PlayerAttackRechargeController_h
+#ifndef PlayerBehaviorController_h
+#define PlayerBehaviorController_h
 
 #include "../IService.h"
+#include "../util/TypeTraits.h"
 
 #include <memory>
 
 class ServiceLocator;
 class EventCommunicator;
 
-class PlayerAttackRechargeController final: public IService
+class PlayerBehaviorController final: public IService
 {
     friend class App;
 public:
@@ -30,11 +31,15 @@ private:
     static const float DEFAULT_PLAYER_RANGED_ATTACK_RECHARGE_DURATION;
     static const int DEFAULT_RANGED_ATTACK_BATCH_COUNT;
     
-    PlayerAttackRechargeController(const ServiceLocator&);
+    PlayerBehaviorController(const ServiceLocator&);
     
+    void RegisterEventCallbacks();
+
     const ServiceLocator& mServiceLocator;
     std::unique_ptr<EventCommunicator> mEventCommunicator;
     
+    EntityId mPlayerEntityId;
+
     float mMeleeAttackRechargeDuration;
     float mRangedAttackRechargeDuration;
     int mRangedAttackBatchCount;
@@ -46,4 +51,4 @@ private:
     bool mIsMeleeAttackRecharging;
 };
 
-#endif /* PlayerAttackRechargeController_h */
+#endif /* PlayerBehaviorController_h */

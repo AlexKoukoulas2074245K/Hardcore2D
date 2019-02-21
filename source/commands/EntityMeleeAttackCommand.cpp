@@ -43,7 +43,7 @@ void EntityMeleeAttackCommand::VExecute()
     AnimationComponent::AnimationsMap mMeleeAnimations;
     for (auto i = 0; i < 7; ++i)
     {
-        const auto& frameTextureResource = mResourceManager.GetResource<TextureResource>("effects/player_swing/idle/" + std::to_string(i) + ".png");
+        const auto& frameTextureResource = mResourceManager.GetResource<TextureResource>("effects/melee_swing/idle/" + std::to_string(i) + ".png");
         mMeleeAnimations[StringId("idle")].push_back(frameTextureResource.GetGLTextureId());
     }
     
@@ -73,5 +73,5 @@ void EntityMeleeAttackCommand::VExecute()
     mEntityComponentManager.AddComponent<TransformComponent>(swingEntityId, std::move(swingTransformComponent));
     mEntityComponentManager.AddComponent<IAIComponent>(swingEntityId, std::make_unique<MeleeSwingAIComponent>(mServiceLocator, swingEntityId, 0.10f));
     mEntityComponentManager.AddComponent<DamageComponent>(swingEntityId, std::make_unique<DamageComponent>(mParentEntityId, 25.0f, false));
-    mEventCommunicator->DispatchEvent(std::make_unique<NewEntityCreatedEvent>(EntityNameIdEntry(StringId("player_swing"), swingEntityId)));
+    mEventCommunicator->DispatchEvent(std::make_unique<NewEntityCreatedEvent>(EntityNameIdEntry(StringId("melee_swing"), swingEntityId)));
 }

@@ -127,6 +127,7 @@ void AnimationComponent::PlayAnimationOnce(const StringId newAnimation, Animatio
     {
         return;
     }
+
     if (mPlayingOneTimeAnimation)
     {
         mPreviousAnimation = newAnimation;

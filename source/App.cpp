@@ -7,7 +7,7 @@
 
 #include "App.h"
 #include "game/AIService.h"
-#include "game/PlayerAttackRechargeController.h"
+#include "game/PlayerBehaviorController.h"
 #include "rendering/Camera.h"
 #include "input/PlayerInputActionConsumer.h"
 #include "input/DebugInputActionConsumer.h"
@@ -65,7 +65,7 @@ bool App::Initialize()
     mUIElementManager = std::unique_ptr<UIElementManager>(new UIElementManager(*mServiceLocator));
     mDamageSystem = std::unique_ptr<DamageSystem>(new DamageSystem(*mServiceLocator));
     mInputHandler = std::unique_ptr<InputHandler>(new InputHandler());
-    mPlayerAttackRechargeController = std::unique_ptr<PlayerAttackRechargeController>(new PlayerAttackRechargeController(*mServiceLocator));
+    mPlayerBehaviorController = std::unique_ptr<PlayerBehaviorController>(new PlayerBehaviorController(*mServiceLocator));
     
     // Register services
     mServiceLocator->RegisterService<EntityComponentManager>(mEntityComponentManager.get());
@@ -75,7 +75,7 @@ bool App::Initialize()
     mServiceLocator->RegisterService<UIElementManager>(mUIElementManager.get());
     mServiceLocator->RegisterService<ResourceManager>(mResourceManager.get());
     mServiceLocator->RegisterService<InputHandler>(mInputHandler.get());
-    mServiceLocator->RegisterService<PlayerAttackRechargeController>(mPlayerAttackRechargeController.get());
+    mServiceLocator->RegisterService<PlayerBehaviorController>(mPlayerBehaviorController.get());
 
     // 2nd step service initialization
     if (!mDamageSystem->VInitialize()) return false;
@@ -84,7 +84,7 @@ bool App::Initialize()
     if (!mAIService->VInitialize()) return false;
     if (!mCoreRenderingService->VInitialize()) return false;
     if (!mResourceManager->VInitialize()) return false;
-    if (!mPlayerAttackRechargeController->VInitialize()) return false;
+    if (!mPlayerBehaviorController->VInitialize()) return false;
     
     // Parse Level
     LevelFactory levelFactory(*mServiceLocator);
@@ -117,7 +117,7 @@ void App::Update(const float dt)
 {    
     mLevel->CheckForAdditionsOrRemovalsOfEntities();
     HandleInput();
-    mPlayerAttackRechargeController->Update(dt);
+    mPlayerBehaviorController->Update(dt);
     mAIService->UpdateAIComponents(mLevel->GetAllActiveEntities(), dt);
     mDamageSystem->Update(mLevel->GetAllActiveEntities(), dt);
     mPhysicsSystem->UpdateEntities(mLevel->GetAllActiveEntities(), dt);

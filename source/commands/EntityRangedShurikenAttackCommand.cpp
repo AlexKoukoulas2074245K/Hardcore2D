@@ -39,7 +39,7 @@ void EntityRangedShurikenAttackCommand::VExecute()
     const auto shurikenEntityId = mEntityComponentManager.GenerateEntity();
     mEntityComponentManager.AddComponent<ShaderComponent>(shurikenEntityId, std::make_unique<ShaderComponent>(StringId("basic")));
         
-    const auto& frameTextureResource = mResourceManager.GetResource<TextureResource>("effects/player_shuriken/idle/0.png");
+    const auto& frameTextureResource = mResourceManager.GetResource<TextureResource>("effects/ranged_shuriken/idle/0.png");
     AnimationComponent::AnimationsMap mAnimation;
     mAnimation[StringId("idle")].push_back(frameTextureResource.GetGLTextureId());
     
@@ -74,5 +74,5 @@ void EntityRangedShurikenAttackCommand::VExecute()
     mEntityComponentManager.AddComponent<TransformComponent>(shurikenEntityId, std::move(shurikenTransformComponent));
     mEntityComponentManager.AddComponent<IAIComponent>(shurikenEntityId, std::make_unique<RangedShurikenAIComponent>(mServiceLocator, shurikenEntityId, 4.0f));
     mEntityComponentManager.AddComponent<DamageComponent>(shurikenEntityId, std::make_unique<DamageComponent>(mParentEntityId, 10.0f, false));
-    mEventCommunicator->DispatchEvent(std::make_unique<NewEntityCreatedEvent>(EntityNameIdEntry(StringId("player_shuriken"), shurikenEntityId)));
+    mEventCommunicator->DispatchEvent(std::make_unique<NewEntityCreatedEvent>(EntityNameIdEntry(StringId("ranged_shuriken"), shurikenEntityId)));
 }

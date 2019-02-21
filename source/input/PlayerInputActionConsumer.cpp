@@ -16,7 +16,7 @@
 #include "../events/EventCommunicator.h"
 #include "../events/PlayerMeleeAttackEvent.h"
 #include "../events/PlayerRangedAttackEvent.h"
-#include "../game/PlayerAttackRechargeController.h"
+#include "../game/PlayerBehaviorController.h"
 #include "../util/Logging.h"
 #include "../events/PlayerChangedDirectionEvent.h"
 
@@ -24,7 +24,7 @@
 
 PlayerInputActionConsumer::PlayerInputActionConsumer(const ServiceLocator& serviceLocator, const EntityId entityId)
     : mServiceLocator(serviceLocator)
-    , mPlayerAttackRechargeController(mServiceLocator.ResolveService<PlayerAttackRechargeController>())
+    , mPlayerBehaviorController(mServiceLocator.ResolveService<PlayerBehaviorController>())
     , mEntityComponentManager(mServiceLocator.ResolveService<EntityComponentManager>())
     , mEntityId(entityId)
     , mEventCommunicator(mServiceLocator.ResolveService<EventCommunicationService>().CreateEventCommunicator())
@@ -102,7 +102,7 @@ bool PlayerInputActionConsumer::VConsumeInputAction(const InputAction& inputActi
             {
                 case InputAction::ActionState::START:
                 {
-                    if (mPlayerAttackRechargeController.IsMeleeAttackAvailable())
+                    if (mPlayerBehaviorController.IsMeleeAttackAvailable())
                     {
                         EntityMeleeAttackCommand(mServiceLocator, mEntityId).VExecute();
                         mEventCommunicator->DispatchEvent(std::make_unique<PlayerMeleeAttackEvent>());
@@ -119,7 +119,7 @@ bool PlayerInputActionConsumer::VConsumeInputAction(const InputAction& inputActi
             {
                 case InputAction::ActionState::START:
                 {
-                    if (mPlayerAttackRechargeController.IsRangedAttackAvailable())
+                    if (mPlayerBehaviorController.IsRangedAttackAvailable())
                     {
                         EntityRangedShurikenAttackCommand(mServiceLocator, mEntityId).VExecute();
                         mEventCommunicator->DispatchEvent(std::make_unique<PlayerRangedAttackEvent>());

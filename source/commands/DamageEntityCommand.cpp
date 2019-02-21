@@ -7,6 +7,7 @@
 
 #include "DamageEntityCommand.h"
 #include "../ServiceLocator.h"
+#include "../components/AnimationComponent.h"
 #include "../components/EntityComponentManager.h"
 #include "../components/HealthComponent.h"
 #include "../components/FactionComponent.h"
@@ -78,5 +79,6 @@ void DamageEntityCommand::VExecute()
         damageComponent.AddEntityToWhitelistedDamagedEntities(mCollidedEntities.second);
     }
     
+    mEntityComponentManager.GetComponent<AnimationComponent>(mCollidedEntities.second).PlayAnimationOnce(StringId("hit"));
     mEventCommunicator->DispatchEvent(std::make_unique<EntityDamagedEvent>(mCollidedEntities.second, mCollidedEntities.first, damageComponent.GetDamage(), healthComponent.GetHealth()));
 }
