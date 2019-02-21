@@ -82,8 +82,8 @@ std::unique_ptr<IResource> TextureLoader::VCreateAndLoadResource(const std::stri
     
     GL_CHECK(glTexImage2D(GL_TEXTURE_2D, 0, mode, sdlSurface->w, sdlSurface->h, 0, textureFormat, GL_UNSIGNED_BYTE, sdlSurface->pixels));
     
-    GL_CHECK(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR));
-    GL_CHECK(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR));
+    GL_CHECK(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST));
+    GL_CHECK(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST));
     
     return std::unique_ptr<IResource>(new TextureResource(sdlSurface, glTextureId));
 }
