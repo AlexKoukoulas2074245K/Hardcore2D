@@ -41,7 +41,15 @@ void BloodDropAIComponent::VUpdate(const float dt)
     const auto& physicsComponent = mEntityComponentManager.GetComponent<PhysicsComponent>(mEntityId);
     auto& transformComponent = mEntityComponentManager.GetComponent<TransformComponent>(mEntityId);
     
-    transformComponent.GetRotation().z = PI/2 + Arctan2(-physicsComponent.GetVelocity().x, physicsComponent.GetVelocity().y);
+    if (glm::length(physicsComponent.GetVelocity()) < 0.01f)
+    {
+        transformComponent.GetRotation().z = PI*1.5f;
+    }
+    else
+    {
+        transformComponent.GetRotation().z = PI*0.5f + Arctan2(-physicsComponent.GetVelocity().x, physicsComponent.GetVelocity().y);
+    }
+    
     
     mTimeToLive -= dt;
     if (mTimeToLive <= 0.0f)
