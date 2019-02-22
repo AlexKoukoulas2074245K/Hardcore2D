@@ -42,7 +42,8 @@ Camera::Camera(const ServiceLocator& serviceLocator,
     {
         mLookingAheadRight = static_cast<const PlayerChangedDirectionEvent&>(event).GetNewFacingDirection() == FacingDirection::RIGHT;
     });
-    mEventCommunicator->RegisterEventCallback<PlayerMeleeAttackEvent>([this](const IEvent&)
+    /*
+    mEventCommunicator->RegisterEventCallback<CamerShakeEvent>([this](const IEvent&)
     {
         mIsShaking = true;
         mShakeRadius = SHAKE_RADIUS;
@@ -52,6 +53,7 @@ Camera::Camera(const ServiceLocator& serviceLocator,
         mTranslation.x += offset.x;
         mTranslation.y += offset.y;
     });
+    */
 }
 
 Camera::~Camera()
