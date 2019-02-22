@@ -51,7 +51,6 @@ private:
     const glm::vec2& mRenderableDimensions;
     
     glm::vec3 mTranslation;
-    glm::vec3 mPreShakeTranslation;
     glm::mat4x4 mViewMatrix;
     bool mLookingAheadRight;
     bool mIsShaking;

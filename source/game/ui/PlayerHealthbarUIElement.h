@@ -42,8 +42,8 @@ private:
     std::vector<EntityId> mEntityIds;
 
     float mStartingHealth;    
-    float mAnimationStartingHealth;
     float mCurrentHealth;
+    float mAnimationStartingHealth;
     float mAnimationTimer;
 };
 

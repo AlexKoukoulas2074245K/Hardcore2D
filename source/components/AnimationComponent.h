@@ -39,7 +39,7 @@ public:
 
     void SetFacingDirection(const FacingDirection);
     void PlayAnimation(const StringId newAnimation, AnimationCompleteCallback animationCompleteCallback = nullptr);
-    void PlayAnimationOnce(const StringId newAnimation, AnimationCompleteCallback animationCompleteCallback = nullptr);
+    void PlayAnimationOnce(const StringId newAnimation, const bool force = false, AnimationCompleteCallback animationCompleteCallback = nullptr);
     void SetAnimationTimer(const float animationTimer);
     void AdvanceFrame();
     void SetPause(const bool paused);

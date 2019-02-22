@@ -60,8 +60,8 @@ void EffectManager::CreateBloodSpurtEffect(const EntityId originEntityId)
     mEntityComponentManager->AddComponent<PhysicsComponent>(bloodDropEntityId, std::move(bloodDropPhysicsComponent));
 
     auto bloodDropTransformComponent = std::make_unique<TransformComponent>();
-    bloodDropTransformComponent->SetParent(originEntityId, glm::vec3(0.0f, 0.0f, 0.0f));
-    bloodDropTransformComponent->GetScale() = glm::vec3(32.0f, 32.0f, 1.0f);
+    bloodDropTransformComponent->GetTranslation() = mEntityComponentManager->GetComponent<TransformComponent>(originEntityId).GetTranslation();
+    bloodDropTransformComponent->GetScale() = glm::vec3(64.0f, 64.0f, 1.0f);
         
     mEntityComponentManager->AddComponent<TransformComponent>(bloodDropEntityId, std::move(bloodDropTransformComponent));
     mEntityComponentManager->AddComponent<IAIComponent>(bloodDropEntityId, std::make_unique<BloodDropAIComponent>(mServiceLocator, bloodDropEntityId, 5.0f));

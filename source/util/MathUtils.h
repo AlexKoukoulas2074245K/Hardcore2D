@@ -161,4 +161,9 @@ inline float Cosf(const float val)
     return std::cosf(val);
 }
 
+inline float Arctan2(const float x, const float y)
+{
+    return std::atan2(x, y);
+}
+
 #endif /* MathUtils_h */

@@ -111,29 +111,29 @@ void AnimationComponent::PlayAnimation(const StringId newAnimation, AnimationCom
     mCurrentFrameIndex = 0;
 }
 
-void AnimationComponent::PlayAnimationOnce(const StringId newAnimation, AnimationCompleteCallback animationCompleteCallback /* nullptr */)
+void AnimationComponent::PlayAnimationOnce(const StringId newAnimation, const bool force /* false */, AnimationCompleteCallback animationCompleteCallback /* nullptr */)
 {
     if (mAnimations.count(newAnimation) == 0)
     {
         assert(false);
     }
 
-    if (animationCompleteCallback != nullptr)
-    {
-        mAnimationCompleteCallback = animationCompleteCallback;
-    }
-
-    if (mCurrentAnimation == newAnimation)
+    if (mCurrentAnimation == newAnimation && force == false)
     {
         return;
     }
 
-    if (mPlayingOneTimeAnimation)
+    if (mPlayingOneTimeAnimation && force == false)
     {
         mPreviousAnimation = newAnimation;
         return;
     }
 
+    if (animationCompleteCallback != nullptr)
+    {
+        mAnimationCompleteCallback = animationCompleteCallback;
+    }
+    
     mPlayingOneTimeAnimation = true;
     mPreviousAnimation = mCurrentAnimation;
     mCurrentAnimation = newAnimation;
