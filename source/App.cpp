@@ -19,6 +19,7 @@
 #include "events/EntityDamagedEvent.h"
 #include "rendering/CoreRenderingService.h"
 #include "rendering/AnimationService.h"
+#include "rendering/effects/EffectManager.h"
 #include "physics/PhysicsSystem.h"
 #include "ServiceLocator.h"
 #include "resources/ResourceManager.h"
@@ -63,6 +64,7 @@ bool App::Initialize()
     mAnimationService = std::unique_ptr<AnimationService>(new AnimationService(*mServiceLocator));
     mPhysicsSystem = std::unique_ptr<PhysicsSystem>(new PhysicsSystem(*mServiceLocator));
     mUIElementManager = std::unique_ptr<UIElementManager>(new UIElementManager(*mServiceLocator));
+    mEffectManager = std::unique_ptr<EffectManager>(new EffectManager(*mServiceLocator));
     mDamageSystem = std::unique_ptr<DamageSystem>(new DamageSystem(*mServiceLocator));
     mInputHandler = std::unique_ptr<InputHandler>(new InputHandler());
     mPlayerBehaviorController = std::unique_ptr<PlayerBehaviorController>(new PlayerBehaviorController(*mServiceLocator));
@@ -73,6 +75,7 @@ bool App::Initialize()
     mServiceLocator->RegisterService<CoreRenderingService>(mCoreRenderingService.get());
     mServiceLocator->RegisterService<PhysicsSystem>(mPhysicsSystem.get());
     mServiceLocator->RegisterService<UIElementManager>(mUIElementManager.get());
+    mServiceLocator->RegisterService<EffectManager>(mEffectManager.get());
     mServiceLocator->RegisterService<ResourceManager>(mResourceManager.get());
     mServiceLocator->RegisterService<InputHandler>(mInputHandler.get());
     mServiceLocator->RegisterService<PlayerBehaviorController>(mPlayerBehaviorController.get());
@@ -81,6 +84,7 @@ bool App::Initialize()
     if (!mDamageSystem->VInitialize()) return false;
     if (!mPhysicsSystem->VInitialize()) return false;
     if (!mUIElementManager->VInitialize()) return false;
+    if (!mEffectManager->VInitialize()) return false;
     if (!mAIService->VInitialize()) return false;
     if (!mCoreRenderingService->VInitialize()) return false;
     if (!mResourceManager->VInitialize()) return false;
@@ -135,8 +139,7 @@ void App::HandleInput()
     {
         for (const auto& inputActionConsumer: mInputActionConsumers)
         {
-            if (inputActionConsumer->VConsumeInputAction(inputAction))
-                break;
+            if (inputActionConsumer->VConsumeInputAction(inputAction)) break;
         }
     }
 }

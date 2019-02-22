@@ -19,6 +19,7 @@ class ServiceLocator;
 class EventCommunicator;
 class IEvent;
 class PhysicsComponent;
+class EffectManager;
 
 class BasicNinjaEnemyAIComponent final: public IAIComponent
 {
@@ -46,13 +47,15 @@ private:
     void OnLeapingComplete();
     
     EntityComponentManager& mEntityComponentManager;
+    EffectManager& mEffectManager;
+    std::unique_ptr<EventCommunicator> mEventCommunicator;
+
     const EntityId mThisEntityId;        
     EntityId mTargetEntityId;
     State mState;
     bool mMovingRight;
     glm::vec3 mInitPosition;
-    float mTimer;
-    std::unique_ptr<EventCommunicator> mEventCommunicator;
+    float mTimer;    
 };
 
 #endif /* BasicNinjaEnemyAIComponent_h */

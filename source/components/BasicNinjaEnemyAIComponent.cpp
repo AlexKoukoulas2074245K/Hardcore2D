@@ -23,6 +23,7 @@
 #include "../commands/SetEntityFacingDirectionCommand.h"
 #include "../events/EntityDamagedEvent.h"
 #include "../events/EntityDestroyedEvent.h"
+#include "../rendering/effects/EffectManager.h"
 
 const float BasicNinjaEnemyAIComponent::PLAYER_DETECTION_DISTANCE = 400.0f;
 const float BasicNinjaEnemyAIComponent::PATROLLING_MAX_DISTANCE_FROM_INIT_POSITION = 100.0f;
@@ -32,11 +33,12 @@ const float BasicNinjaEnemyAIComponent::CHARGING_TIMER = 1.5f;
 
 BasicNinjaEnemyAIComponent::BasicNinjaEnemyAIComponent(const ServiceLocator& serviceLocator, const EntityId thisEntityId)
     : mEntityComponentManager(serviceLocator.ResolveService<EntityComponentManager>())
+    , mEffectManager(serviceLocator.ResolveService<EffectManager>())
+    , mEventCommunicator(serviceLocator.ResolveService<EventCommunicationService>().CreateEventCommunicator())
     , mThisEntityId(thisEntityId)
     , mState(State::INITIALIZE)
     , mMovingRight(true)
-    , mTimer(0.0f)
-    , mEventCommunicator(serviceLocator.ResolveService<EventCommunicationService>().CreateEventCommunicator())
+    , mTimer(0.0f)    
 {
     mEventCommunicator->RegisterEventCallback<AnnouncePlayerEntityIdEvent>([this](const IEvent& event) 
     {
@@ -168,13 +170,13 @@ void BasicNinjaEnemyAIComponent::OnEntityCollisionEvent(const IEvent& event)
 }
 
 void BasicNinjaEnemyAIComponent::OnEntityDamagedEvent(const IEvent& event)
-{
-    const auto& actualEvent = static_cast<const EntityDamagedEvent&>(event);
-
+{    
     if (mState == State::DEAD)
     {
         return;
     }
+
+    const auto& actualEvent = static_cast<const EntityDamagedEvent&>(event);
 
     if (actualEvent.GetDamagedEntityId() != mThisEntityId)
     {
@@ -183,6 +185,7 @@ void BasicNinjaEnemyAIComponent::OnEntityDamagedEvent(const IEvent& event)
 
     if (actualEvent.GetHealthRemaining() > 0.0f)
     {
+        mEffectManager.PlayEffect(mThisEntityId, EffectManager::EffectType::BLOOD_SPURT);
         return;
     }
 
