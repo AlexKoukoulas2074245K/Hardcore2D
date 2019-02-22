@@ -37,16 +37,26 @@ public:
     bool IsTransformInsideViewRect(const TransformComponent&) const;
 
 private:
+    static const float MAX_LOOKAHEAD_DISTANCE;
+    static const float SHAKE_RADIUS;
+
+    void UpdateFollowingEntity(const EntityId focusedEntityId, const float dt);
+    void UpdateScreenShake(const float dt);
+
     const EntityComponentManager& mEntityComponentManager;
     std::unique_ptr<EventCommunicator> mEventCommunicator;
-    
+        
     const glm::vec2& mLevelHorBounds;
     const glm::vec2& mLevelVerBounds;
     const glm::vec2& mRenderableDimensions;
     
     glm::vec3 mTranslation;
+    glm::vec3 mPreShakeTranslation;
     glm::mat4x4 mViewMatrix;
     bool mLookingAheadRight;
+    bool mIsShaking;
+    float mShakeRadius;    
+    float mInitShakeRandomAngle;
 };
 
 #endif /* Camera_h */

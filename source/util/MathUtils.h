@@ -11,6 +11,8 @@
 #include <glm/vec2.hpp>
 #include <glm/vec3.hpp>
 #include <cmath>
+#include <ctime>
+#include <random>
 #include <functional>
 
 static constexpr float PI = 3.141592f;
@@ -119,6 +121,44 @@ inline float TweenValue(const float val, const std::function<float(const float)>
     }
     
     return 0.0f;
+}
+
+static bool hasInitializedSeed = false;
+inline int RandomInt(const int min = 0, const int max = RAND_MAX)
+{
+    if (!hasInitializedSeed)
+    {
+        std::srand(static_cast<unsigned int>(time(nullptr)));
+        hasInitializedSeed = true;
+    }
+    
+    return (std::rand() % (max - min)) + min;
+}
+
+inline float RandomFloat(const float min = 0.0f, const float max = 1.0f)
+{
+    if (!hasInitializedSeed)
+    {
+        std::srand(static_cast<unsigned int>(time(nullptr)));
+        hasInitializedSeed = true;
+    }
+
+    return min + static_cast <float> (RandomInt()) / (static_cast <float> (RAND_MAX / (max - min)));
+}
+
+inline int RandomSign()
+{
+    return (RandomInt(0, 2)) ? 1 : -1;
+}
+
+inline float Sinf(const float val)
+{
+    return std::sinf(val);
+}
+
+inline float Cosf(const float val)
+{
+    return std::cosf(val);
 }
 
 #endif /* MathUtils_h */
