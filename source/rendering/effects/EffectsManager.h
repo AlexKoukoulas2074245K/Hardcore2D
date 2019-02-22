@@ -1,15 +1,15 @@
 //
-//  EffectManager.h
+//  EffectsManager.h
 //  Hardcore2D
 //
 //  Created by Alex Koukoulas on 19/02/2019.
 //
 
-#ifndef EffectManager_h
-#define EffectManager_h
+#ifndef EffectsManager_h
+#define EffectsManager_h
 
 #include "../../IService.h"
-#include "../../util/TypeTraits.h"
+#include "../../util/MathUtils.h"
 
 #include <memory>
 
@@ -18,7 +18,7 @@ class EntityComponentManager;
 class EventCommunicator;
 class ResourceManager;
 
-class EffectManager final : public IService
+class EffectsManager final : public IService
 {
     friend class App;
 
@@ -28,14 +28,14 @@ public:
         BLOOD_SPURT
     };
 
-    ~EffectManager();
+    ~EffectsManager();
 
     bool VInitialize() override;    
-    void PlayEffect(const EntityId originEntityId, const EffectType effectType);
+    void PlayEffect(const glm::vec3& effectOrigin, const EffectType effectType);
 
 private:
-    EffectManager(const ServiceLocator&);
-    void CreateBloodSpurtEffect(const EntityId originEntityId);
+    EffectsManager(const ServiceLocator&);
+    void CreateBloodSpurtEffect(const glm::vec3& effectOrigin);
 
     const ServiceLocator& mServiceLocator;    
     EntityComponentManager* mEntityComponentManager;
@@ -44,4 +44,4 @@ private:
     std::unique_ptr<EventCommunicator> mEventCommunicator;
 };
 
-#endif /* EffectManager_h */
+#endif /* EffectsManager_h */

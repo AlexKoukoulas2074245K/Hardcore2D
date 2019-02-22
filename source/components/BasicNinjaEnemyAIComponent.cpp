@@ -23,7 +23,7 @@
 #include "../commands/SetEntityFacingDirectionCommand.h"
 #include "../events/EntityDamagedEvent.h"
 #include "../events/EntityDestroyedEvent.h"
-#include "../rendering/effects/EffectManager.h"
+#include "../rendering/effects/EffectsManager.h"
 
 const float BasicNinjaEnemyAIComponent::PLAYER_DETECTION_DISTANCE = 400.0f;
 const float BasicNinjaEnemyAIComponent::PATROLLING_MAX_DISTANCE_FROM_INIT_POSITION = 100.0f;
@@ -33,7 +33,7 @@ const float BasicNinjaEnemyAIComponent::CHARGING_TIMER = 1.5f;
 
 BasicNinjaEnemyAIComponent::BasicNinjaEnemyAIComponent(const ServiceLocator& serviceLocator, const EntityId thisEntityId)
     : mEntityComponentManager(serviceLocator.ResolveService<EntityComponentManager>())
-    , mEffectManager(serviceLocator.ResolveService<EffectManager>())
+    , mEffectsManager(serviceLocator.ResolveService<EffectsManager>())
     , mEventCommunicator(serviceLocator.ResolveService<EventCommunicationService>().CreateEventCommunicator())
     , mThisEntityId(thisEntityId)
     , mState(State::INITIALIZE)
@@ -185,7 +185,7 @@ void BasicNinjaEnemyAIComponent::OnEntityDamagedEvent(const IEvent& event)
 
     if (actualEvent.GetHealthRemaining() > 0.0f)
     {
-        mEffectManager.PlayEffect(mThisEntityId, EffectManager::EffectType::BLOOD_SPURT);
+        mEffectsManager.PlayEffect(mEntityComponentManager.GetComponent<TransformComponent>(actualEvent.GetDamageSenderEntityId()).GetTranslation(), EffectsManager::EffectType::BLOOD_SPURT);
         return;
     }
 

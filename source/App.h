@@ -23,7 +23,7 @@ class AnimationService;
 class ResourceManager;
 class PhysicsSystem;
 class UIElementManager;
-class EffectManager;
+class EffectsManager;
 class InputHandler;
 class IInputActionConsumer;
 class Level;
@@ -52,7 +52,7 @@ private:
     std::unique_ptr<InputHandler> mInputHandler;
     std::unique_ptr<PhysicsSystem> mPhysicsSystem;
     std::unique_ptr<UIElementManager> mUIElementManager;
-    std::unique_ptr<EffectManager> mEffectManager;
+    std::unique_ptr<EffectsManager> mEffectsManager;
     std::unique_ptr<DamageSystem> mDamageSystem;
     std::unique_ptr<PlayerBehaviorController> mPlayerBehaviorController;
     
