@@ -53,6 +53,21 @@ EntityId Level::GetEntityIdFromName(const StringId entityName) const
     return resultIter->mEntityId;
 }
 
+StringId Level::GetEntityNameFromId(const EntityId entityId) const
+{
+    const auto resultIter = std::find_if(mActiveEntities.begin(), mActiveEntities.end(), [entityId](const EntityNameIdEntry& entityEntry)
+    {
+        return entityEntry.mEntityId == entityId;
+    });
+    
+    if (resultIter == mActiveEntities.end())
+    {
+        assert(false);
+    }
+    
+    return resultIter->mEntityName;
+}
+
 void Level::CheckForAdditionsOrRemovalsOfEntities()
 {    
     while (!mEntityIdsToRemove.empty())

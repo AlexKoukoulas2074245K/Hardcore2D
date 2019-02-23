@@ -108,10 +108,19 @@ bool App::Initialize()
     // Announce player id
     mEventCommunicator = mEventCommunicationService->CreateEventCommunicator();
     mEventCommunicator->DispatchEvent(std::make_unique<AnnouncePlayerEntityIdEvent>(mLevel->GetEntityIdFromName(StringId("player"))));
-    mEventCommunicator->RegisterEventCallback<EntityDamagedEvent>([](const IEvent& event)
+    mEventCommunicator->RegisterEventCallback<EntityDamagedEvent>([this](const IEvent& event)
     {
         const auto& actualEvent = static_cast<const EntityDamagedEvent&>(event);
-        Log(LogType::INFO, "Entity %d damaged %.2f by entity %d, now has %.2f health", static_cast<int>(actualEvent.GetDamagedEntityId()), actualEvent.GetDamageDone(), static_cast<int>(actualEvent.GetDamageSenderEntityId()), actualEvent.GetHealthRemaining());
+        const auto damagedEntityName = mLevel->GetEntityNameFromId(actualEvent.GetDamagedEntityId()).GetString();
+        const auto damageSenderEntityName = mLevel->GetEntityNameFromId(actualEvent.GetDamageSenderEntityId()).GetString();
+        
+        Log(LogType::INFO, "Entity %d (%s) damaged %.2f by entity %d (%s), now has %.2f health",
+            static_cast<int>(actualEvent.GetDamagedEntityId()),
+            damagedEntityName.c_str(),
+            actualEvent.GetDamageDone(),
+            static_cast<int>(actualEvent.GetDamageSenderEntityId()),
+            damageSenderEntityName.c_str(),
+            actualEvent.GetHealthRemaining());
     });
     
     return true;

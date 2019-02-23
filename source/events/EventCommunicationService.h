@@ -23,6 +23,7 @@ class EventCommunicationService final: public IService
     friend class App;
 public:
     using EventCallback = std::function<void(const IEvent&)>;
+    using EventCallbackRegistryMap = std::unordered_map<size_t, std::vector<std::pair<EventCommunicator*, EventCallback>>>;
     
     ~EventCommunicationService();
 
@@ -30,7 +31,15 @@ public:
     inline void RegisterEventCallback(EventCommunicator* listener, EventCallback eventCallback)
     {
         const auto eventTypeHash = GetStringHash(typeid(EventType).name());
-        mEventCallbackRegistry[eventTypeHash].push_back(std::make_pair(listener, eventCallback));
+        
+        if (mEventDispatchingDepth != 0)
+        {
+            mPendingCallbacksToBeRegistered[eventTypeHash].push_back(std::make_pair(listener, eventCallback));
+        }
+        else
+        {
+            mEventCallbackRegistry[eventTypeHash].push_back(std::make_pair(listener, eventCallback));
+        }
     }
         
     std::unique_ptr<EventCommunicator> CreateEventCommunicator();
@@ -40,10 +49,11 @@ public:
     void UnregisterAllCallbacksForListener(EventCommunicator* listener);
     
 private:
-    EventCommunicationService() = default;
+    EventCommunicationService();
     
-    std::unordered_map<size_t, std::vector<std::pair<EventCommunicator*, EventCallback>>> mEventCallbackRegistry;
-    std::vector<std::pair<std::string, EventCommunicator*>> mEventDispatchingHistory;    
+    EventCallbackRegistryMap mEventCallbackRegistry;
+    EventCallbackRegistryMap mPendingCallbacksToBeRegistered;
+    int mEventDispatchingDepth;
 };
 
 #endif /* EventCommunicationService_h */

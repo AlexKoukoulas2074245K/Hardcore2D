@@ -27,6 +27,8 @@ public:
     ~Level();   
     
     EntityId GetEntityIdFromName(const StringId entityName) const;
+    StringId GetEntityNameFromId(const EntityId entityId) const;
+    
     void CheckForAdditionsOrRemovalsOfEntities();
 
     const std::vector<EntityNameIdEntry>& GetAllActiveEntities() const;

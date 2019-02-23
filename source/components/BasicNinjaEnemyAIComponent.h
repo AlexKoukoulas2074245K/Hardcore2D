@@ -32,20 +32,19 @@ public:
 private:
     enum class State
     {
-        INITIALIZE, PATROLLING, LEAPING_TO_TARGET, FOCUSING, CHARGING_PLAYER, DEAD 
+        INITIALIZE, PATROLLING, LEAPING_TO_TARGET, PURSUING, DEAD 
     };
 
     static const float PLAYER_DETECTION_DISTANCE;
     static const float PATROLLING_MAX_DISTANCE_FROM_INIT_POSITION;
-    static const float PURSUING_MAX_DISTANCE_HORIZONTALLY;
-    static const float FOCUSING_TIMER;
-    static const float CHARGING_TIMER;
+    static const float PURSUING_MELEE_ATTACK_DISTANCE;
     
     void OnAnnouncePlayerEntityId(const IEvent&);
     void OnEntityCollisionEvent(const IEvent&);
     void OnEntityDamagedEvent(const IEvent&);
     void OnLeapingComplete();
     
+    const ServiceLocator& mServiceLocator;
     EntityComponentManager& mEntityComponentManager;
     EffectsManager& mEffectsManager;
     std::unique_ptr<EventCommunicator> mEventCommunicator;

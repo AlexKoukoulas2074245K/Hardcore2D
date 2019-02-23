@@ -21,6 +21,7 @@ BloodDropAIComponent::BloodDropAIComponent(const ServiceLocator& serviceLocator,
     , mTimeToLive(timeToLive)
     , mEventCommunicator(serviceLocator.ResolveService<EventCommunicationService>().CreateEventCommunicator())
 {
+    
     mEventCommunicator->RegisterEventCallback<EntityCollisionEvent>([this](const IEvent& event)
     {
         const auto& actualEvent = static_cast<const EntityCollisionEvent&>(event);
@@ -28,10 +29,10 @@ BloodDropAIComponent::BloodDropAIComponent(const ServiceLocator& serviceLocator,
         
         if (collidedEntitiesPair.first == mEntityId)
         {
-            if (mEntityComponentManager.GetComponent<PhysicsComponent>(collidedEntitiesPair.second).GetBodyType() == PhysicsComponent::BodyType::STATIC)
-            {
+            //if (mEntityComponentManager.GetComponent<PhysicsComponent>(collidedEntitiesPair.second).GetBodyType() == PhysicsComponent::BodyType::STATIC)
+            //{
                 mEntityComponentManager.GetComponent<PhysicsComponent>(mEntityId).GetVelocity() = glm::vec3(0.0f, 0.0f, 0.0f);
-            }
+            //}
         }
     });
 }
