@@ -35,7 +35,7 @@ EntityMeleeAttackCommand::EntityMeleeAttackCommand(const ServiceLocator& service
 void EntityMeleeAttackCommand::VExecute()
 {
     auto& entityAnimationComponent = mEntityComponentManager.GetComponent<AnimationComponent>(mParentEntityId);
-    entityAnimationComponent.PlayAnimationOnce(StringId("melee"));
+    entityAnimationComponent.PlayAnimation(StringId("melee"), false, true, AnimationComponent::AnimationPriority::HIGH);
 
     const auto swingEntityId = mEntityComponentManager.GenerateEntity();
     mEntityComponentManager.AddComponent<ShaderComponent>(swingEntityId, std::make_unique<ShaderComponent>(StringId("basic")));

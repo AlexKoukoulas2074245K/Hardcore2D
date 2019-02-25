@@ -28,7 +28,7 @@ void SetEntityCustomVelocityCommand::VExecute()
         auto& animationComponent = mEntityComponentManager.GetComponent<AnimationComponent>(mEntityId);
         if (Abs(mVelocity.x) < 1.0f)
         {
-            animationComponent.PlayAnimation(StringId("idle"));
+            animationComponent.PlayAnimation(StringId("idle"), true);
         }
         else
         {
@@ -49,7 +49,7 @@ void SetEntityCustomVelocityCommand::VExecute()
             
             if (animationComponent.HasAnimation(StringId("running")))
             {
-                animationComponent.PlayAnimation(StringId("running"));
+                animationComponent.PlayAnimation(StringId("running"), true);
             }            
         }
         

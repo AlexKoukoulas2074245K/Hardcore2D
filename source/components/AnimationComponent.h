@@ -22,6 +22,11 @@ class ResourceManager;
 class AnimationComponent final: public IComponent
 {
 public:
+    enum class AnimationPriority
+    {
+        NORMAL = 0, HIGH = 1
+    };
+
     using AnimationCompleteCallback = std::function<void()>;
     using AnimationsMap = std::unordered_map<StringId, std::vector<GLuint>, StringIdHasher>;
     
@@ -38,8 +43,7 @@ public:
     bool HasAnimation(const StringId animation);
 
     void SetFacingDirection(const FacingDirection);
-    void PlayAnimation(const StringId newAnimation, AnimationCompleteCallback animationCompleteCallback = nullptr);
-    void PlayAnimationOnce(const StringId newAnimation, const bool force = false, AnimationCompleteCallback animationCompleteCallback = nullptr);
+    void PlayAnimation(const StringId newAnimation, const bool loop = false, const bool resetToIdleWhenFinished = true, const AnimationPriority priority = AnimationPriority::NORMAL, AnimationCompleteCallback animationCompleteCallback = nullptr);    
     void SetAnimationTimer(const float animationTimer);
     void AdvanceFrame();
     void SetPause(const bool paused);
@@ -54,10 +58,12 @@ private:
     AnimationsMap mAnimations;
     FacingDirection mFacingDirection;
     StringId mCurrentAnimation;
-    StringId mPreviousAnimation;
-    bool mPlayingOneTimeAnimation;
+    
+    bool mIsLooping;
     bool mIsPaused;
+    bool mResetToIdleWhenFinished;
 
+    AnimationPriority mCurrentAnimationPriority;
     int mCurrentFrameIndex;
     float mAnimationFrameDuration;
     float mAnimationTimer;

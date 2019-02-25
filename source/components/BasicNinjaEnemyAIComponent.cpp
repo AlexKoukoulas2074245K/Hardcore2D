@@ -187,9 +187,8 @@ void BasicNinjaEnemyAIComponent::OnEntityDamagedEvent(const IEvent& event)
     mState = State::DEAD;
     
     mEntityComponentManager.GetComponent<PhysicsComponent>(mThisEntityId).GetVelocity() = glm::vec3(0.0f, 0.0f, 0.0f);
-    mEntityComponentManager.GetComponent<AnimationComponent>(mThisEntityId).PlayAnimationOnce(StringId("death"), true, [this]() 
-    {
-        mEntityComponentManager.GetComponent<AnimationComponent>(mThisEntityId).SetPause(true);
+    mEntityComponentManager.GetComponent<AnimationComponent>(mThisEntityId).PlayAnimation(StringId("death"), false, false, AnimationComponent::AnimationPriority::HIGH, [this]() 
+    {        
         mEntityComponentManager.RemoveComponent<DamageComponent>(mThisEntityId);
         mEntityComponentManager.RemoveComponent<HealthComponent>(mThisEntityId);
     });

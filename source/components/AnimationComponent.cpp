@@ -17,10 +17,11 @@ AnimationComponent::AnimationComponent(const std::string& relativeEntityAnimatio
     : mResourceManager(&resourceManager)
     , mRootAnimationsPath(relativeEntityAnimationsDirectoryPath)
     , mFacingDirection(FacingDirection::RIGHT)
-    , mCurrentAnimation("")
-    , mPreviousAnimation("")
-    , mPlayingOneTimeAnimation(false)
+    , mCurrentAnimation("")    
+    , mIsLooping(false)
     , mIsPaused(false)
+    , mResetToIdleWhenFinished(true)
+    , mCurrentAnimationPriority(AnimationPriority::NORMAL)
     , mCurrentFrameIndex(0)
     , mAnimationFrameDuration(animationFrameDuration)
     , mAnimationTimer(0.0f)
@@ -33,15 +34,16 @@ AnimationComponent::AnimationComponent(const AnimationsMap& userSuppliedAnimatio
     , mRootAnimationsPath("")
     , mAnimations(userSuppliedAnimations)
     , mFacingDirection(FacingDirection::RIGHT)
-    , mCurrentAnimation("")
-    , mPreviousAnimation("")
-    , mPlayingOneTimeAnimation(false)
+    , mCurrentAnimation("")    
+    , mIsLooping(false)
     , mIsPaused(false)
+    , mResetToIdleWhenFinished(true)
+    , mCurrentAnimationPriority(AnimationPriority::NORMAL)
     , mCurrentFrameIndex(0)
     , mAnimationFrameDuration(animationFrameDuration)
     , mAnimationTimer(0.0f)
 {
-    PlayAnimation(StringId("idle"));
+    PlayAnimation(StringId("idle"), true);
 }
 
 const std::string& AnimationComponent::GetRootAnimationsPath() const
@@ -84,7 +86,7 @@ void AnimationComponent::SetFacingDirection(const FacingDirection facingDirectio
     mFacingDirection = facingDirection;
 }
 
-void AnimationComponent::PlayAnimation(const StringId newAnimation, AnimationCompleteCallback animationCompleteCallback /* nullptr */)
+void AnimationComponent::PlayAnimation(const StringId newAnimation, const bool loop /* false */, const bool resetToIdleWhenFinished /* true */, const AnimationPriority priority /* AnimationPriority::NORMAL */, AnimationCompleteCallback animationCompleteCallback /* nullptr */)
 {
     if (mAnimations.count(newAnimation) == 0)
     {
@@ -101,43 +103,16 @@ void AnimationComponent::PlayAnimation(const StringId newAnimation, AnimationCom
         return;
     }
 
-    if (mPlayingOneTimeAnimation)
+    // Only override current animation if the new one is of the same or higher priority
+    if (static_cast<int>(priority) >= static_cast<int>(mCurrentAnimationPriority))
     {
-        mPreviousAnimation = newAnimation;
-        return;
-    }
-
-    mCurrentAnimation = newAnimation;    
-    mCurrentFrameIndex = 0;
-}
-
-void AnimationComponent::PlayAnimationOnce(const StringId newAnimation, const bool force /* false */, AnimationCompleteCallback animationCompleteCallback /* nullptr */)
-{
-    if (mAnimations.count(newAnimation) == 0)
-    {
-        assert(false);
-    }
-
-    if (mCurrentAnimation == newAnimation && force == false)
-    {
-        return;
-    }
-
-    if (mPlayingOneTimeAnimation && force == false)
-    {
-        mPreviousAnimation = newAnimation;
-        return;
-    }
-
-    if (animationCompleteCallback != nullptr)
-    {
-        mAnimationCompleteCallback = animationCompleteCallback;
-    }
-    
-    mPlayingOneTimeAnimation = true;
-    mPreviousAnimation = mCurrentAnimation;
-    mCurrentAnimation = newAnimation;
-    mCurrentFrameIndex = 0;
+        mIsPaused = false;
+        mResetToIdleWhenFinished = resetToIdleWhenFinished;
+        mIsLooping = loop;
+        mCurrentAnimation = newAnimation;
+        mCurrentAnimationPriority = priority;
+        mCurrentFrameIndex = 0;
+    }    
 }
 
 void AnimationComponent::SetAnimationTimer(const float animationTimer)
@@ -147,14 +122,6 @@ void AnimationComponent::SetAnimationTimer(const float animationTimer)
 
 void AnimationComponent::AdvanceFrame()
 {
-    if (mCurrentFrameIndex + 1 >= static_cast<int>(mAnimations.at(mCurrentAnimation).size()))
-    {
-        if (mAnimationCompleteCallback != nullptr)
-        {
-            mAnimationCompleteCallback();
-        }
-    }
-
     if (mIsPaused)
     {
         return;
@@ -162,12 +129,30 @@ void AnimationComponent::AdvanceFrame()
 
     mCurrentFrameIndex = (mCurrentFrameIndex + 1) % mAnimations.at(mCurrentAnimation).size();
     if (mCurrentFrameIndex == 0)
-    {
-        if (mPlayingOneTimeAnimation)
+    {                        
+        if (mIsLooping)
         {
-            mPlayingOneTimeAnimation = false;
-            PlayAnimation(mPreviousAnimation);
-        }        
+            mCurrentFrameIndex = 0;
+        }
+        else
+        {          
+            mIsPaused = true;
+            mCurrentFrameIndex = mAnimations.at(mCurrentAnimation).size() - 1;
+
+            if (mResetToIdleWhenFinished)
+            {
+                mCurrentAnimation = StringId("idle");
+            }            
+        }
+
+        if (mAnimationCompleteCallback != nullptr)
+        {
+            mAnimationCompleteCallback();
+        }
+
+        // Reset animation priority so that subsequent animations can be played if the current one 
+        // which just finished was high priority. This means that a high priority animation des not make sense to be looping
+        mCurrentAnimationPriority = AnimationPriority::NORMAL;
     }
 }
 
@@ -196,6 +181,6 @@ void AnimationComponent::CreateAnimationsMapFromRelativeEntityAnimationsDirector
         
     }
     
-    PlayAnimation(StringId("idle"));
+    PlayAnimation(StringId("idle"), true);
 }
 
