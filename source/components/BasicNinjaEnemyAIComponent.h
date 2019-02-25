@@ -38,7 +38,8 @@ private:
     static const float PLAYER_DETECTION_DISTANCE;
     static const float PATROLLING_MAX_DISTANCE_FROM_INIT_POSITION;
     static const float PURSUING_MELEE_ATTACK_DISTANCE;
-    
+    static const float MELEE_ATTACK_COOLDOWN;
+
     void OnAnnouncePlayerEntityId(const IEvent&);
     void OnEntityCollisionEvent(const IEvent&);
     void OnEntityDamagedEvent(const IEvent&);

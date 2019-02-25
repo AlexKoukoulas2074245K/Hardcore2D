@@ -23,12 +23,12 @@ public:
     void VUpdate(const float dt) override;
     
 private:
-    static const float MAX_DISTANCE_FROM_INIT_POSITION;
+    static const float MOVEMENT_DURATION_PER_DIRECTION;
     
     EntityComponentManager& mEntityComponentManager;
-    const EntityId mEntityId;
-    const glm::vec3 mInitPosition;
+    const EntityId mEntityId;    
     bool mMovingDownwards;
+    float mTimer;
     
 };
 

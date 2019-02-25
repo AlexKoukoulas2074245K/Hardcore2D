@@ -18,6 +18,7 @@
 #include "../components/EntityComponentManager.h"
 #include "../components/TransformComponent.h"
 #include "../util/MathUtils.h"
+#include "../util/Logging.h"
 
 const float PlayerBehaviorController::DEFAULT_PLAYER_MELEE_ATTACK_RECHARGE_DURATION = 0.35f;
 const float PlayerBehaviorController::DEFAULT_PLAYER_RANGED_ATTACK_RECHARGE_DURATION = 1.0f;
@@ -129,7 +130,7 @@ void PlayerBehaviorController::RegisterEventCallbacks()
         }
 
         const auto& otherEntityPhysicsComponent = mEntityComponentManager->GetComponent<PhysicsComponent>(actualEvent.GetCollidedEntityIds().second);
-        if (otherEntityPhysicsComponent.GetBodyType() != PhysicsComponent::BodyType::STATIC)
+        if (otherEntityPhysicsComponent.GetBodyType() == PhysicsComponent::BodyType::DYNAMIC)
         {
             return;
         }
@@ -138,13 +139,13 @@ void PlayerBehaviorController::RegisterEventCallbacks()
         const auto& playerPhysicsComponent = mEntityComponentManager->GetComponent<PhysicsComponent>(mPlayerEntityId);
         const auto& otherEntityTransformComponent = mEntityComponentManager->GetComponent<TransformComponent>(actualEvent.GetCollidedEntityIds().second);
         if (otherEntityTransformComponent.GetTranslation().y > playerTransformComponent.GetTranslation().y)
-        {
+        {            
             return;
         }
 
 
-        if (Abs(playerPhysicsComponent.GetVelocity().y) > 0.0001f)
-        {
+        if (Abs(playerPhysicsComponent.GetVelocity().y) > 0.0001f && otherEntityPhysicsComponent.GetBodyType() != PhysicsComponent::BodyType::KINEMATIC)
+        {            
             return;
         }
 
