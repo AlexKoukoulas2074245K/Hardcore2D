@@ -20,7 +20,7 @@
 #include "../util/MathUtils.h"
 #include "../util/Logging.h"
 
-const float PlayerBehaviorController::DEFAULT_PLAYER_MELEE_ATTACK_RECHARGE_DURATION = 0.35f;
+const float PlayerBehaviorController::DEFAULT_PLAYER_MELEE_ATTACK_RECHARGE_DURATION = 0.5f;
 const float PlayerBehaviorController::DEFAULT_PLAYER_RANGED_ATTACK_RECHARGE_DURATION = 1.0f;
 const int PlayerBehaviorController::DEFAULT_RANGED_ATTACK_BATCH_COUNT = 3;
 const int PlayerBehaviorController::DEFAULT_JUMP_COUNT = 2;
@@ -149,7 +149,7 @@ void PlayerBehaviorController::RegisterEventCallbacks()
             return;
         }
             
-        if (Abs(playerPhysicsComponent.GetVelocity().y) > 0.0001f)
+        if (Abs(playerPhysicsComponent.GetVelocity().y) > 0.0001f && otherEntityPhysicsComponent.GetBodyType() != PhysicsComponent::BodyType::KINEMATIC)
         {            
             return;
         }

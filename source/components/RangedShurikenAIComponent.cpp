@@ -32,7 +32,7 @@ RangedShurikenAIComponent::RangedShurikenAIComponent(const ServiceLocator& servi
     {
         const auto collidingEntityIds = static_cast<const EntityCollisionEvent&>(event).GetCollidedEntityIds();
         
-        if (collidingEntityIds.first == mEntityId && mEntityComponentManager.GetComponent<PhysicsComponent>(collidingEntityIds.second).GetBodyType() == PhysicsComponent::BodyType::STATIC)
+        if (collidingEntityIds.first == mEntityId && mEntityComponentManager.GetComponent<PhysicsComponent>(collidingEntityIds.second).GetBodyType() != PhysicsComponent::BodyType::DYNAMIC)
         {
             mEventCommunicator->DispatchEvent(std::make_unique<EntityDestroyedEvent>(mEntityId));
         }

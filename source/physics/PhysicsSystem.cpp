@@ -235,11 +235,10 @@ void PhysicsSystem::PushEntityOutsideOtherEntityInAxis(const EntityId referenceE
                                              referenceEntityHitBox.mCenterPoint.x -
                                              referenceEntityHitBox.mDimensions.x * 0.5f;
             
-            if (otherEntityPhysicsComponent.GetBodyType() != PhysicsComponent::BodyType::KINEMATIC ||
-                Abs(-referenceEntityTransformComponent.GetTranslation().x + horizontalPushDelta) < 10.0f)
+            if (Abs(referenceEntityTransformComponent.GetTranslation().x - otherEntityTransformComponent.GetTranslation().x) > otherEntityPhysicsComponent.GetHitBox().mDimensions.x * 0.5f)
             {
                 referenceEntityTransformComponent.GetTranslation().x = horizontalPushDelta;
-            }
+            }            
         }
         // Collided with entity to the left
         else
@@ -250,8 +249,7 @@ void PhysicsSystem::PushEntityOutsideOtherEntityInAxis(const EntityId referenceE
                                              referenceEntityHitBox.mCenterPoint.x +
                                              referenceEntityHitBox.mDimensions.x * 0.5f;
             
-            if (otherEntityPhysicsComponent.GetBodyType() != PhysicsComponent::BodyType::KINEMATIC ||
-                Abs(-referenceEntityTransformComponent.GetTranslation().x + horizontalPushDelta) < 10.0f)
+            if (Abs(referenceEntityTransformComponent.GetTranslation().x - otherEntityTransformComponent.GetTranslation().x) > otherEntityPhysicsComponent.GetHitBox().mDimensions.x * 0.5f)
             {
                 referenceEntityTransformComponent.GetTranslation().x = horizontalPushDelta;
             }
