@@ -9,8 +9,7 @@
 #include "Level.h"
 #include "../components/EntityComponentManager.h"
 #include "../components/BasicNinjaEnemyAIComponent.h"
-#include "../components/HorizontalMovingPlatformAIComponent.h"
-#include "../components/VerticalMovingPlatformAIComponent.h"
+#include "../components/MovingPlatformAIComponent.h"
 #include "../components/AnimationComponent.h"
 #include "../components/DamageComponent.h"
 #include "../components/FactionComponent.h"
@@ -97,13 +96,9 @@ std::unique_ptr<Level> LevelFactory::CreateLevel(const std::string& levelPath)
                 {
                     entityComponentManager.AddComponent<IAIComponent>(entityId, std::make_unique<BasicNinjaEnemyAIComponent>(mServiceLocator, entityId));
                 }
-                else if (componentName == "VerticalMovingPlatformAIComponent")
+                else if (componentName == "MovingPlatformAIComponent")
                 {
-                    entityComponentManager.AddComponent<IAIComponent>(entityId, std::make_unique<VerticalMovingPlatformAIComponent>(mServiceLocator, entityId));
-                }
-                else if (componentName == "HorizontalMovingPlatformAIComponent")
-                {
-                    entityComponentManager.AddComponent<IAIComponent>(entityId, std::make_unique<HorizontalMovingPlatformAIComponent>(mServiceLocator, entityId));
+                    entityComponentManager.AddComponent<IAIComponent>(entityId, std::make_unique<MovingPlatformAIComponent>(mServiceLocator, entityId));
                 }
             }
             else if (componentName == "AnimationComponent")

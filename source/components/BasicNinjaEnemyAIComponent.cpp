@@ -124,6 +124,7 @@ void BasicNinjaEnemyAIComponent::VUpdate(const float dt)
             
             if (distanceFromPlayer < PURSUING_MELEE_ATTACK_DISTANCE)
             {
+                SetEntityCustomVelocityCommand(mEntityComponentManager, mThisEntityId, glm::vec3(0.0f, physicsComponent.GetVelocity().y, physicsComponent.GetVelocity().z)).VExecute();
                 mTimer -= dt;
                 if (mTimer <= 0.0f)
                 {
@@ -134,7 +135,7 @@ void BasicNinjaEnemyAIComponent::VUpdate(const float dt)
             else
             {
                 const auto targetXVelocity = targetTransformComponent.GetTranslation().x > transformComponent.GetTranslation().x ? physicsComponent.GetMaxVelocity().x * 0.13f : physicsComponent.GetMinVelocity().x * 0.13f;
-                SetEntityCustomVelocityCommand(mEntityComponentManager, mThisEntityId, glm::vec3(targetXVelocity, 0.0f, 0.0f)).VExecute();
+                SetEntityCustomVelocityCommand(mEntityComponentManager, mThisEntityId, glm::vec3(targetXVelocity, physicsComponent.GetVelocity().y, physicsComponent.GetVelocity().z)).VExecute();
             }
             
         } break;
@@ -199,5 +200,5 @@ void BasicNinjaEnemyAIComponent::OnLeapingComplete()
     mState = State::PURSUING;
     SetEntityCustomVelocityCommand(mEntityComponentManager, mThisEntityId, glm::vec3(0.0f, 0.0f, 0.0f)).VExecute();
     EntityMeleeAttackCommand(mServiceLocator, mThisEntityId).VExecute();
-    mTimer = 0.5f;
+    mTimer = MELEE_ATTACK_COOLDOWN;
 }

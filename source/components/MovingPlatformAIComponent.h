@@ -1,12 +1,12 @@
 //
-//  HorizontalMovingPlatformAIComponent.h
+//  MovingPlatformAIComponent.h
 //  Hardcore2D
 //
 //  Created by Alex Koukoulas on 23/02/2019.
 //
 
-#ifndef HorizontalMovingPlatformAIComponent_h
-#define HorizontalMovingPlatformAIComponent_h
+#ifndef MovingPlatformAIComponent_h
+#define MovingPlatformAIComponent_h
 
 #include "IAIComponent.h"
 #include "../util/TypeTraits.h"
@@ -15,10 +15,10 @@
 class ServiceLocator;
 class EntityComponentManager;
 
-class HorizontalMovingPlatformAIComponent final: public IAIComponent
+class MovingPlatformAIComponent final: public IAIComponent
 {
 public:
-    HorizontalMovingPlatformAIComponent(const ServiceLocator&, const EntityId entityId);
+    MovingPlatformAIComponent(const ServiceLocator&, const EntityId entityId);
     
     void VUpdate(const float dt) override;
     
@@ -27,9 +27,9 @@ private:
     
     EntityComponentManager& mEntityComponentManager;
     const EntityId mEntityId;    
-    bool mMovingRight;
+    bool mMovingNorthOrEastOrBoth;
     float mTimer;
     
 };
 
-#endif /* HorizontalMovingPlatformAIComponent_h */
+#endif /* MovingPlatformAIComponent_h */

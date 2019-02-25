@@ -907,22 +907,22 @@
 			"name": "",
 			"components":
 			{
-				"VerticalMovingPlatformAIComponent": {},
+				"MovingPlatformAIComponent": {},
 				"AnimationComponent": { "path": "environments/jungle_tiles/ground_top_edge_left_side", "animationFrameDuration": 100.0 },
 				"PhysicsComponent": { "bodyType": "KINEMATIC", "hitBox": { "centerPoint": [0.0, 0.0], "dimensions": [80.0, 80.0] }, "gravity": [0.0, 0.0, 0.0], "maxVelocity": [100.0, 0.0, 0.0], "minVelocity": [-100.0, 0.0, 0.0] },
 				"ShaderComponent": { "shaderName": "basic" },
-				"TransformComponent": { "translation": [520.0, 840.0, 1.0], "rotation": [0.0, 0.0, 0.0], "scale": [80.0, 80.0, 1.0] }
+				"TransformComponent": { "translation": [600.0, 680.0, 1.0], "rotation": [0.0, 0.0, 0.0], "scale": [80.0, 80.0, 1.0] }
 			}
 		},
 		{
 			"name": "",
 			"components":
 			{
-				"HorizontalMovingPlatformAIComponent": {},
+				"MovingPlatformAIComponent": {},
 				"AnimationComponent": { "path": "environments/jungle_tiles/ground_top_edge_left_side", "animationFrameDuration": 100.0 },
-				"PhysicsComponent": { "bodyType": "KINEMATIC", "hitBox": { "centerPoint": [0.0, 0.0], "dimensions": [80.0, 80.0] }, "gravity": [0.0, 0.0, 0.0], "maxVelocity": [100.0, 0.0, 0.0], "minVelocity": [-100.0, 0.0, 0.0] },
+				"PhysicsComponent": { "bodyType": "KINEMATIC", "hitBox": { "centerPoint": [0.0, 0.0], "dimensions": [80.0, 80.0] }, "gravity": [0.0, 0.0, 0.0], "maxVelocity": [0.0, 100.0, 0.0], "minVelocity": [0.0, -100.0, 0.0] },
 				"ShaderComponent": { "shaderName": "basic" },
-				"TransformComponent": { "translation": [600.0, 680.0, 1.0], "rotation": [0.0, 0.0, 0.0], "scale": [80.0, 80.0, 1.0] }
+				"TransformComponent": { "translation": [520.0, 600.0, 1.0], "rotation": [0.0, 0.0, 0.0], "scale": [80.0, 80.0, 1.0] }
 			}
 		},
 		{
