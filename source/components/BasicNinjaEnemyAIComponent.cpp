@@ -27,7 +27,7 @@
 
 const float BasicNinjaEnemyAIComponent::PLAYER_DETECTION_DISTANCE = 300.0f;
 const float BasicNinjaEnemyAIComponent::PATROLLING_MAX_DISTANCE_FROM_INIT_POSITION = 100.0f;
-const float BasicNinjaEnemyAIComponent::PURSUING_MELEE_ATTACK_DISTANCE = 50.0f;
+const float BasicNinjaEnemyAIComponent::PURSUING_MELEE_ATTACK_DISTANCE = 100.0f;
 
 BasicNinjaEnemyAIComponent::BasicNinjaEnemyAIComponent(const ServiceLocator& serviceLocator, const EntityId thisEntityId)
     : mServiceLocator(serviceLocator)
@@ -127,7 +127,7 @@ void BasicNinjaEnemyAIComponent::VUpdate(const float dt)
                 mTimer -= dt;
                 if (mTimer <= 0.0f)
                 {
-                    mTimer = 0.5f;
+                    mTimer = 2.0f;
                     EntityMeleeAttackCommand(mServiceLocator, mThisEntityId).VExecute();
                 }
             }
