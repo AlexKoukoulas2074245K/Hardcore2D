@@ -135,14 +135,17 @@ void AnimationComponent::AdvanceFrame()
             mCurrentFrameIndex = 0;
         }
         else
-        {          
-            mIsPaused = true;
-            mCurrentFrameIndex = mAnimations.at(mCurrentAnimation).size() - 1;
-
+        {                                  
             if (mResetToIdleWhenFinished)
             {
                 mCurrentAnimation = StringId("idle");
-            }            
+                mCurrentFrameIndex = 0;
+            }      
+            else
+            {
+                mCurrentFrameIndex = mAnimations.at(mCurrentAnimation).size() - 1;
+                mIsPaused = true;
+            }
         }
 
         if (mAnimationCompleteCallback != nullptr)
