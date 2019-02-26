@@ -235,7 +235,7 @@ void PhysicsSystem::PushEntityOutsideOtherEntityInAxis(const EntityId referenceE
                                              referenceEntityHitBox.mCenterPoint.x -
                                              referenceEntityHitBox.mDimensions.x * 0.5f;
             
-            if (Abs(referenceEntityTransformComponent.GetTranslation().x - otherEntityTransformComponent.GetTranslation().x) > otherEntityPhysicsComponent.GetHitBox().mDimensions.x * 0.5f)
+            if (Abs(referenceEntityTransformComponent.GetTranslation().x - (otherEntityTransformComponent.GetTranslation().x + otherEntityHitBox.mCenterPoint.x)) > otherEntityPhysicsComponent.GetHitBox().mDimensions.x * 0.5f)
             {
                 referenceEntityTransformComponent.GetTranslation().x = horizontalPushDelta;
             }            
@@ -249,7 +249,7 @@ void PhysicsSystem::PushEntityOutsideOtherEntityInAxis(const EntityId referenceE
                                              referenceEntityHitBox.mCenterPoint.x +
                                              referenceEntityHitBox.mDimensions.x * 0.5f;
             
-            if (Abs(referenceEntityTransformComponent.GetTranslation().x - otherEntityTransformComponent.GetTranslation().x) > otherEntityPhysicsComponent.GetHitBox().mDimensions.x * 0.5f)
+            if (Abs(referenceEntityTransformComponent.GetTranslation().x - (otherEntityTransformComponent.GetTranslation().x + otherEntityHitBox.mCenterPoint.x)) > otherEntityPhysicsComponent.GetHitBox().mDimensions.x * 0.5f)
             {
                 referenceEntityTransformComponent.GetTranslation().x = horizontalPushDelta;
             }

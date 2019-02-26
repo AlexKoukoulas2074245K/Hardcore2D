@@ -144,7 +144,7 @@ void PlayerBehaviorController::RegisterEventCallbacks()
         }
 
         // Make sure the player is positioned correctly horizontally on top of the platform
-        if (Abs(playerTransformComponent.GetTranslation().x - otherEntityTransformComponent.GetTranslation().x) > otherEntityPhysicsComponent.GetHitBox().mDimensions.x * 0.5f)
+        if (Abs(playerTransformComponent.GetTranslation().x - (otherEntityTransformComponent.GetTranslation().x + otherEntityPhysicsComponent.GetHitBox().mCenterPoint.x)) > otherEntityPhysicsComponent.GetHitBox().mDimensions.x * 0.5f)
         {
             return;
         }

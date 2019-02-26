@@ -45,7 +45,7 @@ void EntityRangedShurikenAttackCommand::VExecute()
     
     auto shurikenAnimationComponent = std::make_unique<AnimationComponent>(mAnimation, 100.0f);
     auto shurikenTransformComponent = std::make_unique<TransformComponent>();
-    auto shurikenPhysicsComponent = std::make_unique<PhysicsComponent>(PhysicsComponent::BodyType::DYNAMIC, PhysicsComponent::Hitbox(glm::vec2(0.0f, 0.0f), glm::vec2(40.0f, 40.0f)), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(1000.0f, 1000.0f, 0.0f), glm::vec3(-1000.0f, -1000.0f, 0.0f));
+    auto shurikenPhysicsComponent = std::make_unique<PhysicsComponent>(PhysicsComponent::BodyType::DYNAMIC, PhysicsComponent::Hitbox(glm::vec2(0.0f, 0.0f), glm::vec2(12.0f, 12.0f)), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(1000.0f, 1000.0f, 0.0f), glm::vec3(-1000.0f, -1000.0f, 0.0f));
     
     if (mEntityComponentManager.GetComponent<AnimationComponent>(mParentEntityId).GetCurrentFacingDirection() == FacingDirection::RIGHT)
     {
