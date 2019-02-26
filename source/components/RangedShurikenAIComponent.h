@@ -25,7 +25,7 @@ public:
     void VUpdate(const float dt) override;
     
 private:
-    const EntityComponentManager& mEntityComponentManager;
+    EntityComponentManager& mEntityComponentManager;
     const EntityId mEntityId;
     float mTimeToLive;
     std::unique_ptr<EventCommunicator> mEventCommunicator;
