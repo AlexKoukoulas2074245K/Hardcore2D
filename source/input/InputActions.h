@@ -14,7 +14,7 @@ struct InputAction
 {
     enum class ActionType
     {
-        MOVE_LEFT, MOVE_RIGHT, JUMP, ATTACK, RANGED, DEBUG_TOGGLE_HITBOX_DISPLAY
+        MOVE_LEFT, MOVE_RIGHT, JUMP, ATTACK, RANGED, RESPAWN, DEBUG_TOGGLE_HITBOX_DISPLAY
     };
 
     enum class ActionState

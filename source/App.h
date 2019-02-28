@@ -41,6 +41,8 @@ public:
 private:
     void Update(const float dt);
 	void HandleInput();
+    bool InitializeServices();
+    bool InitializeGame();
 
     std::unique_ptr<ServiceLocator> mServiceLocator;
     std::unique_ptr<EventCommunicationService> mEventCommunicationService;    
@@ -61,6 +63,8 @@ private:
     std::unique_ptr<EventCommunicator> mEventCommunicator;
     std::unique_ptr<Camera> mCamera;
     std::unique_ptr<Level> mLevel;
+    
+    bool mShouldRestartLevelOnPlayerDeath;
 };
 
 #endif /* App_h */

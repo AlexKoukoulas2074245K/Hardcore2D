@@ -35,7 +35,13 @@ Level::Level(const ServiceLocator& serviceLocator, const std::vector<EntityNameI
 
 Level::~Level()
 {
-    
+    CheckForAdditionsOrRemovalsOfEntities();
+    while (!mActiveEntities.empty())
+    {
+        const auto destroyedEntityEntry = mActiveEntities.back();
+        mEntityComponentManager.RemoveEntityEntry(destroyedEntityEntry.mEntityId);
+        mActiveEntities.pop_back();
+    }
 }
 
 EntityId Level::GetEntityIdFromName(const StringId entityName) const

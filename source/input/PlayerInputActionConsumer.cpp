@@ -16,11 +16,12 @@
 #include "../events/EventCommunicator.h"
 #include "../events/PlayerMeleeAttackEvent.h"
 #include "../events/PlayerRangedAttackEvent.h"
-#include "../game/PlayerBehaviorController.h"
-#include "../util/Logging.h"
+#include "../events/PlayerRespawnEvent.h"
 #include "../events/PlayerChangedDirectionEvent.h"
 #include "../events/PlayerJumpEvent.h"
 #include "../events/PlayerKilledEvent.h"
+#include "../game/PlayerBehaviorController.h"
+#include "../util/Logging.h"
 
 #include <glm/glm.hpp>
 
@@ -41,12 +42,19 @@ PlayerInputActionConsumer::~PlayerInputActionConsumer()
 
 bool PlayerInputActionConsumer::VConsumeInputAction(const InputAction& inputAction) const
 {
+    if (inputAction.mActionType == InputAction::ActionType::RESPAWN &&
+        inputAction.mActionState == InputAction::ActionState::START)
+    {
+        mEventCommunicator->DispatchEvent(std::make_unique<PlayerRespawnEvent>());
+        return true;
+    }
+    
     if (mPlayerKilled)
     {
         mEntityComponentManager.GetComponent<PhysicsComponent>(mEntityId).GetVelocity() = glm::vec3(0.0f, 0.0f, 0.0f);
         return false;
     }
-
+    
     auto& entityPhysicsComponent = mEntityComponentManager.GetComponent<PhysicsComponent>(mEntityId);
     switch (inputAction.mActionType)
     {

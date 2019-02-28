@@ -43,6 +43,7 @@ public:
     void GameLoop(std::function<void(const float)> appUpdateMethod);
     void RenderEntities(const std::vector<EntityNameIdEntry>& entityIds);
     void RenderEntities(const std::vector<EntityId>& entityIds);
+    void SetFrameStatisticsMessage(const std::string& frameStatisticsMessage);
     void UpdateCamera(const EntityId focusedEntity, const float dt);
     
     const glm::vec2& GetRenderableDimensions() const;
@@ -75,6 +76,8 @@ private:
     
     glm::vec2 mRenderableDimensions;
     glm::mat4 mProjectionMatrix;
+    
+    std::string mFrameStatisticsMessage;
     
     float mSwirlAngle;
     

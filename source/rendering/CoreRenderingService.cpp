@@ -130,14 +130,17 @@ void CoreRenderingService::GameLoop(std::function<void(const float)> appUpdateMe
         const auto dt = lastFrameTicks * 0.001f;
         framesAccumulator++;
         dtAccumulator += dt;
+        
+#ifndef NDEBUG
         if (dtAccumulator > 1.0f)
         {
-            const auto windowTitle = "FPS: " + std::to_string(framesAccumulator);
+            const auto windowTitle = "FPS: " + std::to_string(framesAccumulator) + mFrameStatisticsMessage;
             SDL_SetWindowTitle(mSdlWindow, windowTitle.c_str());
             framesAccumulator = 0;
             dtAccumulator = 0.0f;
         }
-		
+#endif
+        
         // Execute first pass rendering
         GL_CHECK(glBindFramebuffer(GL_FRAMEBUFFER, mFrameBufferId));
         GL_CHECK(glClearColor(0.1f, 0.1f, 0.1f, 1.0f));
@@ -179,6 +182,11 @@ void CoreRenderingService::RenderEntities(const std::vector<EntityNameIdEntry>& 
     {
         RenderEntityInternal(entityEntry.mEntityId);
     }
+}
+
+void CoreRenderingService::SetFrameStatisticsMessage(const std::string& frameStatisticsMessage)
+{
+    mFrameStatisticsMessage = frameStatisticsMessage;
 }
 
 const glm::vec2& CoreRenderingService::GetRenderableDimensions() const

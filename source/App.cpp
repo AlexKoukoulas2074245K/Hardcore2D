@@ -17,6 +17,7 @@
 #include "events/EventCommunicator.h"
 #include "events/AnnouncePlayerEntityIdEvent.h"
 #include "events/EntityDamagedEvent.h"
+#include "events/PlayerRespawnEvent.h"
 #include "rendering/CoreRenderingService.h"
 #include "rendering/AnimationService.h"
 #include "rendering/effects/EffectsManager.h"
@@ -36,7 +37,7 @@
 #include "util/StringId.h"
 
 #include <vector>
-
+#include <chrono>
 
 App::App()
 {
@@ -53,6 +54,63 @@ void App::Run()
 }
 
 bool App::Initialize()
+{
+    if (!InitializeServices()) return false;
+    if (!InitializeGame()) return false;
+    return true;
+}
+
+void App::Update(const float dt)
+{
+    if (mShouldRestartLevelOnPlayerDeath)
+    {
+        InitializeGame();
+    }
+    
+    mLevel->CheckForAdditionsOrRemovalsOfEntities();
+    HandleInput();
+    mPlayerBehaviorController->Update(dt);
+    mAIService->UpdateAIComponents(mLevel->GetAllActiveEntities(), dt);
+    mDamageSystem->Update(mLevel->GetAllActiveEntities(), dt);
+    mUIElementManager->Update(dt);
+    mAnimationService->UpdateAnimations(mLevel->GetAllActiveEntities(), dt);
+    mCamera->Update(mLevel->GetEntityIdFromName(StringId("player")), dt);
+    
+#ifndef NDEBUG
+    const auto prePhysicsTimeStamp = std::chrono::high_resolution_clock::now();
+#endif
+    
+    mPhysicsSystem->UpdateEntities(mLevel->GetAllActiveEntities(), dt);
+    
+#ifndef NDEBUG
+    const auto postPhysicsTimeStamp = std::chrono::high_resolution_clock::now();
+#endif
+    
+    mCoreRenderingService->RenderEntities(mLevel->GetAllActiveEntities());
+    mCoreRenderingService->RenderEntities(mUIElementManager->GetUIEntities());
+    
+#ifndef NDEBUG
+    const auto postRenderingTimeStamp = std::chrono::high_resolution_clock::now();
+    const auto elapsedPhysicsSeconds = postPhysicsTimeStamp - prePhysicsTimeStamp;
+    const auto elapsedRenderingSeconds = postRenderingTimeStamp - postPhysicsTimeStamp;
+    mCoreRenderingService->SetFrameStatisticsMessage("  |  Physics: " + (std::to_string(elapsedPhysicsSeconds.count() * 1e-6)) +
+                                                   "ms  |  " + "Rendering: " + (std::to_string(elapsedRenderingSeconds.count() * 1e-6)) + "ms");
+#endif
+}
+
+void App::HandleInput()
+{
+    const auto inputActions = mInputHandler->TranslateInputToActions();
+    for (const auto inputAction: inputActions)
+    {
+        for (const auto& inputActionConsumer: mInputActionConsumers)
+        {
+            if (inputActionConsumer->VConsumeInputAction(inputAction)) break;
+        }
+    }
+}
+
+bool App::InitializeServices()
 {
     // Initialize services
     mServiceLocator = std::unique_ptr<ServiceLocator>(new ServiceLocator);
@@ -79,7 +137,7 @@ bool App::Initialize()
     mServiceLocator->RegisterService<ResourceManager>(mResourceManager.get());
     mServiceLocator->RegisterService<InputHandler>(mInputHandler.get());
     mServiceLocator->RegisterService<PlayerBehaviorController>(mPlayerBehaviorController.get());
-
+    
     // 2nd step service initialization
     if (!mDamageSystem->VInitialize()) return false;
     if (!mPhysicsSystem->VInitialize()) return false;
@@ -90,18 +148,25 @@ bool App::Initialize()
     if (!mResourceManager->VInitialize()) return false;
     if (!mPlayerBehaviorController->VInitialize()) return false;
     
+    mUIElementManager->InitializeUIElements();
+    
+    return true;
+}
+
+bool App::InitializeGame()
+{
+    mShouldRestartLevelOnPlayerDeath = false;
+    
     // Parse Level
     LevelFactory levelFactory(*mServiceLocator);
     mLevel = levelFactory.CreateLevel("editornew.json");
-    
-    // Initialize UI elements
-    mUIElementManager->InitializeUIElements();
     
     // Initialize camera
     mCamera = std::make_unique<Camera>(*mServiceLocator, mCoreRenderingService->GetRenderableDimensions(), mLevel->GetHorizontalBounds(), mLevel->GetVerticalBounds());
     mCoreRenderingService->AttachCamera(mCamera.get());
     
     // Initialized in order of priority
+    mInputActionConsumers.clear();
     mInputActionConsumers.emplace_back(std::make_unique<DebugInputActionConsumer>(*mServiceLocator));
     mInputActionConsumers.emplace_back(std::make_unique<PlayerInputActionConsumer>(*mServiceLocator, mLevel->GetEntityIdFromName(StringId("player"))));
     
@@ -122,34 +187,10 @@ bool App::Initialize()
             damageSenderEntityName.c_str(),
             actualEvent.GetHealthRemaining());
     });
-    
+    mEventCommunicator->RegisterEventCallback<PlayerRespawnEvent>([this](const IEvent&)
+    {
+        mShouldRestartLevelOnPlayerDeath = true;
+    });
+                                                                  
     return true;
 }
-
-void App::Update(const float dt)
-{    
-    mLevel->CheckForAdditionsOrRemovalsOfEntities();
-    HandleInput();
-    mPlayerBehaviorController->Update(dt);
-    mAIService->UpdateAIComponents(mLevel->GetAllActiveEntities(), dt);
-    mDamageSystem->Update(mLevel->GetAllActiveEntities(), dt);
-    mPhysicsSystem->UpdateEntities(mLevel->GetAllActiveEntities(), dt);
-    mUIElementManager->Update(dt);
-    mAnimationService->UpdateAnimations(mLevel->GetAllActiveEntities(), dt);
-    mCamera->Update(mLevel->GetEntityIdFromName(StringId("player")), dt);
-    mCoreRenderingService->RenderEntities(mLevel->GetAllActiveEntities());
-    mCoreRenderingService->RenderEntities(mUIElementManager->GetUIEntities());
-}
-
-void App::HandleInput()
-{
-    const auto inputActions = mInputHandler->TranslateInputToActions();
-    for (const auto inputAction: inputActions)
-    {
-        for (const auto& inputActionConsumer: mInputActionConsumers)
-        {
-            if (inputActionConsumer->VConsumeInputAction(inputAction)) break;
-        }
-    }
-}
-

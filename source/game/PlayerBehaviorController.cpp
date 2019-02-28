@@ -18,6 +18,7 @@
 #include "../commands/SetEntityCustomVelocityCommand.h"
 #include "../components/AnimationComponent.h"
 #include "../components/PhysicsComponent.h"
+#include "../components/HealthComponent.h"
 #include "../components/EntityComponentManager.h"
 #include "../components/TransformComponent.h"
 #include "../util/MathUtils.h"
@@ -182,7 +183,10 @@ void PlayerBehaviorController::RegisterEventCallbacks()
 
         mPlayerKilled = true;
         mEventCommunicator->DispatchEvent(std::make_unique<PlayerKilledEvent>());
-        mEntityComponentManager->GetComponent<AnimationComponent>(mPlayerEntityId).PlayAnimation(StringId("death"), false, false, AnimationComponent::AnimationPriority::HIGH);        
+        mEntityComponentManager->GetComponent<AnimationComponent>(mPlayerEntityId).PlayAnimation(StringId("death"), false, false, AnimationComponent::AnimationPriority::HIGH, [this]()
+        {
+            mEntityComponentManager->RemoveComponent<HealthComponent>(mPlayerEntityId);
+        });
     });
 }
 
