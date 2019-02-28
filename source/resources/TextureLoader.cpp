@@ -27,7 +27,7 @@ bool TextureLoader::Initialize()
     const auto imgPatchConsistency = imgCompiledVersion.patch == imgLinkedVersion->patch;
     const auto imgVersionConsistency = imgMajorVersionConsistency && imgMinorVersionConsistency && imgPatchConsistency;
     
-    const auto sdlImageInitFlags = IMG_INIT_PNG | IMG_INIT_WEBP | IMG_INIT_JPG | IMG_INIT_TIF;
+    const auto sdlImageInitFlags = IMG_INIT_PNG;
     if (!imgVersionConsistency || IMG_Init(sdlImageInitFlags) != sdlImageInitFlags)
     {
         ShowMessageBox(SDL_MESSAGEBOX_INFORMATION, "SDL_image", "SDL_image did not initialize properly");

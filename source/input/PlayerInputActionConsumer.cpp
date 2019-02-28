@@ -20,6 +20,7 @@
 #include "../util/Logging.h"
 #include "../events/PlayerChangedDirectionEvent.h"
 #include "../events/PlayerJumpEvent.h"
+#include "../events/PlayerKilledEvent.h"
 
 #include <glm/glm.hpp>
 
@@ -27,10 +28,11 @@ PlayerInputActionConsumer::PlayerInputActionConsumer(const ServiceLocator& servi
     : mServiceLocator(serviceLocator)
     , mPlayerBehaviorController(mServiceLocator.ResolveService<PlayerBehaviorController>())
     , mEntityComponentManager(mServiceLocator.ResolveService<EntityComponentManager>())
-    , mEntityId(entityId)
     , mEventCommunicator(mServiceLocator.ResolveService<EventCommunicationService>().CreateEventCommunicator())
+    , mEntityId(entityId)
+    , mPlayerKilled(false)
 {
-    
+    RegisterEventCallbacks();
 }
 
 PlayerInputActionConsumer::~PlayerInputActionConsumer()
@@ -39,6 +41,11 @@ PlayerInputActionConsumer::~PlayerInputActionConsumer()
 
 bool PlayerInputActionConsumer::VConsumeInputAction(const InputAction& inputAction) const
 {
+    if (mPlayerKilled)
+    {
+        return false;
+    }
+
     auto& entityPhysicsComponent = mEntityComponentManager.GetComponent<PhysicsComponent>(mEntityId);
     switch (inputAction.mActionType)
     {
@@ -140,4 +147,12 @@ bool PlayerInputActionConsumer::VConsumeInputAction(const InputAction& inputActi
     }
     
     return false;
+}
+
+void PlayerInputActionConsumer::RegisterEventCallbacks()
+{
+    mEventCommunicator->RegisterEventCallback<PlayerKilledEvent>([this](const IEvent&)
+    {
+        mPlayerKilled = true;
+    });
 }

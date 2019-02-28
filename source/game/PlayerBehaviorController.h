@@ -56,6 +56,8 @@ private:
     int mJumpsAvailable;
 
     bool mIsMeleeAttackRecharging;
+
+    bool mPlayerKilled;
 };
 
 #endif /* PlayerBehaviorController_h */

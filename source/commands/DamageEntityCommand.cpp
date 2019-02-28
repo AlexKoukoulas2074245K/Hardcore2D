@@ -31,7 +31,7 @@ void DamageEntityCommand::VExecute()
     {
         return;
     }
-    
+
     auto& damageComponent = mEntityComponentManager.GetComponent<DamageComponent>(mCollidedEntities.first);
     
     // Make sure the attack won't damage the owner of the attack

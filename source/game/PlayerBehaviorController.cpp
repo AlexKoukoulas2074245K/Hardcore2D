@@ -14,6 +14,8 @@
 #include "../events/AnnouncePlayerEntityIdEvent.h"
 #include "../events/PlayerJumpEvent.h"
 #include "../events/EntityCollisionEvent.h"
+#include "../events/PlayerKilledEvent.h"
+#include "../components/AnimationComponent.h"
 #include "../components/PhysicsComponent.h"
 #include "../components/EntityComponentManager.h"
 #include "../components/TransformComponent.h"
@@ -39,6 +41,7 @@ PlayerBehaviorController::PlayerBehaviorController(const ServiceLocator& service
     , mJumpCount(DEFAULT_JUMP_COUNT)
     , mJumpsAvailable(mJumpCount)
     , mIsMeleeAttackRecharging(false)    
+    , mPlayerKilled(false)
 {
     
 }
@@ -155,6 +158,30 @@ void PlayerBehaviorController::RegisterEventCallbacks()
         }
 
         mJumpsAvailable = mJumpCount;
+    });
+
+    mEventCommunicator->RegisterEventCallback<EntityDamagedEvent>([this](const IEvent& event)
+    {
+        const auto& actualEvent = static_cast<const EntityDamagedEvent&>(event);
+
+        if (mPlayerKilled)
+        {
+            return;
+        }
+
+        if (actualEvent.GetDamagedEntityId() != mPlayerEntityId)
+        {
+            return;
+        }
+
+        if (actualEvent.GetHealthRemaining() > 0.0f)
+        {
+            return;
+        }
+
+        mPlayerKilled = true;
+        mEventCommunicator->DispatchEvent(std::make_unique<PlayerKilledEvent>());
+        mEntityComponentManager->GetComponent<AnimationComponent>(mPlayerEntityId).PlayAnimation(StringId("death"), false, false, AnimationComponent::AnimationPriority::HIGH);        
     });
 }
 

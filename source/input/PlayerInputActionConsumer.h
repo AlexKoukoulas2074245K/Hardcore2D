@@ -27,13 +27,16 @@ public:
     bool VConsumeInputAction(const InputAction&) const override;
     
 private:
+    void RegisterEventCallbacks();
+
     const ServiceLocator& mServiceLocator;
     const PlayerBehaviorController& mPlayerBehaviorController;
     
     EntityComponentManager& mEntityComponentManager;
-    
-    EntityId mEntityId;
     std::unique_ptr<EventCommunicator> mEventCommunicator;
+
+    EntityId mEntityId;
+    bool mPlayerKilled;
 };
 
 #endif /* PlayerInputActionConsumer_h */

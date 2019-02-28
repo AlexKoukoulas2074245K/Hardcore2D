@@ -160,6 +160,13 @@ void PhysicsSystem::UpdateEntities(const std::vector<EntityNameIdEntry>& activeE
             for (const auto otherEntityId: allCollidedEntities)
             {
                 mEventCommunicator->DispatchEvent(std::make_unique<EntityCollisionEvent>(std::make_pair(entityId, otherEntityId)));
+
+                // If the second collided entity is static, we need to manually dispatch a collision event with it as the first entity id, since
+                // the logic above will not run for static objects, and we need to account for them as first collided entries for damage events etc
+                if (mEntityComponentManager->GetComponent<PhysicsComponent>(otherEntityId).GetBodyType() == PhysicsComponent::BodyType::STATIC)
+                {
+                    mEventCommunicator->DispatchEvent(std::make_unique<EntityCollisionEvent>(std::make_pair(otherEntityId, entityId)));
+                }
             }
             
         }
