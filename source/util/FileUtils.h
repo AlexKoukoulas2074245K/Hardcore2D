@@ -90,6 +90,8 @@ inline std::vector<std::string> GetAllFilenamesInDirectory(const std::string& di
                 fileNames.push_back(fileName);
             }
         }
+        
+        closedir(dir);
     }
 #else
 	for (const auto& entry : std::experimental::filesystem::v1::directory_iterator(directory))
