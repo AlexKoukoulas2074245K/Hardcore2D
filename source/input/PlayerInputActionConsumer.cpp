@@ -43,6 +43,7 @@ bool PlayerInputActionConsumer::VConsumeInputAction(const InputAction& inputActi
 {
     if (mPlayerKilled)
     {
+        mEntityComponentManager.GetComponent<PhysicsComponent>(mEntityId).GetVelocity() = glm::vec3(0.0f, 0.0f, 0.0f);
         return false;
     }
 
