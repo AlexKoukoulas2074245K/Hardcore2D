@@ -18,6 +18,7 @@
 #include "events/AnnouncePlayerEntityIdEvent.h"
 #include "events/EntityDamagedEvent.h"
 #include "events/PlayerRespawnEvent.h"
+#include "events/LevelCreatedEvent.h"
 #include "rendering/CoreRenderingService.h"
 #include "rendering/AnimationService.h"
 #include "rendering/effects/EffectsManager.h"
@@ -172,7 +173,12 @@ bool App::InitializeGame()
     
     // Announce player id
     mEventCommunicator = mEventCommunicationService->CreateEventCommunicator();
+    
+    // Dispatch game related events
     mEventCommunicator->DispatchEvent(std::make_unique<AnnouncePlayerEntityIdEvent>(mLevel->GetEntityIdFromName(StringId("player"))));
+    mEventCommunicator->DispatchEvent(std::make_unique<LevelCreatedEvent>(mLevel->GetHorizontalBounds().y, mLevel->GetVerticalBounds().y));
+    
+    // Listen to game related events
     mEventCommunicator->RegisterEventCallback<EntityDamagedEvent>([this](const IEvent& event)
     {
         const auto& actualEvent = static_cast<const EntityDamagedEvent&>(event);

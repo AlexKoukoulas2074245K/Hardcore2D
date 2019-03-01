@@ -18,28 +18,32 @@
 class ServiceLocator;
 class EntityComponentManager;
 class EventCommunicator;
+class ISceneGraph;
 
 class PhysicsSystem final: public IService
 {
     friend class App;
 public:
+    ~PhysicsSystem();
     bool VInitialize() override;
     void UpdateEntities(const std::vector<EntityNameIdEntry>& activeEntities, const float dt);
     
 private:
-    PhysicsSystem(const ServiceLocator&);
-    
     enum class Axis
     {
         X_AXIS, Y_AXIS
     };
-
+    
+    PhysicsSystem(const ServiceLocator&);
+    
+    void RegisterEventCallbacks();
     std::vector<EntityId> CheckAndGetCollidedEntities(const EntityId referenceEntityId, const std::vector<EntityNameIdEntry>& allConsideredEntityIds);
     void PushEntityOutsideOtherEntityInAxis(const EntityId referenceEntityId, const EntityId collidedWithEntityId, const Axis, const float dt);
 
     const ServiceLocator& mServiceLocator;
     EntityComponentManager* mEntityComponentManager;
     std::unique_ptr<EventCommunicator> mEventCommunicator;
+    std::unique_ptr<ISceneGraph> mSceneGraph;
 };
 
 #endif /* PhysicsSystem_h */

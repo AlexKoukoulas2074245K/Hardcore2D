@@ -6,6 +6,7 @@
 //
 
 #include "PhysicsSystem.h"
+#include "scene_graphs/QuadtreeSceneGraph.h"
 #include "../util/MathUtils.h"
 #include "../util/Logging.h"
 #include "../ServiceLocator.h"
@@ -14,6 +15,8 @@
 #include "../components/TransformComponent.h"
 #include "../events/EventCommunicator.h"
 #include "../events/EntityCollisionEvent.h"
+#include "../events/LevelCreatedEvent.h"
+#include "../physics/scene_graphs/ISceneGraph.h"
 
 #include <algorithm>
 #include <unordered_map>
@@ -34,15 +37,20 @@ PhysicsSystem::PhysicsSystem(const ServiceLocator& serviceLocator)
     
 }
 
+PhysicsSystem::~PhysicsSystem()
+{
+}
+
 bool PhysicsSystem::VInitialize()
 {
     mEntityComponentManager = &(mServiceLocator.ResolveService<EntityComponentManager>());
     mEventCommunicator = mServiceLocator.ResolveService<EventCommunicationService>().CreateEventCommunicator();
+    RegisterEventCallbacks();
     return true;
 }
 
 void PhysicsSystem::UpdateEntities(const std::vector<EntityNameIdEntry>& activeEntities, const float dt)
-{  
+{
     for (const auto entityEntry: activeEntities)
     {
         const auto entityId = entityEntry.mEntityId;
@@ -183,6 +191,15 @@ void PhysicsSystem::UpdateEntities(const std::vector<EntityNameIdEntry>& activeE
     }
 }
 
+void PhysicsSystem::RegisterEventCallbacks()
+{
+    mEventCommunicator->RegisterEventCallback<LevelCreatedEvent>([this](const IEvent& event)
+    {
+        const auto& actualEvent = static_cast<const LevelCreatedEvent&>(event);
+        mSceneGraph = std::make_unique<QuadtreeSceneGraph>(*mEntityComponentManager, glm::vec2(0.0f, 0.0f), glm::vec2(actualEvent.GetLevelWidth(), actualEvent.GetLevelHeight()));
+    });
+}
+
 std::vector<EntityId> PhysicsSystem::CheckAndGetCollidedEntities(const EntityId referenceEntityId, const std::vector<EntityNameIdEntry>& allConsideredEntityIds)
 {
     std::vector<EntityId> collidedEntities;
@@ -300,5 +317,4 @@ void PhysicsSystem::PushEntityOutsideOtherEntityInAxis(const EntityId referenceE
             }
         }
     }
-    
 }
