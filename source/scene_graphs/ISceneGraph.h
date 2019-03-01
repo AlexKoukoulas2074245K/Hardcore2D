@@ -21,7 +21,7 @@ public:
     ISceneGraph& operator = (const ISceneGraph&) = delete;
     
     virtual std::list<EntityId> VGetCollisionCandidates(const EntityId mReferenceEntityId) = 0;
-    virtual void VCreate(const std::vector<EntityNameIdEntry>& mPhyicsSimulatedEntities) = 0;
+    virtual void VPopulateSceneGraph(const std::vector<EntityNameIdEntry>& mPhyicsSimulatedEntities) = 0;
     virtual void VClear() = 0;
 
 protected:

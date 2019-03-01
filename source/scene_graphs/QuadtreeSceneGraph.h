@@ -11,6 +11,8 @@
 #include "ISceneGraph.h"
 #include "../util/MathUtils.h"
 
+#include <memory>
+
 class EntityComponentManager;
 
 class QuadtreeSceneGraph final: public ISceneGraph
@@ -20,7 +22,7 @@ public:
     ~QuadtreeSceneGraph();
     
     std::list<EntityId> VGetCollisionCandidates(const EntityId mReferenceEntityId) override;
-    void VCreate(const std::vector<EntityNameIdEntry>& mPhyicsSimulatedEntities) override;
+    void VPopulateSceneGraph(const std::vector<EntityNameIdEntry>& mPhyicsSimulatedEntities) override;
     void VClear() override;
     
 private:
@@ -28,13 +30,14 @@ private:
     static const int MAX_DEPTH;
     
     void InternalClear();
+    void Split();
     
     const EntityComponentManager& mEntityComponentManager;
     const glm::vec2 mPosition;
     const glm::vec2 mDimensions;
     const int mDepth;
     
-    QuadtreeSceneGraph* mNodes[4];
+    std::unique_ptr<QuadtreeSceneGraph> mNodes[4];
     std::list<EntityId> mObjectsInNode;
 };
 

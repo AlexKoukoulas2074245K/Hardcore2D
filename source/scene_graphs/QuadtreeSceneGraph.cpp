@@ -38,7 +38,7 @@ std::list<EntityId> QuadtreeSceneGraph::VGetCollisionCandidates(const EntityId)/
     return collisionCandidates;
 }
 
-void QuadtreeSceneGraph::VCreate(const std::vector<EntityNameIdEntry>&) //mPhyicsSimulatedEntities)
+void QuadtreeSceneGraph::VPopulateSceneGraph(const std::vector<EntityNameIdEntry>&) //mPhyicsSimulatedEntities)
 {
     const_cast<EntityComponentManager&>(mEntityComponentManager).GetComponent<PhysicsComponent>(0).GetAngularVelocity() = mDimensions.x + mPosition.x + mDepth;
 }
@@ -55,9 +55,13 @@ void QuadtreeSceneGraph::InternalClear()
     {
         if (mNodes[i] != nullptr)
         {
-            mNodes[i]->InternalClear();
-            delete mNodes[i];
+            mNodes[i]->InternalClear();            
         }
         mNodes[i] = nullptr;
     }
+}
+
+void QuadtreeSceneGraph::Split()
+{
+
 }
