@@ -50,6 +50,9 @@ bool PhysicsSystem::VInitialize()
 
 void PhysicsSystem::UpdateEntities(const std::vector<EntityNameIdEntry>& activeEntities, const float dt)
 {
+    mSceneGraph->VClear();
+    mSceneGraph->VPopulateSceneGraph(activeEntities);
+    
     for (const auto entityEntry: activeEntities)
     {
         const auto entityId = entityEntry.mEntityId;

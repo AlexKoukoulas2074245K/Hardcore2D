@@ -21,16 +21,33 @@ public:
     QuadtreeSceneGraph(const EntityComponentManager&, const glm::vec2& position, const glm::vec2& mDimensions, const int depth = 0);
     ~QuadtreeSceneGraph();
     
-    std::list<EntityId> VGetCollisionCandidates(const EntityId mReferenceEntityId) override;
-    void VPopulateSceneGraph(const std::vector<EntityNameIdEntry>& mPhyicsSimulatedEntities) override;
+    void VGetCollisionCandidates(const EntityId referenceEntityId, std::list<EntityId>& collisionCandidates) override;
+    void VPopulateSceneGraph(const std::vector<EntityNameIdEntry>& phyicsSimulatedEntities) override;
     void VClear() override;
     
 private:
     static const int MAX_OBJECTS_PER_NODE;
     static const int MAX_DEPTH;
     
+    struct QuadtreeEntityEntry
+    {
+        QuadtreeEntityEntry(const EntityId entityId, const glm::vec3& objectPosition, const glm::vec2& objectDimensions)
+            : mEntityId(entityId)
+            , mObjectPosition(objectPosition)
+            , mObjectDimensions(objectDimensions)
+        {
+        }
+        
+        const EntityId mEntityId;
+        const glm::vec3 mObjectPosition;
+        const glm::vec2 mObjectDimensions;
+    };
+    
     void InternalClear();
     void Split();
+    int GetMatchedQuadrant(const glm::vec3& objectPosition, const glm::vec2& objectDimensions);
+    void InsertObject(const EntityId entityId, const glm::vec3& objectPosition, const glm::vec2& objectDimensions);
+    
     
     const EntityComponentManager& mEntityComponentManager;
     const glm::vec2 mPosition;
@@ -38,7 +55,7 @@ private:
     const int mDepth;
     
     std::unique_ptr<QuadtreeSceneGraph> mNodes[4];
-    std::list<EntityId> mObjectsInNode;
+    std::list<QuadtreeEntityEntry> mObjectsInNode;
 };
 
 #endif /* QuadtreeSceneGraph_h */
