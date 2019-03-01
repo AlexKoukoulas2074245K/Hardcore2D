@@ -20,8 +20,8 @@ public:
     ISceneGraph(const ISceneGraph&) = delete;
     ISceneGraph& operator = (const ISceneGraph&) = delete;
     
-    virtual void VGetCollisionCandidates(const EntityId referenceEntityId, std::list<EntityId>& collisionCandidates) = 0;
-    virtual void VPopulateSceneGraph(const std::vector<EntityNameIdEntry>& phyicsSimulatedEntities) = 0;
+    virtual std::list<EntityId> VGetCollisionCandidates(const EntityId referenceEntityId) = 0;
+    virtual void VPopulateSceneGraph(const std::vector<EntityNameIdEntry>& phyicsSimulatedEntities) = 0;    
     virtual void VClear() = 0;
 
 protected:

@@ -12,6 +12,7 @@
 #include "../game/GameTypeTraits.h"
 
 #include <vector>
+#include <list>
 #include <utility>
 #include <memory>
 
@@ -37,7 +38,7 @@ private:
     PhysicsSystem(const ServiceLocator&);
     
     void RegisterEventCallbacks();
-    std::vector<EntityId> CheckAndGetCollidedEntities(const EntityId referenceEntityId, const std::vector<EntityNameIdEntry>& allConsideredEntityIds);
+    std::list<EntityId> CheckAndGetCollidedEntities(const EntityId referenceEntityId, const std::list<EntityId>& allConsideredEntityIds);
     void PushEntityOutsideOtherEntityInAxis(const EntityId referenceEntityId, const EntityId collidedWithEntityId, const Axis, const float dt);
 
     const ServiceLocator& mServiceLocator;

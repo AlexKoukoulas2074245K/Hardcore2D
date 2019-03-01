@@ -21,8 +21,8 @@ public:
     QuadtreeSceneGraph(const EntityComponentManager&, const glm::vec2& position, const glm::vec2& mDimensions, const int depth = 0);
     ~QuadtreeSceneGraph();
     
-    void VGetCollisionCandidates(const EntityId referenceEntityId, std::list<EntityId>& collisionCandidates) override;
-    void VPopulateSceneGraph(const std::vector<EntityNameIdEntry>& phyicsSimulatedEntities) override;
+    std::list<EntityId> VGetCollisionCandidates(const EntityId referenceEntityId) override;
+    void VPopulateSceneGraph(const std::vector<EntityNameIdEntry>& phyicsSimulatedEntities) override;    
     void VClear() override;
     
 private:
@@ -44,10 +44,10 @@ private:
     };
     
     void InternalClear();
+    void InternalGetCollisionCandidates(const EntityId referenceEntityId, const glm::vec3& objectPosition, const glm::vec2& objectDimensions, std::list<EntityId>& collisionCandidates);
     void Split();
     int GetMatchedQuadrant(const glm::vec3& objectPosition, const glm::vec2& objectDimensions);
     void InsertObject(const EntityId entityId, const glm::vec3& objectPosition, const glm::vec2& objectDimensions);
-    
     
     const EntityComponentManager& mEntityComponentManager;
     const glm::vec2 mPosition;

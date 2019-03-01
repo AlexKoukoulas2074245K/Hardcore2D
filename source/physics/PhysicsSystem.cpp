@@ -87,9 +87,10 @@ void PhysicsSystem::UpdateEntities(const std::vector<EntityNameIdEntry>& activeE
             
             // Set of all collidedEntities (filtered by layers and not)
             std::set<EntityId> allCollidedEntities;
+            std::string collisionInfo;
             
             // Find all entities horizontally colliding with current
-            auto horizontallyCollidingEntityIds = CheckAndGetCollidedEntities(entityId, activeEntities);
+            auto horizontallyCollidingEntityIds = CheckAndGetCollidedEntities(entityId, mSceneGraph->VGetCollisionCandidates(entityId));
             
             const auto& collidableBodyTypesWithCurrent = sPhysicallyInteractableLayers.at(referenceEntityPhysicsComponent.GetBodyType());
             for (const auto otherEntityId: horizontallyCollidingEntityIds)
@@ -125,7 +126,7 @@ void PhysicsSystem::UpdateEntities(const std::vector<EntityNameIdEntry>& activeE
             }
 
             // Find all entities vertically colliding with current
-            auto verticallyCollidingEntityIds = CheckAndGetCollidedEntities(entityId, activeEntities);
+            auto verticallyCollidingEntityIds = CheckAndGetCollidedEntities(entityId, mSceneGraph->VGetCollisionCandidates(entityId));
             
             for (const auto otherEntityId: verticallyCollidingEntityIds)
             {
@@ -202,18 +203,16 @@ void PhysicsSystem::RegisterEventCallbacks()
     });
 }
 
-std::vector<EntityId> PhysicsSystem::CheckAndGetCollidedEntities(const EntityId referenceEntityId, const std::vector<EntityNameIdEntry>& allConsideredEntityIds)
+std::list<EntityId> PhysicsSystem::CheckAndGetCollidedEntities(const EntityId referenceEntityId, const std::list<EntityId>& allConsideredEntityIds)
 {
-    std::vector<EntityId> collidedEntities;
+    std::list<EntityId> collidedEntities;
     
     const auto& referenceEntityPhysicsComponent = mEntityComponentManager->GetComponent<PhysicsComponent>(referenceEntityId);
     const auto& referenceEntityTransformComponent = mEntityComponentManager->GetComponent<TransformComponent>(referenceEntityId);
     const auto& referenceEntityHitBox = referenceEntityPhysicsComponent.GetHitBox();
     
-    for (const auto otherEntityEntry: allConsideredEntityIds)
-    {
-        const auto otherEntityId = otherEntityEntry.mEntityId;
-        
+    for (const auto otherEntityId: allConsideredEntityIds)
+    {                
         if (referenceEntityId != otherEntityId &&
             mEntityComponentManager->HasComponent<PhysicsComponent>(otherEntityId))
         {

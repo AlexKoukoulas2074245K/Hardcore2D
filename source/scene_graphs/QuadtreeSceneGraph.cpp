@@ -11,7 +11,7 @@
 #include "../components/PhysicsComponent.h"
 
 const int QuadtreeSceneGraph::MAX_OBJECTS_PER_NODE = 10;
-const int QuadtreeSceneGraph::MAX_DEPTH = 5;
+const int QuadtreeSceneGraph::MAX_DEPTH = 2;
 
 QuadtreeSceneGraph::QuadtreeSceneGraph(const EntityComponentManager& entityComponentManager, const glm::vec2& position, const glm::vec2& dimensions, const int depth /* 0 */)
     : mEntityComponentManager(entityComponentManager)
@@ -32,9 +32,13 @@ QuadtreeSceneGraph::~QuadtreeSceneGraph()
     InternalClear();
 }
 
-void QuadtreeSceneGraph::VGetCollisionCandidates(const EntityId, std::list<EntityId>& collisionCandidates)
+std::list<EntityId> QuadtreeSceneGraph::VGetCollisionCandidates(const EntityId referenceEntityId)
 {
-
+    std::list<EntityId> collisionCandidates;
+    const auto& entityTranslation = mEntityComponentManager.GetComponent<TransformComponent>(referenceEntityId).GetTranslation();
+    const auto& entityHitbox = mEntityComponentManager.GetComponent<PhysicsComponent>(referenceEntityId).GetHitBox();
+    InternalGetCollisionCandidates(referenceEntityId, entityTranslation + glm::vec3(entityHitbox.mCenterPoint.x, entityHitbox.mCenterPoint.y, 0.0f), entityHitbox.mDimensions, collisionCandidates);
+    return collisionCandidates;
 }
 
 void QuadtreeSceneGraph::VPopulateSceneGraph(const std::vector<EntityNameIdEntry>& phyicsSimulatedEntities)
@@ -67,6 +71,25 @@ void QuadtreeSceneGraph::InternalClear()
         }
         mNodes[i] = nullptr;
     }
+}
+
+void QuadtreeSceneGraph::InternalGetCollisionCandidates(const EntityId referenceEntityId, const glm::vec3& objectPosition, const glm::vec2& objectDimensions, std::list<EntityId>& collisionCandidates)
+{
+    if (mNodes[0] != nullptr)
+    {
+        const auto quadrantIndex = GetMatchedQuadrant(objectPosition, objectDimensions);
+        if (quadrantIndex != -1)
+        {
+            mNodes[quadrantIndex]->InternalGetCollisionCandidates(referenceEntityId, objectPosition, objectDimensions, collisionCandidates);
+        }
+    }
+
+    auto objectsIter = mObjectsInNode.begin();
+    while (objectsIter != mObjectsInNode.end())
+    {
+        collisionCandidates.push_back(objectsIter->mEntityId);
+        objectsIter++;
+    }    
 }
 
 void QuadtreeSceneGraph::Split()
