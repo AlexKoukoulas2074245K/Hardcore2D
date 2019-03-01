@@ -56,7 +56,6 @@ private:
     int mJumpsAvailable;
 
     bool mIsMeleeAttackRecharging;
-
     bool mPlayerKilled;
 };
 

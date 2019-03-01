@@ -8,7 +8,7 @@
 #ifndef ISceneGraph_h
 #define ISceneGraph_h
 
-#include "../../game/GameTypeTraits.h"
+#include "../game/GameTypeTraits.h"
 
 #include <vector>
 #include <list>

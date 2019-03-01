@@ -6,9 +6,9 @@
 //
 
 #include "QuadtreeSceneGraph.h"
-#include "../../components/EntityComponentManager.h"
-#include "../../components/TransformComponent.h"
-#include "../../components/PhysicsComponent.h"
+#include "../components/EntityComponentManager.h"
+#include "../components/TransformComponent.h"
+#include "../components/PhysicsComponent.h"
 
 const int QuadtreeSceneGraph::MAX_OBJECTS_PER_NODE = 10;
 const int QuadtreeSceneGraph::MAX_DEPTH = 5;

@@ -6,7 +6,7 @@
 //
 
 #include "PhysicsSystem.h"
-#include "scene_graphs/QuadtreeSceneGraph.h"
+#include "../scene_graphs/QuadtreeSceneGraph.h"
 #include "../util/MathUtils.h"
 #include "../util/Logging.h"
 #include "../ServiceLocator.h"
@@ -16,7 +16,6 @@
 #include "../events/EventCommunicator.h"
 #include "../events/EntityCollisionEvent.h"
 #include "../events/LevelCreatedEvent.h"
-#include "../physics/scene_graphs/ISceneGraph.h"
 
 #include <algorithm>
 #include <unordered_map>

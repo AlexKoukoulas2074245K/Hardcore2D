@@ -9,7 +9,7 @@
 #define QuadtreeSceneGraph_h
 
 #include "ISceneGraph.h"
-#include "../../util/MathUtils.h"
+#include "../util/MathUtils.h"
 
 class EntityComponentManager;
 
