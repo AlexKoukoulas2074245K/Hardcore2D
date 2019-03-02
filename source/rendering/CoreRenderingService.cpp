@@ -27,6 +27,8 @@
 #include "../events/EventCommunicationService.h"
 #include "../events/EventCommunicator.h"
 #include "../events/DebugToggleHitboxDisplayEvent.h"
+#include "../events/DebugToggleSceneGraphDisplayEvent.h"
+#include "../physics/PhysicsSystem.h"
 
 #include <string>
 #include <vector>
@@ -49,6 +51,7 @@ CoreRenderingService::CoreRenderingService(const ServiceLocator& serviceLocator)
     , mSdlWindow(nullptr)
     , mSdlGLContext(nullptr)
     , mDebugHitboxDisplay(false)
+    , mDebugSceneGraphDisplay(false)
     , mRunning(false)
     , mRenderableDimensions(0.0f, 0.0f)
     , mSwirlAngle(0.0f)
@@ -151,6 +154,12 @@ void CoreRenderingService::GameLoop(std::function<void(const float)> appUpdateMe
         // Update client
         appUpdateMethod(Min(dt, 0.05f));
        
+        // Render Debug Scene graph
+        if (mDebugSceneGraphDisplay)
+        {
+            RenderOutlineRectangles(mServiceLocator.ResolveService<PhysicsSystem>().GetSceneGraphDebugRectangles());
+        }
+        
         // Clear buffers for post-processing
         GL_CHECK(glBindFramebuffer(GL_FRAMEBUFFER, 0));
         GL_CHECK(glClearColor(1.0f, 1.0f, 1.0f, 1.0f));
@@ -450,6 +459,29 @@ void CoreRenderingService::RegisterEventCallbacks()
     {
         mDebugHitboxDisplay = !mDebugHitboxDisplay;
     });
+    mEventCommunicator->RegisterEventCallback<DebugToggleSceneGraphDisplayEvent>([this](const IEvent&)
+    {
+        mDebugSceneGraphDisplay = !mDebugSceneGraphDisplay;
+    });
+}
+
+void CoreRenderingService::RenderOutlineRectangles(const std::list<std::pair<glm::vec2, glm::vec2>>& rectangles)
+{
+    mCurrentShader = StringId("basic");
+    GL_CHECK(glUseProgram(mShaders[mCurrentShader]->GetShaderId()));
+    GL_CHECK(glBindTexture(GL_TEXTURE_2D, mResourceManager->GetResource<TextureResource>("debug/debug_outline_square.png").GetGLTextureId()));
+    GL_CHECK(glUniformMatrix4fv(mShaders[mCurrentShader]->GetUniformNamesToLocations().at(StringId("view")), 1, GL_FALSE, (GLfloat*)&(mAttachedCamera->GetViewMatrix())));
+    GL_CHECK(glUniformMatrix4fv(mShaders[mCurrentShader]->GetUniformNamesToLocations().at(StringId("proj")), 1, GL_FALSE, (GLfloat*)&mProjectionMatrix));
+    
+    for (const auto& rectangleInfoPair: rectangles)
+    {
+        glm::mat4 worldMatrix(1.0f);
+        worldMatrix = glm::translate(worldMatrix, glm::vec3(rectangleInfoPair.first.x + rectangleInfoPair.second.x * 0.5f, rectangleInfoPair.first.y + rectangleInfoPair.second.y * 0.5f, 1.0f));
+        worldMatrix = glm::scale(worldMatrix, glm::vec3(rectangleInfoPair.second.x * 0.5f, rectangleInfoPair.second.y * 0.5f, 1.0));
+        
+        GL_CHECK(glUniformMatrix4fv(mShaders[mCurrentShader]->GetUniformNamesToLocations().at(StringId("world")), 1, GL_FALSE, (GLfloat*)&worldMatrix));
+        GL_CHECK(glDrawArrays(GL_TRIANGLE_FAN, 0, 4));
+    }
 }
 
 void CoreRenderingService::RenderEntityInternal(const EntityId entityId)

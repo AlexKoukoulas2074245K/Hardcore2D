@@ -10,6 +10,7 @@
 
 #include "../IService.h"
 #include "../game/GameTypeTraits.h"
+#include "../util/MathUtils.h"
 
 #include <vector>
 #include <list>
@@ -28,6 +29,7 @@ public:
     ~PhysicsSystem();
     bool VInitialize() override;
     void UpdateEntities(const std::vector<EntityNameIdEntry>& activeEntities, const float dt);
+    std::list<std::pair<glm::vec2, glm::vec2>> GetSceneGraphDebugRectangles() const;
     
 private:
     enum class Axis

@@ -10,6 +10,7 @@
 #include "../util/MathUtils.h"
 #include "../util/Logging.h"
 #include "../ServiceLocator.h"
+#include "../rendering/CoreRenderingService.h"
 #include "../components/EntityComponentManager.h"
 #include "../components/PhysicsComponent.h"
 #include "../components/TransformComponent.h"
@@ -192,6 +193,11 @@ void PhysicsSystem::UpdateEntities(const std::vector<EntityNameIdEntry>& activeE
             transformComponent.GetPreviousTranslation() = transformComponent.GetTranslation();
         }
     }
+}
+
+std::list<std::pair<glm::vec2, glm::vec2>> PhysicsSystem::GetSceneGraphDebugRectangles() const
+{
+    return mSceneGraph->VGetDebugRenderRectangles();
 }
 
 void PhysicsSystem::RegisterEventCallbacks()

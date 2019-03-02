@@ -10,8 +10,8 @@
 #include "../components/TransformComponent.h"
 #include "../components/PhysicsComponent.h"
 
-const int QuadtreeSceneGraph::MAX_OBJECTS_PER_NODE = 10;
-const int QuadtreeSceneGraph::MAX_DEPTH = 2;
+const int QuadtreeSceneGraph::MAX_OBJECTS_PER_NODE = 5;
+const int QuadtreeSceneGraph::MAX_DEPTH = 1;
 
 QuadtreeSceneGraph::QuadtreeSceneGraph(const EntityComponentManager& entityComponentManager, const glm::vec2& position, const glm::vec2& dimensions, const int depth /* 0 */)
     : mEntityComponentManager(entityComponentManager)
@@ -32,7 +32,7 @@ QuadtreeSceneGraph::~QuadtreeSceneGraph()
     InternalClear();
 }
 
-std::list<EntityId> QuadtreeSceneGraph::VGetCollisionCandidates(const EntityId referenceEntityId)
+std::list<EntityId> QuadtreeSceneGraph::VGetCollisionCandidates(const EntityId referenceEntityId) const
 {
     std::list<EntityId> collisionCandidates;
     const auto& entityTranslation = mEntityComponentManager.GetComponent<TransformComponent>(referenceEntityId).GetTranslation();
@@ -60,6 +60,13 @@ void QuadtreeSceneGraph::VClear()
     InternalClear();
 }
 
+std::list<std::pair<glm::vec2, glm::vec2>> QuadtreeSceneGraph::VGetDebugRenderRectangles() const
+{
+    std::list<std::pair<glm::vec2, glm::vec2>> debugRectangles;
+    InternalGetDebugRenderRectangles(debugRectangles);
+    return debugRectangles;
+}
+
 void QuadtreeSceneGraph::InternalClear()
 {
     mObjectsInNode.clear();
@@ -73,7 +80,7 @@ void QuadtreeSceneGraph::InternalClear()
     }
 }
 
-void QuadtreeSceneGraph::InternalGetCollisionCandidates(const EntityId referenceEntityId, const glm::vec3& objectPosition, const glm::vec2& objectDimensions, std::list<EntityId>& collisionCandidates)
+void QuadtreeSceneGraph::InternalGetCollisionCandidates(const EntityId referenceEntityId, const glm::vec3& objectPosition, const glm::vec2& objectDimensions, std::list<EntityId>& collisionCandidates) const
 {
     if (mNodes[0] != nullptr)
     {
@@ -92,6 +99,18 @@ void QuadtreeSceneGraph::InternalGetCollisionCandidates(const EntityId reference
     }    
 }
 
+void QuadtreeSceneGraph::InternalGetDebugRenderRectangles(std::list<std::pair<glm::vec2, glm::vec2>>& debugRectangles) const
+{
+    debugRectangles.push_back(std::make_pair(mPosition, mDimensions));
+    if (mNodes[0] != nullptr)
+    {
+        for (int i = 0; i < 4; ++i)
+        {
+            mNodes[i]->InternalGetDebugRenderRectangles(debugRectangles);
+        }
+    }
+}
+
 void QuadtreeSceneGraph::Split()
 {
     const auto halfWidth = mDimensions.x * 0.5f;
@@ -103,7 +122,7 @@ void QuadtreeSceneGraph::Split()
     mNodes[3] = std::make_unique<QuadtreeSceneGraph>(mEntityComponentManager, glm::vec2(mPosition.x,             mPosition.y + halfHeight), glm::vec2(halfWidth, halfHeight), mDepth + 1);
 }
 
-int QuadtreeSceneGraph::GetMatchedQuadrant(const glm::vec3& objectPosition, const glm::vec2& objectDimensions)
+int QuadtreeSceneGraph::GetMatchedQuadrant(const glm::vec3& objectPosition, const glm::vec2& objectDimensions) const
 {
     int quadrant = -1;
     

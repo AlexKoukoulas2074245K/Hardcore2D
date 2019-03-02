@@ -42,6 +42,7 @@ bool ResourceManager::VInitialize()
     if (!mTextFileLoader->Initialize()) return false;
     
     LoadResource("debug/debug_square.png");
+    LoadResource("debug/debug_outline_square.png");
     
     return true;
 }

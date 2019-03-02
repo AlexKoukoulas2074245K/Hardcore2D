@@ -11,6 +11,7 @@
 #include "../events/EventCommunicationService.h"
 #include "../events/EventCommunicator.h"
 #include "../events/DebugToggleHitboxDisplayEvent.h"
+#include "../events/DebugToggleSceneGraphDisplayEvent.h"
 
 DebugInputActionConsumer::DebugInputActionConsumer(const ServiceLocator& serviceLocator)
     : mEventCommunicator(serviceLocator.ResolveService<EventCommunicationService>().CreateEventCommunicator())
@@ -29,6 +30,13 @@ bool DebugInputActionConsumer::VConsumeInputAction(const InputAction& inputActio
         inputAction.mActionState == InputAction::ActionState::START)
     {
         mEventCommunicator->DispatchEvent(std::make_unique<DebugToggleHitboxDisplayEvent>());
+        return true;
+    }
+    
+    if (inputAction.mActionType == InputAction::ActionType::DEBUG_TOGGLE_SCENEGRAPH_DISPLAY &&
+        inputAction.mActionState == InputAction::ActionState::START)
+    {
+        mEventCommunicator->DispatchEvent(std::make_unique<DebugToggleSceneGraphDisplayEvent>());
         return true;
     }
 

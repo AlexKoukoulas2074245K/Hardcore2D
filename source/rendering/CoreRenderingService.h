@@ -20,6 +20,8 @@
 #include <string>
 #include <unordered_map>
 #include <memory>
+#include <list>
+#include <utility>
 
 struct SDL_Window;
 
@@ -60,6 +62,7 @@ private:
     void CompileAllShaders();
     void RegisterEventCallbacks();
 
+    void RenderOutlineRectangles(const std::list<std::pair<glm::vec2, glm::vec2>>& rectangles);
     void RenderEntityInternal(const EntityId);
     void PreparePostProcessingPass();
         
@@ -72,6 +75,7 @@ private:
     SDL_GLContext mSdlGLContext;
     
     bool mDebugHitboxDisplay;
+    bool mDebugSceneGraphDisplay;
     bool mRunning;
     
     glm::vec2 mRenderableDimensions;

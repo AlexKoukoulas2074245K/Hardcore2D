@@ -27,7 +27,7 @@
 const float PlayerBehaviorController::DEFAULT_PLAYER_MELEE_ATTACK_RECHARGE_DURATION = 0.5f;
 const float PlayerBehaviorController::DEFAULT_PLAYER_RANGED_ATTACK_RECHARGE_DURATION = 1.0f;
 const int PlayerBehaviorController::DEFAULT_RANGED_ATTACK_BATCH_COUNT = 3;
-const int PlayerBehaviorController::DEFAULT_JUMP_COUNT = 2;
+const int PlayerBehaviorController::DEFAULT_JUMP_COUNT = 20;
 
 PlayerBehaviorController::PlayerBehaviorController(const ServiceLocator& serviceLocator)
     : mServiceLocator(serviceLocator)

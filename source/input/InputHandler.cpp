@@ -56,4 +56,5 @@ void InputHandler::SetDefaultKeybindings()
     mKeybindingsToActions[SDL_SCANCODE_C] = InputAction::ActionType::RANGED;
     mKeybindingsToActions[SDL_SCANCODE_R] = InputAction::ActionType::RESPAWN;
     mKeybindingsToActions[SDL_SCANCODE_H] = InputAction::ActionType::DEBUG_TOGGLE_HITBOX_DISPLAY;
+    mKeybindingsToActions[SDL_SCANCODE_Q] = InputAction::ActionType::DEBUG_TOGGLE_SCENEGRAPH_DISPLAY;
 }

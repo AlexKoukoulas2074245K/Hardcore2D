@@ -11,6 +11,7 @@
 #include "ISceneGraph.h"
 #include "../util/MathUtils.h"
 
+#include <utility>
 #include <memory>
 
 class EntityComponentManager;
@@ -21,9 +22,10 @@ public:
     QuadtreeSceneGraph(const EntityComponentManager&, const glm::vec2& position, const glm::vec2& mDimensions, const int depth = 0);
     ~QuadtreeSceneGraph();
     
-    std::list<EntityId> VGetCollisionCandidates(const EntityId referenceEntityId) override;
+    std::list<EntityId> VGetCollisionCandidates(const EntityId referenceEntityId) const override;
     void VPopulateSceneGraph(const std::vector<EntityNameIdEntry>& phyicsSimulatedEntities) override;    
     void VClear() override;
+    std::list<std::pair<glm::vec2, glm::vec2>> VGetDebugRenderRectangles() const override;
     
 private:
     static const int MAX_OBJECTS_PER_NODE;
@@ -44,9 +46,10 @@ private:
     };
     
     void InternalClear();
-    void InternalGetCollisionCandidates(const EntityId referenceEntityId, const glm::vec3& objectPosition, const glm::vec2& objectDimensions, std::list<EntityId>& collisionCandidates);
+    void InternalGetCollisionCandidates(const EntityId referenceEntityId, const glm::vec3& objectPosition, const glm::vec2& objectDimensions, std::list<EntityId>& collisionCandidates) const;
+    void InternalGetDebugRenderRectangles(std::list<std::pair<glm::vec2, glm::vec2>>& debugRectangles) const;
     void Split();
-    int GetMatchedQuadrant(const glm::vec3& objectPosition, const glm::vec2& objectDimensions);
+    int GetMatchedQuadrant(const glm::vec3& objectPosition, const glm::vec2& objectDimensions) const;
     void InsertObject(const EntityId entityId, const glm::vec3& objectPosition, const glm::vec2& objectDimensions);
     
     const EntityComponentManager& mEntityComponentManager;
