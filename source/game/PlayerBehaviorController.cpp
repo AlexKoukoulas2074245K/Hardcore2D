@@ -102,6 +102,7 @@ void PlayerBehaviorController::RegisterEventCallbacks()
     mEventCommunicator->RegisterEventCallback<AnnouncePlayerEntityIdEvent>([this](const IEvent& event)
     {
         mPlayerEntityId = static_cast<const AnnouncePlayerEntityIdEvent&>(event).GetPlayerEntityId();
+        mPlayerKilled = false;
     });
 
     mEventCommunicator->RegisterEventCallback<PlayerMeleeAttackEvent>([this](const IEvent&)
