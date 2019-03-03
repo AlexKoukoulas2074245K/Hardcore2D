@@ -19,6 +19,7 @@
 #include "../resources/ResourceManager.h"
 #include "../components/TransformComponent.h"
 #include "../components/EntityComponentManager.h"
+#include "../components/FactionComponent.h"
 #include "../components/AnimationComponent.h"
 #include "../components/ShaderComponent.h"
 #include "../components/PhysicsComponent.h"
@@ -547,10 +548,14 @@ void CoreRenderingService::RenderEntityInternal(const EntityId entityId)
     GL_CHECK(glDrawArrays(GL_TRIANGLE_FAN, 0, 4));
  
 
-    if (mDebugHitboxDisplay && mEntityComponentManager->HasComponent<PhysicsComponent>(entityId))
+    if (mDebugHitboxDisplay &&
+        mEntityComponentManager->HasComponent<PhysicsComponent>(entityId) &&
+        mEntityComponentManager->HasComponent<FactionComponent>(entityId))
     {                
         const auto& physicsComponent = mEntityComponentManager->GetComponent<PhysicsComponent>(entityId);
         const auto& transformComponent = mEntityComponentManager->GetComponent<TransformComponent>(entityId);
+        const auto& factionComponent = mEntityComponentManager->GetComponent<FactionComponent>(entityId);
+        
         glm::mat4 worldMatrix(1.0f);
         const auto entityTranslation = transformComponent.GetTranslation();
         const auto entityRotation = transformComponent.GetRotation();
@@ -564,7 +569,7 @@ void CoreRenderingService::RenderEntityInternal(const EntityId entityId)
         mCurrentShader = StringId("debug_rect");
         GL_CHECK(glUseProgram(mShaders[mCurrentShader]->GetShaderId()));
         GL_CHECK(glUniformMatrix4fv(mShaders[mCurrentShader]->GetUniformNamesToLocations().at(StringId("world")), 1, GL_FALSE, (GLfloat*)&worldMatrix));
-        GL_CHECK(glBindTexture(GL_TEXTURE_2D, mResourceManager->GetResource<TextureResource>("debug/debug_square.png").GetGLTextureId()));
+        GL_CHECK(glBindTexture(GL_TEXTURE_2D, (mResourceManager->GetResource<TextureResource>((factionComponent.GetFactionGroup() == FactionGroup::ALLIES || factionComponent.testFlag) ? "debug/debug_square_cyan.png" : "debug/debug_square_pink.png")).GetGLTextureId()));
         GL_CHECK(glUniformMatrix4fv(mShaders[mCurrentShader]->GetUniformNamesToLocations().at(StringId("view")), 1, GL_FALSE, (GLfloat*)&(mAttachedCamera->GetViewMatrix())));
         GL_CHECK(glUniformMatrix4fv(mShaders[mCurrentShader]->GetUniformNamesToLocations().at(StringId("proj")), 1, GL_FALSE, (GLfloat*)&mProjectionMatrix));
         GL_CHECK(glDrawArrays(GL_TRIANGLE_FAN, 0, 4));

@@ -56,7 +56,6 @@ private:
     const glm::vec2 mPosition;
     const glm::vec2 mDimensions;
     const int mDepth;
-    
     std::unique_ptr<QuadtreeSceneGraph> mNodes[4];
     std::list<QuadtreeEntityEntry> mObjectsInNode;
 };

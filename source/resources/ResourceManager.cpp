@@ -41,7 +41,8 @@ bool ResourceManager::VInitialize()
     if (!mTextureLoader->Initialize()) return false;
     if (!mTextFileLoader->Initialize()) return false;
     
-    LoadResource("debug/debug_square.png");
+    LoadResource("debug/debug_square_pink.png");
+    LoadResource("debug/debug_square_cyan.png");
     LoadResource("debug/debug_outline_square.png");
     
     return true;

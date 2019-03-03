@@ -9,12 +9,13 @@
 #include "../components/EntityComponentManager.h"
 #include "../components/TransformComponent.h"
 #include "../components/PhysicsComponent.h"
+#include "../components/FactionComponent.h"
 
 const int QuadtreeSceneGraph::MAX_OBJECTS_PER_NODE = 5;
-const int QuadtreeSceneGraph::MAX_DEPTH = 1;
+const int QuadtreeSceneGraph::MAX_DEPTH = 5;
 
 QuadtreeSceneGraph::QuadtreeSceneGraph(const EntityComponentManager& entityComponentManager, const glm::vec2& position, const glm::vec2& dimensions, const int depth /* 0 */)
-    : mEntityComponentManager(entityComponentManager)
+    : mEntityComponentManager(const_cast<EntityComponentManager&>(entityComponentManager))
     , mPosition(position)
     , mDimensions(dimensions)
     , mDepth(depth)
@@ -88,6 +89,16 @@ void QuadtreeSceneGraph::InternalGetCollisionCandidates(const EntityId reference
         if (quadrantIndex != -1)
         {
             mNodes[quadrantIndex]->InternalGetCollisionCandidates(referenceEntityId, objectPosition, objectDimensions, collisionCandidates);
+        }
+        else
+        {
+            if (mNodes[0] != nullptr)
+            {
+                for (int i = 0; i < 4; ++i)
+                {
+                    mNodes[i]->InternalGetCollisionCandidates(referenceEntityId, objectPosition, objectDimensions, collisionCandidates);
+                }
+            }
         }
     }
 

@@ -15,6 +15,7 @@
 #include "../../components/PhysicsComponent.h"
 #include "../../components/TransformComponent.h"
 #include "../../components/BloodDropAIComponent.h"
+#include "../../components/FactionComponent.h"
 #include "../../resources/ResourceManager.h"
 #include "../../resources/TextureResource.h"
 #include "../../util/MathUtils.h"
@@ -73,6 +74,7 @@ void EffectsManager::CreateBloodSpurtEffect(const glm::vec3& effectOrigin)
         bloodDropTransformComponent->GetTranslation().y = effectOrigin.y;
         bloodDropTransformComponent->GetScale() = glm::vec3(8.0f, 8.0f, 1.0f);
         
+        mEntityComponentManager->AddComponent<FactionComponent>(bloodDropEntityId, std::make_unique<FactionComponent>(FactionGroup::ALLIES));
         mEntityComponentManager->AddComponent<TransformComponent>(bloodDropEntityId, std::move(bloodDropTransformComponent));
         mEntityComponentManager->AddComponent<IAIComponent>(bloodDropEntityId, std::make_unique<BloodDropAIComponent>(mServiceLocator, bloodDropEntityId, 0.5f));
         mEventCommunicator->DispatchEvent(std::make_unique<NewEntityCreatedEvent>(EntityNameIdEntry(StringId("blood_drop"), bloodDropEntityId)));
