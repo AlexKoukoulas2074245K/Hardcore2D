@@ -18,7 +18,7 @@
 #include "../components/TransformComponent.h"
 #include "../components/PhysicsComponent.h"
 #include "../components/HealthComponent.h"
-#include "../commands/SetEntityCustomVelocityCommand.h"
+#include "../commands/SetEntityVelocityAndAnimateCommand.h"
 #include "../commands/EntityMeleeAttackCommand.h"
 #include "../commands/SetEntityFacingDirectionCommand.h"
 #include "../events/EntityDamagedEvent.h"
@@ -90,7 +90,7 @@ void BasicNinjaEnemyAIComponent::VUpdate(const float dt)
                 SetEntityFacingDirectionCommand(mEntityComponentManager, mThisEntityId, transformComponent.GetTranslation().x > targetTransformComponent.GetTranslation().x ? FacingDirection::RIGHT : FacingDirection::LEFT).VExecute();
                 mMovingRight = animationComponent.GetCurrentFacingDirection() == FacingDirection::RIGHT;
                 
-                SetEntityCustomVelocityCommand(mEntityComponentManager, mThisEntityId, glm::vec3(mMovingRight ? physicsComponent.GetMinVelocity().x * 0.25f : physicsComponent.GetMaxVelocity().x * 0.25f,
+                SetEntityVelocityAndAnimateCommand(mEntityComponentManager, mThisEntityId, glm::vec3(mMovingRight ? physicsComponent.GetMinVelocity().x * 0.25f : physicsComponent.GetMaxVelocity().x * 0.25f,
                                                                                                  physicsComponent.GetMaxVelocity().y * 0.8f,
                                                                                                  physicsComponent.GetVelocity().z)).VExecute();
                 
@@ -101,7 +101,7 @@ void BasicNinjaEnemyAIComponent::VUpdate(const float dt)
                                                       physicsComponent.GetVelocity().y,
                                                       physicsComponent.GetVelocity().z);
 
-                SetEntityCustomVelocityCommand(mEntityComponentManager, mThisEntityId, targetVelocity).VExecute();
+                SetEntityVelocityAndAnimateCommand(mEntityComponentManager, mThisEntityId, targetVelocity).VExecute();
                 
                 if (transformComponent.GetTranslation().x >= mInitPosition.x + PATROLLING_MAX_DISTANCE_FROM_INIT_POSITION)
                 {
@@ -124,7 +124,7 @@ void BasicNinjaEnemyAIComponent::VUpdate(const float dt)
             
             if (distanceFromPlayer < PURSUING_MELEE_ATTACK_DISTANCE)
             {
-                SetEntityCustomVelocityCommand(mEntityComponentManager, mThisEntityId, glm::vec3(0.0f, physicsComponent.GetVelocity().y, physicsComponent.GetVelocity().z)).VExecute();
+                SetEntityVelocityAndAnimateCommand(mEntityComponentManager, mThisEntityId, glm::vec3(0.0f, physicsComponent.GetVelocity().y, physicsComponent.GetVelocity().z)).VExecute();
                 mTimer -= dt;
                 if (mTimer <= 0.0f)
                 {
@@ -135,7 +135,7 @@ void BasicNinjaEnemyAIComponent::VUpdate(const float dt)
             else
             {
                 const auto targetXVelocity = targetTransformComponent.GetTranslation().x > transformComponent.GetTranslation().x ? physicsComponent.GetMaxVelocity().x * 0.13f : physicsComponent.GetMinVelocity().x * 0.13f;
-                SetEntityCustomVelocityCommand(mEntityComponentManager, mThisEntityId, glm::vec3(targetXVelocity, physicsComponent.GetVelocity().y, physicsComponent.GetVelocity().z)).VExecute();
+                SetEntityVelocityAndAnimateCommand(mEntityComponentManager, mThisEntityId, glm::vec3(targetXVelocity, physicsComponent.GetVelocity().y, physicsComponent.GetVelocity().z)).VExecute();
             }
             
         } break;
@@ -186,7 +186,7 @@ void BasicNinjaEnemyAIComponent::OnEntityDamagedEvent(const IEvent& event)
 
     mState = State::DEAD;
     
-    mEntityComponentManager.GetComponent<PhysicsComponent>(mThisEntityId).GetVelocity() = glm::vec3(0.0f, 0.0f, 0.0f);
+    SetEntityVelocityAndAnimateCommand(mEntityComponentManager, mThisEntityId, glm::vec3(0.0f, 0.0f, 0.0f)).VExecute();
     mEntityComponentManager.GetComponent<AnimationComponent>(mThisEntityId).PlayAnimation(StringId("death"), false, false, AnimationComponent::AnimationPriority::HIGH, [this]() 
     {        
         mEntityComponentManager.RemoveComponent<DamageComponent>(mThisEntityId);
@@ -197,7 +197,7 @@ void BasicNinjaEnemyAIComponent::OnEntityDamagedEvent(const IEvent& event)
 void BasicNinjaEnemyAIComponent::OnLeapingComplete()
 {
     mState = State::PURSUING;
-    SetEntityCustomVelocityCommand(mEntityComponentManager, mThisEntityId, glm::vec3(0.0f, 0.0f, 0.0f)).VExecute();
+    SetEntityVelocityAndAnimateCommand(mEntityComponentManager, mThisEntityId, glm::vec3(0.0f, 0.0f, 0.0f)).VExecute();
     EntityMeleeAttackCommand(mServiceLocator, mThisEntityId).VExecute();
     mTimer = MELEE_ATTACK_COOLDOWN;
 }

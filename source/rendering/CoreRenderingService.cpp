@@ -569,7 +569,7 @@ void CoreRenderingService::RenderEntityInternal(const EntityId entityId)
         mCurrentShader = StringId("debug_rect");
         GL_CHECK(glUseProgram(mShaders[mCurrentShader]->GetShaderId()));
         GL_CHECK(glUniformMatrix4fv(mShaders[mCurrentShader]->GetUniformNamesToLocations().at(StringId("world")), 1, GL_FALSE, (GLfloat*)&worldMatrix));
-        GL_CHECK(glBindTexture(GL_TEXTURE_2D, (mResourceManager->GetResource<TextureResource>((factionComponent.GetFactionGroup() == FactionGroup::ALLIES || factionComponent.testFlag) ? "debug/debug_square_cyan.png" : "debug/debug_square_pink.png")).GetGLTextureId()));
+        GL_CHECK(glBindTexture(GL_TEXTURE_2D, (mResourceManager->GetResource<TextureResource>(factionComponent.GetFactionGroup() == FactionGroup::ALLIES ? "debug/debug_square_cyan.png" : "debug/debug_square_pink.png")).GetGLTextureId()));
         GL_CHECK(glUniformMatrix4fv(mShaders[mCurrentShader]->GetUniformNamesToLocations().at(StringId("view")), 1, GL_FALSE, (GLfloat*)&(mAttachedCamera->GetViewMatrix())));
         GL_CHECK(glUniformMatrix4fv(mShaders[mCurrentShader]->GetUniformNamesToLocations().at(StringId("proj")), 1, GL_FALSE, (GLfloat*)&mProjectionMatrix));
         GL_CHECK(glDrawArrays(GL_TRIANGLE_FAN, 0, 4));

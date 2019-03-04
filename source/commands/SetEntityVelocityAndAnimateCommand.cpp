@@ -1,11 +1,11 @@
 //
-//  SetEntityCustomVelocityCommand.cpp
+//  SetEntityVelocityAndAnimateCommand.cpp
 //  Hardcore2D
 //
 //  Created by Alex Koukoulas on 21/01/2019.
 //
 
-#include "SetEntityCustomVelocityCommand.h"
+#include "SetEntityVelocityAndAnimateCommand.h"
 #include "../commands/SetEntityFacingDirectionCommand.h"
 #include "../components/EntityComponentManager.h"
 #include "../components/PhysicsComponent.h"
@@ -13,15 +13,15 @@
 #include "../game/GameConstants.h"
 #include "../util/MathUtils.h"
 
-SetEntityCustomVelocityCommand::SetEntityCustomVelocityCommand(EntityComponentManager& entityComponentManager, const EntityId entityId, const glm::vec3& velocity)
-: mEntityComponentManager(entityComponentManager)
-, mEntityId(entityId)
-, mVelocity(velocity)
+SetEntityVelocityAndAnimateCommand::SetEntityVelocityAndAnimateCommand(EntityComponentManager& entityComponentManager, const EntityId entityId, const glm::vec3& velocity)
+    : mEntityComponentManager(entityComponentManager)
+    , mEntityId(entityId)
+    , mVelocity(velocity)
 {
     
 }
 
-void SetEntityCustomVelocityCommand::VExecute()
+void SetEntityVelocityAndAnimateCommand::VExecute()
 {
     if (mEntityComponentManager.HasComponent<AnimationComponent>(mEntityId))
     {

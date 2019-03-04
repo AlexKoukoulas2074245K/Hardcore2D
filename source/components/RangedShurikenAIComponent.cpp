@@ -10,7 +10,7 @@
 #include "../components/EntityComponentManager.h"
 #include "../components/TransformComponent.h"
 #include "../components/PhysicsComponent.h"
-#include "../commands/SetEntityCustomVelocityCommand.h"
+#include "../commands/SetEntityVelocityAndAnimateCommand.h"
 #include "../events/EntityCollisionEvent.h"
 #include "../events/EventCommunicator.h"
 #include "../events/EntityDamagedEvent.h"
@@ -30,7 +30,7 @@ RangedShurikenAIComponent::RangedShurikenAIComponent(const ServiceLocator& servi
         
         if (damageSenderEntityId == mEntityId)
         {
-            SetEntityCustomVelocityCommand(mEntityComponentManager, mEntityId, glm::vec3(0.0f, 0.0f, 0.0f)).VExecute();
+            SetEntityVelocityAndAnimateCommand(mEntityComponentManager, mEntityId, glm::vec3(0.0f, 0.0f, 0.0f)).VExecute();
             mEntityComponentManager.GetComponent<PhysicsComponent>(mEntityId).GetAngularVelocity() = 0.0f;
             mTimeToLive = 0.5f;
             

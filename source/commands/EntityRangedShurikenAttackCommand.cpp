@@ -9,6 +9,7 @@
 #include "../ServiceLocator.h"
 #include "../events/NewEntityCreatedEvent.h"
 #include "../events/EventCommunicator.h"
+#include "../commands/SetEntityVelocityCommand.h"
 #include "../components/EntityComponentManager.h"
 #include "../components/FactionComponent.h"
 #include "../components/ShaderComponent.h"
@@ -52,16 +53,14 @@ void EntityRangedShurikenAttackCommand::VExecute()
         shurikenTransformComponent->GetTranslation() = entityTransformComponent.GetTranslation();
         shurikenTransformComponent->GetTranslation().x += 15.0f;
         shurikenAnimationComponent->SetFacingDirection(FacingDirection::RIGHT);
-        shurikenPhysicsComponent->GetAngularVelocity() = 10.0f;
-        shurikenPhysicsComponent->GetVelocity().x = 1000.0f;
+        shurikenPhysicsComponent->GetAngularVelocity() = 10.0f;        
     }
     else
     {
         shurikenTransformComponent->GetTranslation() = entityTransformComponent.GetTranslation();
         shurikenTransformComponent->GetTranslation().x += -15.0f;
         shurikenAnimationComponent->SetFacingDirection(FacingDirection::LEFT);
-        shurikenPhysicsComponent->GetAngularVelocity() = -10.0f;
-        shurikenPhysicsComponent->GetVelocity().x = -1000.0f;
+        shurikenPhysicsComponent->GetAngularVelocity() = -10.0f;        
     }
     
     shurikenTransformComponent->GetScale() = glm::vec3(30.0f, 30.0f, 1.0f);
@@ -69,6 +68,9 @@ void EntityRangedShurikenAttackCommand::VExecute()
     const auto& parentEntityFactionGroup = mEntityComponentManager.GetComponent<FactionComponent>(mParentEntityId).GetFactionGroup();
 
     mEntityComponentManager.AddComponent<PhysicsComponent>(shurikenEntityId, std::move(shurikenPhysicsComponent));
+    SetEntityVelocityCommand(mEntityComponentManager, shurikenEntityId, mEntityComponentManager.GetComponent<AnimationComponent>(mParentEntityId).GetCurrentFacingDirection() == FacingDirection::RIGHT ? 1000.0f : -1000.0f, 0.0f, 0.0f).VExecute();
+
+
     mEntityComponentManager.AddComponent<FactionComponent>(shurikenEntityId, std::make_unique<FactionComponent>(parentEntityFactionGroup));
     mEntityComponentManager.AddComponent<AnimationComponent>(shurikenEntityId, std::move(shurikenAnimationComponent));
     mEntityComponentManager.AddComponent<TransformComponent>(shurikenEntityId, std::move(shurikenTransformComponent));

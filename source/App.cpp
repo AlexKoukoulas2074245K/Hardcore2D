@@ -11,7 +11,7 @@
 #include "rendering/Camera.h"
 #include "input/PlayerInputActionConsumer.h"
 #include "input/DebugInputActionConsumer.h"
-#include "commands/SetEntityCustomVelocityCommand.h"
+#include "commands/SetEntityVelocityAndAnimateCommand.h"
 #include "components/EntityComponentManager.h"
 #include "components/IAIComponent.h"
 #include "events/EventCommunicator.h"
