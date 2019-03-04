@@ -32,7 +32,7 @@
 #include <SDL.h>
 
 
-static const float CHARACTER_SCALE_MULTIPLIER = 2.5f;
+static const float CHARACTER_SCALE_MULTIPLIER = 4.0f;
 static const std::string LEVEL_DIRECTORY = "levels/";
 static const std::unordered_map<std::string, PhysicsComponent::BodyType> sStringToPhysicsBodyType = 
 {
@@ -170,14 +170,14 @@ std::unique_ptr<Level> LevelFactory::CreateLevel(const std::string& levelPath)
             if (entityComponentManager.HasComponent<PhysicsComponent>(entityId))
             {
                 auto& physicsComponent = entityComponentManager.GetComponent<PhysicsComponent>(entityId);
-                physicsComponent.ScaleHitBoxBy(CHARACTER_SCALE_MULTIPLIER);
+                physicsComponent.ScaleHitBoxBy(entityName == "player" ? CHARACTER_SCALE_MULTIPLIER : 2.5f);
             }
 
             if (entityComponentManager.HasComponent<TransformComponent>(entityId))
             {
                 auto& transformComponent = entityComponentManager.GetComponent<TransformComponent>(entityId);
-                transformComponent.GetScale().x *= CHARACTER_SCALE_MULTIPLIER;
-                transformComponent.GetScale().y *= CHARACTER_SCALE_MULTIPLIER;
+                transformComponent.GetScale().x *= entityName == "player" ? CHARACTER_SCALE_MULTIPLIER : 2.5f;
+                transformComponent.GetScale().y *= entityName == "player" ? CHARACTER_SCALE_MULTIPLIER : 2.5f;
             }
         }
 

@@ -857,17 +857,6 @@
 			}
 		},
 		{
-			"name": "player",
-			"components":
-			{
-				"AnimationComponent": { "path": "characters/light_samurai", "animationFrameDuration": 0.03 },
-				"HealthComponent": { "health": 100.0, "invincibilityDuration": 0.5 },
-				"PhysicsComponent": { "bodyType": "DYNAMIC", "hitBox": { "centerPoint": [0.0, 0.0], "dimensions": [10.0, 30.0] }, "gravity": [0.0, -1680.0, 0.0], "maxVelocity": [240.0, 640.0, 0.0], "minVelocity": [-240.0, -460.0, 0.0] },
-				"ShaderComponent": { "shaderName": "basic" },
-				"TransformComponent": { "translation": [440.0, 520.0, 1.0], "rotation": [0.0, 0.0, 0.0], "scale": [80.0, 80.0, 1.0] }
-			}
-		},
-		{
 			"name": "",
 			"components":
 			{
@@ -891,6 +880,17 @@
 				"PhysicsComponent": { "bodyType": "DYNAMIC", "hitBox": { "centerPoint": [0.0, 0.0], "dimensions": [20.0, 30.0] }, "gravity": [0.0, -1680.0, 0.0], "maxVelocity": [1000.0, 720.0, 0.0], "minVelocity": [-1000.0, -720.0, 0.0] },
 				"ShaderComponent": { "shaderName": "basic" },
 				"TransformComponent": { "translation": [1720.0, 440.0, 1.0], "rotation": [0.0, 0.0, 0.0], "scale": [80.0, 80.0, 1.0] }
+			}
+		},
+		{	
+			"name": "player",
+			"components":
+			{
+				"AnimationComponent": { "path": "characters/gareth", "animationFrameDuration": 0.1 },
+				"HealthComponent": { "health": 100.0, "invincibilityDuration": 0.5 },
+				"PhysicsComponent": { "bodyType": "DYNAMIC", "hitBox": { "centerPoint": [0.0, 0.0], "dimensions": [10.0, 20.0] }, "gravity": [0.0, -1680.0, 0.0], "maxVelocity": [240.0, 640.0, 0.0], "minVelocity": [-240.0, -460.0, 0.0] },
+				"ShaderComponent": { "shaderName": "basic" },
+				"TransformComponent": { "translation": [440.0, 520.0, 1.0], "rotation": [0.0, 0.0, 0.0], "scale": [80.0, 80.0, 1.0] }
 			}
 		}
 	]

@@ -26,8 +26,8 @@
 
 const float PlayerBehaviorController::DEFAULT_PLAYER_MELEE_ATTACK_RECHARGE_DURATION = 0.5f;
 const float PlayerBehaviorController::DEFAULT_PLAYER_RANGED_ATTACK_RECHARGE_DURATION = 1.0f;
-const int PlayerBehaviorController::DEFAULT_RANGED_ATTACK_BATCH_COUNT = 3;
-const int PlayerBehaviorController::DEFAULT_JUMP_COUNT = 20;
+const int PlayerBehaviorController::DEFAULT_RANGED_ATTACK_BATCH_COUNT = 5;
+const int PlayerBehaviorController::DEFAULT_JUMP_COUNT = 2;
 
 PlayerBehaviorController::PlayerBehaviorController(const ServiceLocator& serviceLocator)
     : mServiceLocator(serviceLocator)
@@ -79,6 +79,11 @@ void PlayerBehaviorController::Update(const float dt)
         {
             mRangedAttackCount = mRangedAttackBatchCount;
         }
+    }
+    
+    if (mJumpsAvailable < mJumpCount)
+    {
+        mEntityComponentManager->GetComponent<AnimationComponent>(mPlayerEntityId).PlayAnimation(StringId("jumping"));
     }
 }
 
@@ -160,6 +165,12 @@ void PlayerBehaviorController::RegisterEventCallbacks()
             return;
         }
 
+        // If just landed play idle
+        if (mJumpsAvailable != mJumpCount)
+        {
+            mEntityComponentManager->GetComponent<AnimationComponent>(mPlayerEntityId).PlayAnimation(StringId("idle"));
+        }
+        
         mJumpsAvailable = mJumpCount;
     });
 
