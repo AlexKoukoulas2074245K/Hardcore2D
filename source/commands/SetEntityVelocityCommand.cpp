@@ -27,5 +27,5 @@ SetEntityVelocityCommand::SetEntityVelocityCommand(EntityComponentManager& entit
 
 void SetEntityVelocityCommand::VExecute()
 {    
-    mEntityComponentManager.GetComponent<PhysicsComponent>(mEntityId).GetVelocity() = mVelocity;
+    mEntityComponentManager.GetComponent<PhysicsComponent>(mEntityId).mVelocity = mVelocity;
 }

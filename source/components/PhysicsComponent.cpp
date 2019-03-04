@@ -38,34 +38,9 @@ void PhysicsComponent::SetBodyType(const BodyType bodyType)
     mBodyType = bodyType;
 }
 
-glm::vec3& PhysicsComponent::GetVelocity()
+void PhysicsComponent::ScaleHitBoxBy(const float scaleMultiplier)
 {
-    return mVelocity;
-}
-
-glm::vec3& PhysicsComponent::GetGravity()
-{
-    return mGravity;
-}
-
-glm::vec3& PhysicsComponent::GetMaxVelocity()
-{
-    return mMaxVelocity;
-}
-
-glm::vec3& PhysicsComponent::GetMinVelocity()
-{
-    return mMinVelocity;
-}
-
-float& PhysicsComponent::GetAngularVelocity()
-{
-    return mAngularVelocity;
-}
-
-PhysicsComponent::Hitbox& PhysicsComponent::GetHitBox()
-{
-    return mHitBox;
+    mHitBox.mDimensions *= scaleMultiplier;
 }
 
 const PhysicsComponent::Hitbox& PhysicsComponent::GetHitBox() const

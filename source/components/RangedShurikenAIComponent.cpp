@@ -11,6 +11,7 @@
 #include "../components/TransformComponent.h"
 #include "../components/PhysicsComponent.h"
 #include "../commands/SetEntityVelocityAndAnimateCommand.h"
+#include "../commands/SetAngularVelocityCommand.h"
 #include "../events/EntityCollisionEvent.h"
 #include "../events/EventCommunicator.h"
 #include "../events/EntityDamagedEvent.h"
@@ -26,18 +27,9 @@ RangedShurikenAIComponent::RangedShurikenAIComponent(const ServiceLocator& servi
     {
         const auto& actualEvent = static_cast<const EntityDamagedEvent&>(event);
         const auto damageSenderEntityId = actualEvent.GetDamageSenderEntityId();
-        const auto damagedEntityId = actualEvent.GetDamagedEntityId();
-        
         if (damageSenderEntityId == mEntityId)
         {
-            SetEntityVelocityAndAnimateCommand(mEntityComponentManager, mEntityId, glm::vec3(0.0f, 0.0f, 0.0f)).VExecute();
-            mEntityComponentManager.GetComponent<PhysicsComponent>(mEntityId).GetAngularVelocity() = 0.0f;
-            mTimeToLive = 0.5f;
-            
-            auto& thisTransformComponent = mEntityComponentManager.GetComponent<TransformComponent>(mEntityId);
-            const auto& otherEntityTransformComponent = mEntityComponentManager.GetComponent<TransformComponent>(damagedEntityId);
-            
-            thisTransformComponent.SetParent(damagedEntityId, thisTransformComponent.GetTranslation() - otherEntityTransformComponent.GetTranslation());
+            mEventCommunicator->DispatchEvent(std::make_unique<EntityDestroyedEvent>(mEntityId));
         }
     });
     mEventCommunicator->RegisterEventCallback<EntityCollisionEvent>([this](const IEvent& event)
