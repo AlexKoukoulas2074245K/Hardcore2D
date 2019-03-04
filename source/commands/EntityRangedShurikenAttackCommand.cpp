@@ -10,6 +10,7 @@
 #include "../events/NewEntityCreatedEvent.h"
 #include "../events/EventCommunicator.h"
 #include "../commands/SetEntityVelocityCommand.h"
+#include "../commands/SetAngularVelocityCommand.h"
 #include "../components/EntityComponentManager.h"
 #include "../components/FactionComponent.h"
 #include "../components/ShaderComponent.h"
@@ -48,19 +49,18 @@ void EntityRangedShurikenAttackCommand::VExecute()
     auto shurikenTransformComponent = std::make_unique<TransformComponent>();
     auto shurikenPhysicsComponent = std::make_unique<PhysicsComponent>(PhysicsComponent::BodyType::DYNAMIC, PhysicsComponent::Hitbox(glm::vec2(0.0f, 0.0f), glm::vec2(12.0f, 12.0f)), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(1000.0f, 1000.0f, 0.0f), glm::vec3(-1000.0f, -1000.0f, 0.0f));
     
-    if (mEntityComponentManager.GetComponent<AnimationComponent>(mParentEntityId).GetCurrentFacingDirection() == FacingDirection::RIGHT)
+    const auto isFacingRight = mEntityComponentManager.GetComponent<AnimationComponent>(mParentEntityId).GetCurrentFacingDirection() == FacingDirection::RIGHT;
+    if (isFacingRight)
     {
         shurikenTransformComponent->GetTranslation() = entityTransformComponent.GetTranslation();
         shurikenTransformComponent->GetTranslation().x += 15.0f;
         shurikenAnimationComponent->SetFacingDirection(FacingDirection::RIGHT);
-        shurikenPhysicsComponent->GetAngularVelocity() = 10.0f;        
     }
     else
     {
         shurikenTransformComponent->GetTranslation() = entityTransformComponent.GetTranslation();
         shurikenTransformComponent->GetTranslation().x += -15.0f;
         shurikenAnimationComponent->SetFacingDirection(FacingDirection::LEFT);
-        shurikenPhysicsComponent->GetAngularVelocity() = -10.0f;        
     }
     
     shurikenTransformComponent->GetScale() = glm::vec3(30.0f, 30.0f, 1.0f);
@@ -68,8 +68,8 @@ void EntityRangedShurikenAttackCommand::VExecute()
     const auto& parentEntityFactionGroup = mEntityComponentManager.GetComponent<FactionComponent>(mParentEntityId).GetFactionGroup();
 
     mEntityComponentManager.AddComponent<PhysicsComponent>(shurikenEntityId, std::move(shurikenPhysicsComponent));
-    SetEntityVelocityCommand(mEntityComponentManager, shurikenEntityId, mEntityComponentManager.GetComponent<AnimationComponent>(mParentEntityId).GetCurrentFacingDirection() == FacingDirection::RIGHT ? 1000.0f : -1000.0f, 0.0f, 0.0f).VExecute();
-
+    SetEntityVelocityCommand(mEntityComponentManager, shurikenEntityId, isFacingRight ? 1000.0f : -1000.0f, 0.0f, 0.0f).VExecute();
+    SetAngularVelocityCommand(mEntityComponentManager, shurikenEntityId, isFacingRight ? 10.0f: -10.0f).VExecute();
 
     mEntityComponentManager.AddComponent<FactionComponent>(shurikenEntityId, std::make_unique<FactionComponent>(parentEntityFactionGroup));
     mEntityComponentManager.AddComponent<AnimationComponent>(shurikenEntityId, std::move(shurikenAnimationComponent));

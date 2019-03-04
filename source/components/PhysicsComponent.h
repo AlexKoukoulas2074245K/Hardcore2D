@@ -17,6 +17,7 @@ class PhysicsComponent final: public IComponent
     friend class SetEntityVelocityCommand;
     friend class SetEntityVelocityAndAnimateCommand;
     friend class PhysicsSystem;
+    friend class SetAngularVelocityCommand;
     
 public:
     enum class BodyType
@@ -41,9 +42,6 @@ public:
     
     void SetBodyType(const BodyType);
     void ScaleHitBoxBy(const float scaleMultiplier);
-    
-    // Command it
-    float& GetAngularVelocity();
     
     const glm::vec3& GetVelocity() const;
     const glm::vec3& GetGravity() const;

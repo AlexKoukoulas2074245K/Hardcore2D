@@ -43,11 +43,6 @@ void PhysicsComponent::ScaleHitBoxBy(const float scaleMultiplier)
     mHitBox.mDimensions *= scaleMultiplier;
 }
 
-float& PhysicsComponent::GetAngularVelocity()
-{
-    return mAngularVelocity;
-}
-
 const PhysicsComponent::Hitbox& PhysicsComponent::GetHitBox() const
 {
     return mHitBox;
