@@ -11,6 +11,7 @@
 #include "../util/Logging.h"
 #include "../ServiceLocator.h"
 #include "../rendering/CoreRenderingService.h"
+#include "../commands/SetEntityVelocityCommand.h"
 #include "../components/EntityComponentManager.h"
 #include "../components/PhysicsComponent.h"
 #include "../components/TransformComponent.h"
@@ -66,12 +67,12 @@ void PhysicsSystem::UpdateEntities(const std::vector<EntityNameIdEntry>& activeE
             // Update angular velocity
             referenceEntityTransformComponent.GetRotation().z += referenceEntityPhysicsComponent.GetAngularVelocity();
 
-            // Update velocity            
-            referenceEntityPhysicsComponent.GetVelocity() += referenceEntityPhysicsComponent.GetGravity() * dt;
+            // Update velocity
+            referenceEntityPhysicsComponent.mVelocity += referenceEntityPhysicsComponent.GetGravity() * dt;
             
             // Clamp velocity to min/maxes
-            referenceEntityPhysicsComponent.GetVelocity() = ClampToMax(referenceEntityPhysicsComponent.GetVelocity(), referenceEntityPhysicsComponent.GetMaxVelocity());
-            referenceEntityPhysicsComponent.GetVelocity() = ClampToMin(referenceEntityPhysicsComponent.GetVelocity(), referenceEntityPhysicsComponent.GetMinVelocity());
+            referenceEntityPhysicsComponent.mVelocity = ClampToMax(referenceEntityPhysicsComponent.GetVelocity(), referenceEntityPhysicsComponent.GetMaxVelocity());
+            referenceEntityPhysicsComponent.mVelocity = ClampToMin(referenceEntityPhysicsComponent.GetVelocity(), referenceEntityPhysicsComponent.GetMinVelocity());
             
             // Update horizontal position first
             if (mEntityComponentManager->HasEntityEntry(referenceEntityTransformComponent.GetParent()))
@@ -294,7 +295,7 @@ void PhysicsSystem::PushEntityOutsideOtherEntityInAxis(const EntityId referenceE
             if (otherEntityPhysicsComponent.GetBodyType() == PhysicsComponent::BodyType::KINEMATIC)
             {
                 referenceEntityTransformComponent.GetTranslation().y -= referenceEntityPhysicsComponent.GetVelocity().y * dt;
-                referenceEntityPhysicsComponent.GetVelocity().y = 0.0f;
+                referenceEntityPhysicsComponent.mVelocity.y = 0.0f;
             }
             else
             {
@@ -303,7 +304,7 @@ void PhysicsSystem::PushEntityOutsideOtherEntityInAxis(const EntityId referenceE
                                                                        otherEntityHitBox.mDimensions.y * 0.5f -
                                                                        referenceEntityHitBox.mCenterPoint.y -
                                                                        referenceEntityHitBox.mDimensions.y * 0.5f;
-                referenceEntityPhysicsComponent.GetVelocity().y = 0.0f;
+                referenceEntityPhysicsComponent.mVelocity.y = 0.0f;
             }
         }
         // Collided with entity below
@@ -320,7 +321,7 @@ void PhysicsSystem::PushEntityOutsideOtherEntityInAxis(const EntityId referenceE
                                                                        otherEntityHitBox.mDimensions.y * 0.5f -
                                                                        referenceEntityHitBox.mCenterPoint.y +
                                                                        referenceEntityHitBox.mDimensions.y * 0.5f;
-                referenceEntityPhysicsComponent.GetVelocity().y = 0.0f;
+                referenceEntityPhysicsComponent.mVelocity.y = 0.0f;
             }
         }
     }

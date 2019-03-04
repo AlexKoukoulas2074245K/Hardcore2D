@@ -170,7 +170,7 @@ std::unique_ptr<Level> LevelFactory::CreateLevel(const std::string& levelPath)
             if (entityComponentManager.HasComponent<PhysicsComponent>(entityId))
             {
                 auto& physicsComponent = entityComponentManager.GetComponent<PhysicsComponent>(entityId);
-                physicsComponent.GetHitBox() = PhysicsComponent::Hitbox(physicsComponent.GetHitBox().mCenterPoint, physicsComponent.GetHitBox().mDimensions * CHARACTER_SCALE_MULTIPLIER);
+                physicsComponent.ScaleHitBoxBy(CHARACTER_SCALE_MULTIPLIER);
             }
 
             if (entityComponentManager.HasComponent<TransformComponent>(entityId))
