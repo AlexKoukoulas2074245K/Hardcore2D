@@ -32,7 +32,7 @@ public:
 private:
     enum class State
     {
-        INITIALIZE, PATROLLING, LEAPING_TO_TARGET, PURSUING, DEAD 
+        INITIALIZE, PATROLLING, PURSUING, DEAD 
     };
 
     static const float PLAYER_DETECTION_DISTANCE;
@@ -55,6 +55,7 @@ private:
     State mState;
     bool mMovingRight;
     glm::vec3 mInitPosition;
+    float mDamagePushback;
     float mTimer;    
 };
 

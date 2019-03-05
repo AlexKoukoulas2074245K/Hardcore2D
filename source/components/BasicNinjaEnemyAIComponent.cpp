@@ -19,6 +19,7 @@
 #include "../components/PhysicsComponent.h"
 #include "../components/HealthComponent.h"
 #include "../commands/SetEntityVelocityAndAnimateCommand.h"
+#include "../commands/SetEntityVelocityCommand.h"
 #include "../commands/EntityMeleeAttackCommand.h"
 #include "../commands/SetEntityFacingDirectionCommand.h"
 #include "../events/EntityDamagedEvent.h"
@@ -44,10 +45,6 @@ BasicNinjaEnemyAIComponent::BasicNinjaEnemyAIComponent(const ServiceLocator& ser
     {
         OnAnnouncePlayerEntityId(event);
     });
-    mEventCommunicator->RegisterEventCallback<EntityCollisionEvent>([this](const IEvent& event)
-    {
-        OnEntityCollisionEvent(event);
-    });
     mEventCommunicator->RegisterEventCallback<EntityDamagedEvent>([this](const IEvent& event)
     {
         OnEntityDamagedEvent(event);
@@ -64,7 +61,6 @@ void BasicNinjaEnemyAIComponent::VUpdate(const float dt)
     const auto& physicsComponent = mEntityComponentManager.GetComponent<PhysicsComponent>(mThisEntityId);
     const auto& targetTransformComponent = mEntityComponentManager.GetComponent<TransformComponent>(mTargetEntityId);
     const auto& transformComponent = mEntityComponentManager.GetComponent<TransformComponent>(mThisEntityId);
-    const auto& animationComponent = mEntityComponentManager.GetComponent<AnimationComponent>(mThisEntityId);
     
     switch (mState)
     {
@@ -86,22 +82,37 @@ void BasicNinjaEnemyAIComponent::VUpdate(const float dt)
 
             if (distanceFromPlayer < PLAYER_DETECTION_DISTANCE)
             {
-                mState = State::LEAPING_TO_TARGET;
-                SetEntityFacingDirectionCommand(mEntityComponentManager, mThisEntityId, transformComponent.GetTranslation().x > targetTransformComponent.GetTranslation().x ? FacingDirection::RIGHT : FacingDirection::LEFT).VExecute();
-                mMovingRight = animationComponent.GetCurrentFacingDirection() == FacingDirection::RIGHT;
-                
-                SetEntityVelocityAndAnimateCommand(mEntityComponentManager, mThisEntityId, glm::vec3(mMovingRight ? physicsComponent.GetMinVelocity().x * 0.25f : physicsComponent.GetMaxVelocity().x * 0.25f,
-                                                                                                 physicsComponent.GetMaxVelocity().y * 0.8f,
-                                                                                                 physicsComponent.GetVelocity().z)).VExecute();
-                
+                mState = State::PURSUING;
             }
             else
             {
-                const auto targetVelocity = glm::vec3(mMovingRight ? physicsComponent.GetMaxVelocity().x * 0.07f : physicsComponent.GetMinVelocity().x * 0.07f,
-                                                      physicsComponent.GetVelocity().y,
-                                                      physicsComponent.GetVelocity().z);
-
-                SetEntityVelocityAndAnimateCommand(mEntityComponentManager, mThisEntityId, targetVelocity).VExecute();
+                if (mMovingRight)
+                {
+                    SetEntityVelocityAndAnimateCommand(mEntityComponentManager, mThisEntityId, glm::vec3(physicsComponent.GetVelocity().x + physicsComponent.GetMaxVelocity().x * 0.07f, 0.0f, 0.0f)).VExecute();
+                    if (physicsComponent.GetVelocity().x > physicsComponent.GetMaxVelocity().x * 0.07f)
+                    {
+                        SetEntityVelocityCommand(mEntityComponentManager, mThisEntityId, glm::vec3(physicsComponent.GetMaxVelocity().x * 0.07f, 0.0f, 0.0f)).VExecute();
+                    }
+                }
+                else
+                {
+                    SetEntityVelocityAndAnimateCommand(mEntityComponentManager, mThisEntityId, glm::vec3(physicsComponent.GetVelocity().x + physicsComponent.GetMinVelocity().x * 0.07f, 0.0f, 0.0f)).VExecute();
+                    if (physicsComponent.GetVelocity().x < physicsComponent.GetMinVelocity().x * 0.07f)
+                    {
+                        SetEntityVelocityCommand(mEntityComponentManager, mThisEntityId, glm::vec3(physicsComponent.GetMinVelocity().x * 0.07f, 0.0f, 0.0f)).VExecute();
+                    }
+                }
+                
+                if (mDamagePushback >= 0.0f)
+                {
+                    mDamagePushback -= 10.0f * dt;
+                }
+                else
+                {
+                    mDamagePushback = 0.0f;
+                }
+                
+                SetEntityVelocityCommand(mEntityComponentManager, mThisEntityId, physicsComponent.GetVelocity().x + mDamagePushback, 0.0f, 0.0f).VExecute();
                 
                 if (transformComponent.GetTranslation().x >= mInitPosition.x + PATROLLING_MAX_DISTANCE_FROM_INIT_POSITION)
                 {
@@ -112,10 +123,6 @@ void BasicNinjaEnemyAIComponent::VUpdate(const float dt)
                     mMovingRight = true;
                 }
             }
-        } break;
-
-        case State::LEAPING_TO_TARGET:
-        {
         } break;
 
         case State::PURSUING:
@@ -152,20 +159,12 @@ void BasicNinjaEnemyAIComponent::OnAnnouncePlayerEntityId(const IEvent& event)
     mTargetEntityId = static_cast<const AnnouncePlayerEntityIdEvent&>(event).GetPlayerEntityId();
 }
 
-void BasicNinjaEnemyAIComponent::OnEntityCollisionEvent(const IEvent& event)
-{
-    if (mState == State::LEAPING_TO_TARGET)
-    {
-        const auto& collidedEntitiesPair = static_cast<const EntityCollisionEvent&>(event).GetCollidedEntityIds();
-        if (mThisEntityId == collidedEntitiesPair.first && mEntityComponentManager.GetComponent<PhysicsComponent>(collidedEntitiesPair.second).GetBodyType() == PhysicsComponent::BodyType::STATIC)
-        {
-            OnLeapingComplete();
-        }
-    }
-}
-
 void BasicNinjaEnemyAIComponent::OnEntityDamagedEvent(const IEvent& event)
-{    
+{
+    
+    mDamagePushback = 100.0f;
+    
+    
     if (mState == State::DEAD)
     {
         return;
