@@ -160,11 +160,11 @@ void BasicNinjaEnemyAIComponent::OnEntityDamagedEvent(const IEvent& event)
 
     if (animationComponent.GetCurrentFacingDirection() == FacingDirection::LEFT)
     {
-        thisPhysicsComponent.SetPushbackForce(glm::vec3(500.0f, 0.0f, 0.0f));
+        thisPhysicsComponent.SetPushbackForce(glm::vec3(1000.0f, 0.0f, 0.0f));
     }    
     else
     {
-        thisPhysicsComponent.SetPushbackForce(glm::vec3(-500.0f, 0.0f, 0.0f));
+        thisPhysicsComponent.SetPushbackForce(glm::vec3(-1000.0f, 0.0f, 0.0f));
     }
     
     mState = State::PURSUING;

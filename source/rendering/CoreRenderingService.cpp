@@ -143,7 +143,7 @@ void CoreRenderingService::GameLoop(std::function<void(const float)> appUpdateMe
         framesAccumulator++;
         dtAccumulator += dt;
         
-
+#ifndef NDEBUG
         if (dtAccumulator > 1.0f)
         {
             const auto windowTitle = "FPS: " + std::to_string(framesAccumulator) + mFrameStatisticsMessage;
@@ -151,7 +151,7 @@ void CoreRenderingService::GameLoop(std::function<void(const float)> appUpdateMe
             framesAccumulator = 0;
             dtAccumulator = 0.0f;
         }
-
+#endif
         
         // Execute first pass rendering
         GL_CHECK(glBindFramebuffer(GL_FRAMEBUFFER, mFrameBufferId));
@@ -494,7 +494,12 @@ void CoreRenderingService::RenderOutlineRectangles(const std::list<std::pair<glm
 }
 
 void CoreRenderingService::RenderEntityInternal(const EntityId entityId)
-{    
+{
+    if (mEntityComponentManager->HasComponent<AnimationComponent>(entityId) == false)
+    {
+        return;
+    }
+    
     if (mEntityComponentManager->HasComponent<ShaderComponent>(entityId))
     {
         mCurrentShader = mEntityComponentManager->GetComponent<ShaderComponent>(entityId).GetShaderName();
@@ -540,18 +545,15 @@ void CoreRenderingService::RenderEntityInternal(const EntityId entityId)
         GL_CHECK(glUniformMatrix4fv(mShaders[mCurrentShader]->GetUniformNamesToLocations().at(StringId("world")), 1, GL_FALSE, (GLfloat*)&worldMatrix));
     }
 
-    if (mEntityComponentManager->HasComponent<AnimationComponent>(entityId))
+    const auto& animationComponent = mEntityComponentManager->GetComponent<AnimationComponent>(entityId);
+    GL_CHECK(glBindTexture(GL_TEXTURE_2D, animationComponent.GetCurrentFrameResourceId()));
+    
+    if (mCurrentShader.GetString() == "basic")
     {
-        const auto& animationComponent = mEntityComponentManager->GetComponent<AnimationComponent>(entityId);
-        
-        GL_CHECK(glBindTexture(GL_TEXTURE_2D, animationComponent.GetCurrentFrameResourceId()));
-
-        if (mCurrentShader.GetString() == "basic")
-        {
-            const auto textureFlip = animationComponent.GetCurrentFacingDirection() == FacingDirection::LEFT ? 1 : 0;
-            GL_CHECK(glUniform1i(mShaders[mCurrentShader]->GetUniformNamesToLocations().at(StringId("flip_tex_hor")), textureFlip));
-        }
+        const auto textureFlip = animationComponent.GetCurrentFacingDirection() == FacingDirection::LEFT ? 1 : 0;
+        GL_CHECK(glUniform1i(mShaders[mCurrentShader]->GetUniformNamesToLocations().at(StringId("flip_tex_hor")), textureFlip));
     }
+    
 
     GL_CHECK(glDrawArrays(GL_TRIANGLE_FAN, 0, 4));
  

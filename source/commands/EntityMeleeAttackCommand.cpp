@@ -45,29 +45,18 @@ void EntityMeleeAttackCommand::VExecute()
         entityAnimationComponent.PlayAnimation(StringId("melee"), false, true, AnimationComponent::AnimationPriority::HIGH);
     }
     
-
     const auto swingEntityId = mEntityComponentManager.GenerateEntity();
     mEntityComponentManager.AddComponent<ShaderComponent>(swingEntityId, std::make_unique<ShaderComponent>(StringId("basic")));
- 
-    AnimationComponent::AnimationsMap mMeleeAnimations;
-    for (auto i = 0; i < 7; ++i)
-    {
-        const auto& frameTextureResource = mResourceManager.GetResource<TextureResource>("effects/melee_swing/idle/" + std::to_string(i) + ".png");
-        mMeleeAnimations[StringId("idle")].push_back(frameTextureResource.GetGLTextureId());
-    }
-    
-    auto swingAnimationComponent = std::make_unique<AnimationComponent>(mMeleeAnimations, 0.025f);
     mEntityComponentManager.AddComponent<PhysicsComponent>(swingEntityId, std::make_unique<PhysicsComponent>
                                                            (PhysicsComponent::BodyType::DYNAMIC, PhysicsComponent::Hitbox(glm::vec2(0.0f, 0.0f), glm::vec2(80.0f, 200.0f)), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(1000.0f, 1000.0f, 0.0f), glm::vec3(-1000.0f, -1000.0f, 0.0f)));
-    
     auto swingTransformComponent = std::make_unique<TransformComponent>();        
     swingTransformComponent->SetParent(mParentEntityId, glm::vec3(entityAnimationComponent.GetCurrentFacingDirection() == FacingDirection::RIGHT ? 80.0f: -80.0f, 0.0f, 0.0f));    
     swingTransformComponent->GetScale() = glm::vec3(80.0f, 160.0f, 1.0f);
     
     const auto& parentEntityFactionGroup = mEntityComponentManager.GetComponent<FactionComponent>(mParentEntityId).GetFactionGroup();
 
-    mEntityComponentManager.AddComponent<AnimationComponent>(swingEntityId, std::move(swingAnimationComponent));
-    SetFacingDirectionCommand(mEntityComponentManager, swingEntityId, entityAnimationComponent.GetCurrentFacingDirection()).VExecute();
+    //mEntityComponentManager.AddComponent<AnimationComponent>(swingEntityId, std::move(swingAnimationComponent));
+    //SetFacingDirectionCommand(mEntityComponentManager, swingEntityId, entityAnimationComponent.GetCurrentFacingDirection()).VExecute();
     mEntityComponentManager.AddComponent<FactionComponent>(swingEntityId, std::make_unique<FactionComponent>(parentEntityFactionGroup));
     mEntityComponentManager.AddComponent<TransformComponent>(swingEntityId, std::move(swingTransformComponent));
     mEntityComponentManager.AddComponent<IAIComponent>(swingEntityId, std::make_unique<MeleeSwingAIComponent>(mServiceLocator, swingEntityId, 0.10f));
