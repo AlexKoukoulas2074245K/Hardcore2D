@@ -73,7 +73,7 @@ void PhysicsSystem::UpdateEntities(const std::vector<EntityNameIdEntry>& activeE
             // Clamp velocity to min/maxes
             referenceEntityPhysicsComponent.mVelocity = ClampToMax(referenceEntityPhysicsComponent.GetVelocity(), referenceEntityPhysicsComponent.GetMaxVelocity());
             referenceEntityPhysicsComponent.mVelocity = ClampToMin(referenceEntityPhysicsComponent.GetVelocity(), referenceEntityPhysicsComponent.GetMinVelocity());
-            referenceEntityPhysicsComponent.mVelocity += referenceEntityPhysicsComponent.mPushbackForce * dt;
+            referenceEntityPhysicsComponent.mVelocity += referenceEntityPhysicsComponent.mPushbackForce;
 
             // Update horizontal position first
             if (mEntityComponentManager->HasEntityEntry(referenceEntityTransformComponent.GetParent()))
