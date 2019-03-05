@@ -143,7 +143,7 @@ void CoreRenderingService::GameLoop(std::function<void(const float)> appUpdateMe
         framesAccumulator++;
         dtAccumulator += dt;
         
-#ifndef NDEBUG
+
         if (dtAccumulator > 1.0f)
         {
             const auto windowTitle = "FPS: " + std::to_string(framesAccumulator) + mFrameStatisticsMessage;
@@ -151,7 +151,7 @@ void CoreRenderingService::GameLoop(std::function<void(const float)> appUpdateMe
             framesAccumulator = 0;
             dtAccumulator = 0.0f;
         }
-#endif
+
         
         // Execute first pass rendering
         GL_CHECK(glBindFramebuffer(GL_FRAMEBUFFER, mFrameBufferId));

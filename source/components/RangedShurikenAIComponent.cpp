@@ -10,7 +10,7 @@
 #include "../components/EntityComponentManager.h"
 #include "../components/TransformComponent.h"
 #include "../components/PhysicsComponent.h"
-#include "../commands/SetEntityVelocityAndAnimateCommand.h"
+#include "../commands/SetVelocityAndAnimateCommand.h"
 #include "../commands/SetAngularVelocityCommand.h"
 #include "../events/EntityCollisionEvent.h"
 #include "../events/EventCommunicator.h"

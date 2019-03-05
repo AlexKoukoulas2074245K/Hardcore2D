@@ -11,7 +11,7 @@
 #include "../util/Logging.h"
 #include "../ServiceLocator.h"
 #include "../rendering/CoreRenderingService.h"
-#include "../commands/SetEntityVelocityCommand.h"
+#include "../commands/SetVelocityCommand.h"
 #include "../components/EntityComponentManager.h"
 #include "../components/PhysicsComponent.h"
 #include "../components/TransformComponent.h"

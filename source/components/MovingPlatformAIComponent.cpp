@@ -7,7 +7,7 @@
 
 #include "MovingPlatformAIComponent.h"
 #include "../ServiceLocator.h"
-#include "../commands/SetEntityVelocityCommand.h"
+#include "../commands/SetVelocityCommand.h"
 #include "../components/EntityComponentManager.h"
 #include "../components/PhysicsComponent.h"
 #include "../util/MathUtils.h"
@@ -37,11 +37,11 @@ void MovingPlatformAIComponent::VUpdate(const float dt)
     if (mMovingNorthOrEastOrBoth)
     {
         
-        SetEntityVelocityCommand(mEntityComponentManager, mEntityId, physicsComponent.GetMaxVelocity()).VExecute();
+        SetVelocityCommand(mEntityComponentManager, mEntityId, physicsComponent.GetMaxVelocity()).VExecute();
     }
     else
     {
-        SetEntityVelocityCommand(mEntityComponentManager, mEntityId, physicsComponent.GetMinVelocity()).VExecute();
+        SetVelocityCommand(mEntityComponentManager, mEntityId, physicsComponent.GetMinVelocity()).VExecute();
     }                 
 }
 

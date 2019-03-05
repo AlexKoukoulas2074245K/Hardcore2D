@@ -11,7 +11,7 @@
 #include "../events/NewEntityCreatedEvent.h"
 #include "../resources/ResourceManager.h"
 #include "../resources/TextureResource.h"
-#include "../commands/SetEntityFacingDirectionCommand.h"
+#include "../commands/SetFacingDirectionCommand.h"
 #include "../components/MeleeSwingAIComponent.h"
 #include "../components/EntityComponentManager.h"
 #include "../components/FactionComponent.h"
@@ -67,7 +67,7 @@ void EntityMeleeAttackCommand::VExecute()
     const auto& parentEntityFactionGroup = mEntityComponentManager.GetComponent<FactionComponent>(mParentEntityId).GetFactionGroup();
 
     mEntityComponentManager.AddComponent<AnimationComponent>(swingEntityId, std::move(swingAnimationComponent));
-    SetEntityFacingDirectionCommand(mEntityComponentManager, swingEntityId, entityAnimationComponent.GetCurrentFacingDirection()).VExecute();
+    SetFacingDirectionCommand(mEntityComponentManager, swingEntityId, entityAnimationComponent.GetCurrentFacingDirection()).VExecute();
     mEntityComponentManager.AddComponent<FactionComponent>(swingEntityId, std::make_unique<FactionComponent>(parentEntityFactionGroup));
     mEntityComponentManager.AddComponent<TransformComponent>(swingEntityId, std::move(swingTransformComponent));
     mEntityComponentManager.AddComponent<IAIComponent>(swingEntityId, std::make_unique<MeleeSwingAIComponent>(mServiceLocator, swingEntityId, 0.10f));

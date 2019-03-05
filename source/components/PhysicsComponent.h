@@ -14,8 +14,8 @@
 
 class PhysicsComponent final: public IComponent
 {
-    friend class SetEntityVelocityCommand;
-    friend class SetEntityVelocityAndAnimateCommand;
+    friend class SetVelocityCommand;
+    friend class SetVelocityAndAnimateCommand;
     friend class PhysicsSystem;
     friend class SetAngularVelocityCommand;
     

@@ -9,7 +9,7 @@
 #include "../ServiceLocator.h"
 #include "../events/NewEntityCreatedEvent.h"
 #include "../events/EventCommunicator.h"
-#include "../commands/SetEntityVelocityCommand.h"
+#include "../commands/SetVelocityCommand.h"
 #include "../commands/SetAngularVelocityCommand.h"
 #include "../components/EntityComponentManager.h"
 #include "../components/FactionComponent.h"
@@ -69,7 +69,7 @@ void EntityRangedShurikenAttackCommand::VExecute()
     const auto& parentEntityFactionGroup = mEntityComponentManager.GetComponent<FactionComponent>(mParentEntityId).GetFactionGroup();
 
     mEntityComponentManager.AddComponent<PhysicsComponent>(shurikenEntityId, std::move(shurikenPhysicsComponent));
-    SetEntityVelocityCommand(mEntityComponentManager, shurikenEntityId, isFacingRight ? 1000.0f : -1000.0f, 0.0f, 0.0f).VExecute();
+    SetVelocityCommand(mEntityComponentManager, shurikenEntityId, isFacingRight ? 1000.0f : -1000.0f, 0.0f, 0.0f).VExecute();
     SetAngularVelocityCommand(mEntityComponentManager, shurikenEntityId, isFacingRight ? 10.0f: -10.0f).VExecute();
 
     mEntityComponentManager.AddComponent<FactionComponent>(shurikenEntityId, std::make_unique<FactionComponent>(parentEntityFactionGroup));

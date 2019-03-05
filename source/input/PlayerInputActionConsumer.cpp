@@ -10,8 +10,8 @@
 #include "../components/PhysicsComponent.h"
 #include "../components/EntityComponentManager.h"
 #include "../components/AnimationComponent.h"
-#include "../commands/SetEntityVelocityCommand.h"
-#include "../commands/SetEntityVelocityAndAnimateCommand.h"
+#include "../commands/SetVelocityCommand.h"
+#include "../commands/SetVelocityAndAnimateCommand.h"
 #include "../commands/EntityMeleeAttackCommand.h"
 #include "../commands/EntityRangedShurikenAttackCommand.h"
 #include "../events/EventCommunicator.h"
@@ -52,7 +52,7 @@ bool PlayerInputActionConsumer::VConsumeInputAction(const InputAction& inputActi
     
     if (mPlayerKilled)
     {
-        SetEntityVelocityCommand(mEntityComponentManager, mEntityId, glm::vec3(0.0f, 0.0f, 0.0f)).VExecute();
+        SetVelocityCommand(mEntityComponentManager, mEntityId, glm::vec3(0.0f, 0.0f, 0.0f)).VExecute();
         return false;
     }
     
@@ -69,12 +69,12 @@ bool PlayerInputActionConsumer::VConsumeInputAction(const InputAction& inputActi
                 } break;
 				case InputAction::ActionState::CONTINUE:
                 {
-                    SetEntityVelocityAndAnimateCommand(mEntityComponentManager, mEntityId, glm::vec3(-entityPhysicsComponent.GetMaxVelocity().x, entityPhysicsComponent.GetVelocity().y, entityPhysicsComponent.GetVelocity().z)).VExecute();
+                    SetVelocityAndAnimateCommand(mEntityComponentManager, mEntityId, glm::vec3(-entityPhysicsComponent.GetMaxVelocity().x, entityPhysicsComponent.GetVelocity().y, entityPhysicsComponent.GetVelocity().z)).VExecute();
                     return true;
                 } break;
                 case InputAction::ActionState::STOP:
                 {
-                    SetEntityVelocityAndAnimateCommand(mEntityComponentManager, mEntityId, glm::vec3(0.0f, entityPhysicsComponent.GetVelocity().y, entityPhysicsComponent.GetVelocity().z)).VExecute();
+                    SetVelocityAndAnimateCommand(mEntityComponentManager, mEntityId, glm::vec3(0.0f, entityPhysicsComponent.GetVelocity().y, entityPhysicsComponent.GetVelocity().z)).VExecute();
                     return true;
                 } break;
             }            
@@ -89,12 +89,12 @@ bool PlayerInputActionConsumer::VConsumeInputAction(const InputAction& inputActi
                 } break;
                 case InputAction::ActionState::CONTINUE:
                 {
-                    SetEntityVelocityAndAnimateCommand(mEntityComponentManager, mEntityId, glm::vec3(entityPhysicsComponent.GetMaxVelocity().x, entityPhysicsComponent.GetVelocity().y, entityPhysicsComponent.GetVelocity().z)).VExecute();
+                    SetVelocityAndAnimateCommand(mEntityComponentManager, mEntityId, glm::vec3(entityPhysicsComponent.GetMaxVelocity().x, entityPhysicsComponent.GetVelocity().y, entityPhysicsComponent.GetVelocity().z)).VExecute();
                     return true;
                 } break;
                 case InputAction::ActionState::STOP:
                 {
-                    SetEntityVelocityAndAnimateCommand(mEntityComponentManager, mEntityId, glm::vec3(0.0f, entityPhysicsComponent.GetVelocity().y, entityPhysicsComponent.GetVelocity().z)).VExecute();
+                    SetVelocityAndAnimateCommand(mEntityComponentManager, mEntityId, glm::vec3(0.0f, entityPhysicsComponent.GetVelocity().y, entityPhysicsComponent.GetVelocity().z)).VExecute();
                     return true;
                 } break;
             }
@@ -109,7 +109,7 @@ bool PlayerInputActionConsumer::VConsumeInputAction(const InputAction& inputActi
                 {   
                     if (mPlayerBehaviorController.CanJump())
                     {
-                        SetEntityVelocityAndAnimateCommand(mEntityComponentManager, mEntityId, glm::vec3(entityPhysicsComponent.GetVelocity().x, entityPhysicsComponent.GetMaxVelocity().y, entityPhysicsComponent.GetVelocity().z)).VExecute();
+                        SetVelocityAndAnimateCommand(mEntityComponentManager, mEntityId, glm::vec3(entityPhysicsComponent.GetVelocity().x, entityPhysicsComponent.GetMaxVelocity().y, entityPhysicsComponent.GetVelocity().z)).VExecute();
                         mEventCommunicator->DispatchEvent(std::make_unique<PlayerJumpEvent>());
                     }
                     

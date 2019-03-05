@@ -1,12 +1,12 @@
 //
-//  SetEntityFacingDirectionCommand.h
+//  SetFacingDirectionCommand.h
 //  Hardcore2D
 //
 //  Created by Alex Koukoulas on 31/01/2019.
 //
 
-#ifndef SetEntityFacingDirectionCommand_h
-#define SetEntityFacingDirectionCommand_h
+#ifndef SetFacingDirectionCommand_h
+#define SetFacingDirectionCommand_h
 
 #include "ICommand.h"
 #include "../game/GameTypeTraits.h"
@@ -14,10 +14,10 @@
 
 class EntityComponentManager;
 
-class SetEntityFacingDirectionCommand final: public ICommand
+class SetFacingDirectionCommand final: public ICommand
 {
 public:
-    SetEntityFacingDirectionCommand(EntityComponentManager&, const EntityId, const FacingDirection);
+    SetFacingDirectionCommand(EntityComponentManager&, const EntityId, const FacingDirection);
     void VExecute() override;
     
 private:
@@ -27,4 +27,4 @@ private:
     const FacingDirection mFacingDirection;
 };
 
-#endif /* SetEntityFacingDirectionCommand_h */
+#endif /* SetFacingDirectionCommand_h */

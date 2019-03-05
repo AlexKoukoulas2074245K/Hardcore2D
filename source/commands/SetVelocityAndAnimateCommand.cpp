@@ -1,19 +1,19 @@
 //
-//  SetEntityVelocityAndAnimateCommand.cpp
+//  SetVelocityAndAnimateCommand.cpp
 //  Hardcore2D
 //
 //  Created by Alex Koukoulas on 21/01/2019.
 //
 
-#include "SetEntityVelocityAndAnimateCommand.h"
-#include "../commands/SetEntityFacingDirectionCommand.h"
+#include "SetVelocityAndAnimateCommand.h"
+#include "../commands/SetFacingDirectionCommand.h"
 #include "../components/EntityComponentManager.h"
 #include "../components/PhysicsComponent.h"
 #include "../components/AnimationComponent.h"
 #include "../game/GameConstants.h"
 #include "../util/MathUtils.h"
 
-SetEntityVelocityAndAnimateCommand::SetEntityVelocityAndAnimateCommand(EntityComponentManager& entityComponentManager, const EntityId entityId, const glm::vec3& velocity)
+SetVelocityAndAnimateCommand::SetVelocityAndAnimateCommand(EntityComponentManager& entityComponentManager, const EntityId entityId, const glm::vec3& velocity)
     : mEntityComponentManager(entityComponentManager)
     , mEntityId(entityId)
     , mVelocity(velocity)
@@ -21,7 +21,7 @@ SetEntityVelocityAndAnimateCommand::SetEntityVelocityAndAnimateCommand(EntityCom
     
 }
 
-void SetEntityVelocityAndAnimateCommand::VExecute()
+void SetVelocityAndAnimateCommand::VExecute()
 {
     if (mEntityComponentManager.HasComponent<AnimationComponent>(mEntityId))
     {
@@ -36,14 +36,14 @@ void SetEntityVelocityAndAnimateCommand::VExecute()
             {
                 if (animationComponent.GetCurrentFacingDirection() != FacingDirection::LEFT)
                 {
-                    SetEntityFacingDirectionCommand(mEntityComponentManager, mEntityId, FacingDirection::LEFT).VExecute();
+                    SetFacingDirectionCommand(mEntityComponentManager, mEntityId, FacingDirection::LEFT).VExecute();
                 }
             }
             else
             {
                 if (animationComponent.GetCurrentFacingDirection() != FacingDirection::RIGHT)
                 {
-                    SetEntityFacingDirectionCommand(mEntityComponentManager, mEntityId, FacingDirection::RIGHT).VExecute();
+                    SetFacingDirectionCommand(mEntityComponentManager, mEntityId, FacingDirection::RIGHT).VExecute();
                 }
             }
             

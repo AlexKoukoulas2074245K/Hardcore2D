@@ -9,7 +9,7 @@
 #include "../../ServiceLocator.h"
 #include "../../events/EventCommunicator.h"
 #include "../../events/NewEntityCreatedEvent.h"
-#include "../../commands/SetEntityVelocityCommand.h"
+#include "../../commands/SetVelocityCommand.h"
 #include "../../components/EntityComponentManager.h"
 #include "../../components/ShaderComponent.h"
 #include "../../components/AnimationComponent.h"
@@ -68,7 +68,7 @@ void EffectsManager::CreateBloodSpurtEffect(const glm::vec3& effectOrigin)
         const auto randomVelocityY = RandomFloat(0.0f, 200.0f);
                 
         mEntityComponentManager->AddComponent<PhysicsComponent>(bloodDropEntityId, std::move(bloodDropPhysicsComponent));
-        SetEntityVelocityCommand(*mEntityComponentManager, bloodDropEntityId, glm::vec3(randomVelocityX, randomVelocityY, 0.0f)).VExecute();
+        SetVelocityCommand(*mEntityComponentManager, bloodDropEntityId, glm::vec3(randomVelocityX, randomVelocityY, 0.0f)).VExecute();
 
         auto bloodDropTransformComponent = std::make_unique<TransformComponent>();
         bloodDropTransformComponent->GetTranslation().x = effectOrigin.x;

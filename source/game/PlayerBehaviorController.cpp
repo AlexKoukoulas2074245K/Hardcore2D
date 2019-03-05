@@ -15,7 +15,7 @@
 #include "../events/PlayerJumpEvent.h"
 #include "../events/EntityCollisionEvent.h"
 #include "../events/PlayerKilledEvent.h"
-#include "../commands/SetEntityVelocityAndAnimateCommand.h"
+#include "../commands/SetVelocityAndAnimateCommand.h"
 #include "../components/AnimationComponent.h"
 #include "../components/PhysicsComponent.h"
 #include "../components/HealthComponent.h"

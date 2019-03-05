@@ -7,7 +7,7 @@
 
 #include "BloodDropAIComponent.h"
 #include "../ServiceLocator.h"
-#include "../commands/SetEntityVelocityCommand.h"
+#include "../commands/SetVelocityCommand.h"
 #include "../components/EntityComponentManager.h"
 #include "../components/PhysicsComponent.h"
 #include "../components/TransformComponent.h"
@@ -30,7 +30,7 @@ BloodDropAIComponent::BloodDropAIComponent(const ServiceLocator& serviceLocator,
         
         if (collidedEntitiesPair.first == mEntityId)
         {            
-            SetEntityVelocityCommand(mEntityComponentManager, mEntityId, glm::vec3(0.0f, 0.0f, 0.0f)).VExecute();
+            SetVelocityCommand(mEntityComponentManager, mEntityId, glm::vec3(0.0f, 0.0f, 0.0f)).VExecute();
         }
     });
 }
