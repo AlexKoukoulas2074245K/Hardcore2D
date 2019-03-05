@@ -61,8 +61,7 @@ void BasicNinjaEnemyAIComponent::VUpdate(const float dt)
     auto& physicsComponent = mEntityComponentManager.GetComponent<PhysicsComponent>(mThisEntityId);
     const auto& targetTransformComponent = mEntityComponentManager.GetComponent<TransformComponent>(mTargetEntityId);
     const auto& transformComponent = mEntityComponentManager.GetComponent<TransformComponent>(mThisEntityId);       
-    const auto currentFacingDirection = mEntityComponentManager.GetComponent<AnimationComponent>(mThisEntityId).GetCurrentFacingDirection();
-    physicsComponent.SetPushbackForce(glm::vec3(mDamagePushback, 0.0f, 0.0f));
+    const auto currentFacingDirection = mEntityComponentManager.GetComponent<AnimationComponent>(mThisEntityId).GetCurrentFacingDirection();    
     
     switch (mState)
     {
@@ -104,13 +103,15 @@ void BasicNinjaEnemyAIComponent::VUpdate(const float dt)
         case State::PURSUING:
         {            
             const auto distanceFromPlayer = Abs(transformComponent.GetTranslation().x - targetTransformComponent.GetTranslation().x);
+            
+            // Increase velocity caps
             physicsComponent.SetMaxVelocity(glm::vec3(200.0f, 720.0f, 0.0f));
-            physicsComponent.SetMinVelocity(glm::vec3(-200.0f, -720.0f, 0.0f));
+            physicsComponent.SetMinVelocity(glm::vec3(-200.0f, -720.0f, 0.0f));                        
 
             if (distanceFromPlayer < PURSUING_MELEE_ATTACK_DISTANCE)
-            {                
-                
+            {                          
                 SetEntityVelocityAndAnimateCommand(mEntityComponentManager, mThisEntityId, glm::vec3(0.0f, physicsComponent.GetVelocity().y, physicsComponent.GetVelocity().z)).VExecute();                                                   
+
                 mTimer -= dt;
                 if (mTimer <= 0.0f)
                 {
@@ -124,6 +125,9 @@ void BasicNinjaEnemyAIComponent::VUpdate(const float dt)
                 SetEntityVelocityAndAnimateCommand(mEntityComponentManager, mThisEntityId, glm::vec3(physicsComponent.GetVelocity().x + targetXVelocity, physicsComponent.GetVelocity().y, physicsComponent.GetVelocity().z)).VExecute();
             }
             
+            const auto isOtherEntityToTheLeftOfThisOne = targetTransformComponent.GetTranslation().x < transformComponent.GetTranslation().x;
+            SetEntityFacingDirectionCommand(mEntityComponentManager, mThisEntityId, isOtherEntityToTheLeftOfThisOne ? FacingDirection::LEFT : FacingDirection::RIGHT).VExecute();
+
         } break;
             
         case State::DEAD:
@@ -131,13 +135,6 @@ void BasicNinjaEnemyAIComponent::VUpdate(const float dt)
             SetEntityVelocityCommand(mEntityComponentManager, mThisEntityId, glm::vec3(0.0f, 0.0f, 0.0f)).VExecute();
         } break;
     }
-
-
-    if (Abs(mDamagePushback) > 0.1f)
-    {
-        mEntityComponentManager.GetComponent<AnimationComponent>(mThisEntityId).SetFacingDirection(currentFacingDirection);
-        mDamagePushback = 0.0f;
-    }    
 }
 
 void BasicNinjaEnemyAIComponent::OnAnnouncePlayerEntityId(const IEvent& event)
@@ -158,27 +155,17 @@ void BasicNinjaEnemyAIComponent::OnEntityDamagedEvent(const IEvent& event)
     {
         return;
     }
-
-    const auto& otherTransformComponent = mEntityComponentManager.GetComponent<TransformComponent>(actualEvent.GetDamageSenderEntityId());
-    const auto& thisTransformComponent = mEntityComponentManager.GetComponent<TransformComponent>(mThisEntityId);
-    const auto isOtherEntityToTheLeftOfThisOne = otherTransformComponent.GetTranslation().x < thisTransformComponent.GetTranslation().x;
     
+    auto& thisPhysicsComponent = mEntityComponentManager.GetComponent<PhysicsComponent>(mThisEntityId);    
     const auto& animationComponent = mEntityComponentManager.GetComponent<AnimationComponent>(mThisEntityId);
-    if (isOtherEntityToTheLeftOfThisOne && animationComponent.GetCurrentFacingDirection() == FacingDirection::LEFT)
+
+    if (animationComponent.GetCurrentFacingDirection() == FacingDirection::LEFT)
     {
-        mDamagePushback = 7000.0f;
-    }
-    else if (isOtherEntityToTheLeftOfThisOne && animationComponent.GetCurrentFacingDirection() == FacingDirection::RIGHT)
+        thisPhysicsComponent.SetPushbackForce(glm::vec3(500.0f, 0.0f, 0.0f));
+    }    
+    else
     {
-        mDamagePushback = 1200.0f;
-    }
-    else if (isOtherEntityToTheLeftOfThisOne == false && animationComponent.GetCurrentFacingDirection() == FacingDirection::LEFT)
-    {
-        mDamagePushback = -1200.0f;
-    }
-    else if (isOtherEntityToTheLeftOfThisOne == false && animationComponent.GetCurrentFacingDirection() == FacingDirection::RIGHT)
-    {
-        mDamagePushback = -7000.0f;
+        thisPhysicsComponent.SetPushbackForce(glm::vec3(-500.0f, 0.0f, 0.0f));
     }
     
     mState = State::PURSUING;

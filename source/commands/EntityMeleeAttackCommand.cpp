@@ -60,24 +60,14 @@ void EntityMeleeAttackCommand::VExecute()
     mEntityComponentManager.AddComponent<PhysicsComponent>(swingEntityId, std::make_unique<PhysicsComponent>
                                                            (PhysicsComponent::BodyType::DYNAMIC, PhysicsComponent::Hitbox(glm::vec2(0.0f, 0.0f), glm::vec2(80.0f, 200.0f)), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(1000.0f, 1000.0f, 0.0f), glm::vec3(-1000.0f, -1000.0f, 0.0f)));
     
-    auto swingTransformComponent = std::make_unique<TransformComponent>();
-    
-    if (entityAnimationComponent.GetCurrentFacingDirection() == FacingDirection::RIGHT)
-    {
-        swingTransformComponent->SetParent(mParentEntityId, glm::vec3(80.0f, 0.0f, 0.0f));
-        swingAnimationComponent->SetFacingDirection(FacingDirection::RIGHT);
-    }
-    else
-    {
-        swingTransformComponent->SetParent(mParentEntityId, glm::vec3(-80.0f, 0.0f, 0.0f));
-        swingAnimationComponent->SetFacingDirection(FacingDirection::LEFT);
-    }
-    
+    auto swingTransformComponent = std::make_unique<TransformComponent>();        
+    swingTransformComponent->SetParent(mParentEntityId, glm::vec3(entityAnimationComponent.GetCurrentFacingDirection() == FacingDirection::RIGHT ? 80.0f: -80.0f, 0.0f, 0.0f));    
     swingTransformComponent->GetScale() = glm::vec3(80.0f, 160.0f, 1.0f);
     
     const auto& parentEntityFactionGroup = mEntityComponentManager.GetComponent<FactionComponent>(mParentEntityId).GetFactionGroup();
 
     mEntityComponentManager.AddComponent<AnimationComponent>(swingEntityId, std::move(swingAnimationComponent));
+    SetEntityFacingDirectionCommand(mEntityComponentManager, swingEntityId, entityAnimationComponent.GetCurrentFacingDirection()).VExecute();
     mEntityComponentManager.AddComponent<FactionComponent>(swingEntityId, std::make_unique<FactionComponent>(parentEntityFactionGroup));
     mEntityComponentManager.AddComponent<TransformComponent>(swingEntityId, std::move(swingTransformComponent));
     mEntityComponentManager.AddComponent<IAIComponent>(swingEntityId, std::make_unique<MeleeSwingAIComponent>(mServiceLocator, swingEntityId, 0.10f));

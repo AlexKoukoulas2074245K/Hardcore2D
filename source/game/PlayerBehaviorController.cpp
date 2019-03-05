@@ -83,7 +83,7 @@ void PlayerBehaviorController::Update(const float dt)
     
     if (mJumpsAvailable < mJumpCount)
     {
-        mEntityComponentManager->GetComponent<AnimationComponent>(mPlayerEntityId).PlayAnimation(StringId("jumping"));
+        mEntityComponentManager->GetComponent<AnimationComponent>(mPlayerEntityId).PlayAnimation(StringId("jumping"), false, false);
     }
 }
 
@@ -167,7 +167,7 @@ void PlayerBehaviorController::RegisterEventCallbacks()
 
         // If just landed play idle
         if (mJumpsAvailable != mJumpCount)
-        {
+        {            
             mEntityComponentManager->GetComponent<AnimationComponent>(mPlayerEntityId).PlayAnimation(StringId("idle"));
         }
         

@@ -74,6 +74,7 @@ void PhysicsSystem::UpdateEntities(const std::vector<EntityNameIdEntry>& activeE
             referenceEntityPhysicsComponent.mVelocity = ClampToMax(referenceEntityPhysicsComponent.GetVelocity(), referenceEntityPhysicsComponent.GetMaxVelocity());
             referenceEntityPhysicsComponent.mVelocity = ClampToMin(referenceEntityPhysicsComponent.GetVelocity(), referenceEntityPhysicsComponent.GetMinVelocity());
             referenceEntityPhysicsComponent.mVelocity += referenceEntityPhysicsComponent.mPushbackForce;
+            referenceEntityPhysicsComponent.mPushbackForce = glm::vec3(0.0f, 0.0f, 0.0f);
 
             // Update horizontal position first
             if (mEntityComponentManager->HasEntityEntry(referenceEntityTransformComponent.GetParent()))

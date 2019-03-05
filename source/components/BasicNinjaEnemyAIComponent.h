@@ -40,8 +40,7 @@ private:
     static const float PURSUING_MELEE_ATTACK_DISTANCE;
     static const float MELEE_ATTACK_COOLDOWN;
 
-    void OnAnnouncePlayerEntityId(const IEvent&);
-    void OnEntityCollisionEvent(const IEvent&);
+    void OnAnnouncePlayerEntityId(const IEvent&);    
     void OnEntityDamagedEvent(const IEvent&);
     
     const ServiceLocator& mServiceLocator;
@@ -53,8 +52,7 @@ private:
     EntityId mTargetEntityId;
     State mState;
     bool mMovingRight;
-    glm::vec3 mInitPosition;
-    float mDamagePushback;
+    glm::vec3 mInitPosition;        
     float mTimer;    
 };
 
