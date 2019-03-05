@@ -82,8 +82,18 @@ std::unique_ptr<Level> LevelFactory::CreateLevel(const std::string& levelPath)
         const auto entityName = entity["name"].get<std::string>();
         const auto entityId = entityComponentManager.GenerateEntity();
         
-        const auto entityFaction = (StringStartsWith(entityName, "player") || StringStartsWith(entityName, "ally-")) ? FactionGroup::ALLIES : FactionGroup::ENEMIES;
-        entityComponentManager.AddComponent<FactionComponent>(entityId, std::make_unique<FactionComponent>(entityFaction));
+        if (StringStartsWith(entityName, "player") || StringStartsWith(entityName, "ally-"))
+        {
+            entityComponentManager.AddComponent<FactionComponent>(entityId, std::make_unique<FactionComponent>(FactionGroup::ALLIES));
+        }
+        else if (StringStartsWith(entityName, "enemy"))
+        {
+            entityComponentManager.AddComponent<FactionComponent>(entityId, std::make_unique<FactionComponent>(FactionGroup::ENEMIES));
+        }
+        else
+        {
+            entityComponentManager.AddComponent<FactionComponent>(entityId, std::make_unique<FactionComponent>(FactionGroup::AMBIENT));
+        }
 
         for (auto& componentEntry: entity["components"].items())
         {

@@ -43,6 +43,7 @@ bool ResourceManager::VInitialize()
     
     LoadResource("debug/debug_square_pink.png");
     LoadResource("debug/debug_square_cyan.png");
+    LoadResource("debug/debug_square_green.png");
     LoadResource("debug/debug_outline_square.png");
     
     return true;

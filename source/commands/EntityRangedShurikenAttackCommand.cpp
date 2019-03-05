@@ -36,8 +36,9 @@ EntityRangedShurikenAttackCommand::EntityRangedShurikenAttackCommand(const Servi
 
 void EntityRangedShurikenAttackCommand::VExecute()
 {
-    const auto& entityTransformComponent = mEntityComponentManager.GetComponent<TransformComponent>(mParentEntityId);
-    
+    const auto& entityTransformComponent = mEntityComponentManager.GetComponent<TransformComponent>(mParentEntityId);    
+    mEntityComponentManager.GetComponent<AnimationComponent>(mParentEntityId).PlayAnimation(StringId("ranged"), false, true, AnimationComponent::AnimationPriority::HIGH);
+
     const auto shurikenEntityId = mEntityComponentManager.GenerateEntity();
     mEntityComponentManager.AddComponent<ShaderComponent>(shurikenEntityId, std::make_unique<ShaderComponent>(StringId("basic")));
         

@@ -10,6 +10,7 @@
 #include "../commands/SetEntityVelocityCommand.h"
 #include "../components/EntityComponentManager.h"
 #include "../components/PhysicsComponent.h"
+#include "../util/MathUtils.h"
 
 const float MovingPlatformAIComponent::MOVEMENT_DURATION_PER_DIRECTION = 4.0f;
 
@@ -17,7 +18,7 @@ MovingPlatformAIComponent::MovingPlatformAIComponent(const ServiceLocator& servi
     : mEntityComponentManager(serviceLocator.ResolveService<EntityComponentManager>())
     , mEntityId(entityId)    
     , mMovingNorthOrEastOrBoth(true)
-    , mTimer(0.0f)
+    , mTimer(RandomFloat(0.0f, MOVEMENT_DURATION_PER_DIRECTION))
 {
     
 }

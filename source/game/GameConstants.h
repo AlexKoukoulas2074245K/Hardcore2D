@@ -17,7 +17,7 @@ enum class FacingDirection
 
 enum class FactionGroup
 {
-    ALLIES, ENEMIES
+    ALLIES, ENEMIES, AMBIENT
 };
 
 #endif /* GameConstants_h */
