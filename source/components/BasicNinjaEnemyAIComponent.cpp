@@ -61,7 +61,6 @@ void BasicNinjaEnemyAIComponent::VUpdate(const float dt)
     auto& physicsComponent = mEntityComponentManager.GetComponent<PhysicsComponent>(mThisEntityId);
     const auto& targetTransformComponent = mEntityComponentManager.GetComponent<TransformComponent>(mTargetEntityId);
     const auto& transformComponent = mEntityComponentManager.GetComponent<TransformComponent>(mThisEntityId);       
-    const auto currentFacingDirection = mEntityComponentManager.GetComponent<AnimationComponent>(mThisEntityId).GetCurrentFacingDirection();    
     
     switch (mState)
     {
