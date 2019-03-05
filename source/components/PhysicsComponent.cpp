@@ -16,6 +16,7 @@ PhysicsComponent::PhysicsComponent(const BodyType bodyType, const Hitbox& hitBox
     , mGravity(0.0f, 0.0f, 0.0f)
     , mMaxVelocity(FLT_MAX, FLT_MAX, 0.0f)
     , mMinVelocity(-FLT_MAX, -FLT_MAX, 0.0f)
+    , mPushbackForce(0.0f, 0.0f, 0.0f)
     , mAngularVelocity(0.0f)
 {
     
@@ -28,9 +29,10 @@ PhysicsComponent::PhysicsComponent(const BodyType bodyType, const Hitbox& hitBox
     , mGravity(gravity)
     , mMaxVelocity(maxVelocity)
     , mMinVelocity(minVelocity)
+    , mPushbackForce(0.0f, 0.0f, 0.0f)
     , mAngularVelocity(0.0f)
 {
-    
+        
 }
 
 void PhysicsComponent::SetBodyType(const BodyType bodyType)
@@ -41,6 +43,21 @@ void PhysicsComponent::SetBodyType(const BodyType bodyType)
 void PhysicsComponent::ScaleHitBoxBy(const float scaleMultiplier)
 {
     mHitBox.mDimensions *= scaleMultiplier;
+}
+
+void PhysicsComponent::SetPushbackForce(const glm::vec3& pushbackForce)
+{
+    mPushbackForce = pushbackForce;
+}
+
+void PhysicsComponent::SetMaxVelocity(const glm::vec3& maxVelocity)
+{
+    mMaxVelocity = maxVelocity;
+}
+
+void PhysicsComponent::SetMinVelocity(const glm::vec3& minVelocity)
+{
+    mMinVelocity = minVelocity;
 }
 
 const PhysicsComponent::Hitbox& PhysicsComponent::GetHitBox() const

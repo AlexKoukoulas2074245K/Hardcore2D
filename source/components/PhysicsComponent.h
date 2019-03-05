@@ -40,9 +40,12 @@ public:
     PhysicsComponent(const BodyType, const Hitbox&);
     PhysicsComponent(const BodyType, const Hitbox&, const glm::vec3& gravity, const glm::vec3& maxVelocity, const glm::vec3& minVelocity);
     
+    void SetPushbackForce(const glm::vec3& pushbackForce);
     void SetBodyType(const BodyType);
     void ScaleHitBoxBy(const float scaleMultiplier);
-    
+    void SetMaxVelocity(const glm::vec3& maxVelocity);
+    void SetMinVelocity(const glm::vec3& minVelocity);
+
     const glm::vec3& GetVelocity() const;
     const glm::vec3& GetGravity() const;
     const glm::vec3& GetMaxVelocity() const;
@@ -58,6 +61,7 @@ private:
     glm::vec3 mGravity;
     glm::vec3 mMaxVelocity;
     glm::vec3 mMinVelocity;
+    glm::vec3 mPushbackForce;
     float mAngularVelocity;
 };
 
