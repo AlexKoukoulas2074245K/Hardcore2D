@@ -500,51 +500,22 @@ void CoreRenderingService::RenderEntityInternal(const EntityId entityId)
         return;
     }
     
-    if (mEntityComponentManager->HasComponent<ShaderComponent>(entityId))
+    
+    mCurrentShader = mEntityComponentManager->GetComponent<ShaderComponent>(entityId).GetShaderName();
+    GL_CHECK(glUseProgram(mShaders[mCurrentShader]->GetShaderId()));
+    
+    const auto& shaderUniforms = mShaders[mCurrentShader]->GetUniformNamesToLocations();
+    
+    if (shaderUniforms.count(StringId("view")) != 0)
     {
-        mCurrentShader = mEntityComponentManager->GetComponent<ShaderComponent>(entityId).GetShaderName();
-        GL_CHECK(glUseProgram(mShaders[mCurrentShader]->GetShaderId()));
-
-        const auto& shaderUniforms = mShaders[mCurrentShader]->GetUniformNamesToLocations();
-
-        if (shaderUniforms.count(StringId("view")) != 0)
-        {
-            GL_CHECK(glUniformMatrix4fv(mShaders[mCurrentShader]->GetUniformNamesToLocations().at(StringId("view")), 1, GL_FALSE, (GLfloat*)&(mAttachedCamera->GetViewMatrix())));
-        }
-
-        if (shaderUniforms.count(StringId("proj")) != 0)
-        {
-            GL_CHECK(glUniformMatrix4fv(mShaders[mCurrentShader]->GetUniformNamesToLocations().at(StringId("proj")), 1, GL_FALSE, (GLfloat*)&mProjectionMatrix));
-        }
+        GL_CHECK(glUniformMatrix4fv(mShaders[mCurrentShader]->GetUniformNamesToLocations().at(StringId("view")), 1, GL_FALSE, (GLfloat*)&(mAttachedCamera->GetViewMatrix())));
     }
-
-    if (mEntityComponentManager->HasComponent<TransformComponent>(entityId))
+    
+    if (shaderUniforms.count(StringId("proj")) != 0)
     {
-        const auto& transformComponent = mEntityComponentManager->GetComponent<TransformComponent>(entityId);
-        
-        // Camera view rect rejection test (with backgrounds excluded from test)
-        if (mCurrentShader != StringId("background") && mAttachedCamera->IsTransformInsideViewRect(transformComponent) == false)
-        {
-            return;
-        }
-
-        glm::mat4 translationMatrix(1.0f);
-        translationMatrix = glm::translate(translationMatrix, transformComponent.GetTranslation());
-
-        glm::mat4 rotationMatrix(1.0f);
-        glm::vec3 rotation = transformComponent.GetRotation();
-        rotationMatrix = glm::rotate(rotationMatrix, rotation.x, glm::vec3(1.0f, 0.0f, 0.0f));
-        rotationMatrix = glm::rotate(rotationMatrix, rotation.y, glm::vec3(0.0f, 1.0f, 0.0f));
-        rotationMatrix = glm::rotate(rotationMatrix, rotation.z, glm::vec3(0.0f, 0.0f, 1.0f));
-
-        glm::mat4 scaleMatrix(1.0f);
-        scaleMatrix = glm::scale(scaleMatrix, transformComponent.GetScale() * 0.5f);
-
-        glm::mat4 worldMatrix(1.0f);
-        worldMatrix = translationMatrix * rotationMatrix * scaleMatrix;
-        GL_CHECK(glUniformMatrix4fv(mShaders[mCurrentShader]->GetUniformNamesToLocations().at(StringId("world")), 1, GL_FALSE, (GLfloat*)&worldMatrix));
+        GL_CHECK(glUniformMatrix4fv(mShaders[mCurrentShader]->GetUniformNamesToLocations().at(StringId("proj")), 1, GL_FALSE, (GLfloat*)&mProjectionMatrix));
     }
-
+    
     const auto& animationComponent = mEntityComponentManager->GetComponent<AnimationComponent>(entityId);
     GL_CHECK(glBindTexture(GL_TEXTURE_2D, animationComponent.GetCurrentFrameResourceId()));
     
@@ -554,7 +525,39 @@ void CoreRenderingService::RenderEntityInternal(const EntityId entityId)
         GL_CHECK(glUniform1i(mShaders[mCurrentShader]->GetUniformNamesToLocations().at(StringId("flip_tex_hor")), textureFlip));
     }
     
-
+    const auto& transformComponent = mEntityComponentManager->GetComponent<TransformComponent>(entityId);
+    
+    // Camera view rect rejection test (with backgrounds excluded from test)
+    if (mCurrentShader != StringId("background") && mAttachedCamera->IsTransformInsideViewRect(transformComponent) == false)
+    {
+        return;
+    }
+    
+    glm::mat4 translationMatrix(1.0f);
+    translationMatrix = glm::translate(translationMatrix, transformComponent.GetTranslation());
+    
+    auto animationDisplacement = animationComponent.GetSpecificAnimationDisplacement(animationComponent.GetCurrentAnimation());
+    if (animationComponent.GetCurrentFacingDirection() == FacingDirection::LEFT)
+    {
+        animationDisplacement.x = -animationDisplacement.x;
+    }
+    
+    translationMatrix = glm::translate(translationMatrix, glm::vec3(animationDisplacement.x, animationDisplacement.y, 0.0f));
+    
+    glm::mat4 rotationMatrix(1.0f);
+    glm::vec3 rotation = transformComponent.GetRotation();
+    rotationMatrix = glm::rotate(rotationMatrix, rotation.x, glm::vec3(1.0f, 0.0f, 0.0f));
+    rotationMatrix = glm::rotate(rotationMatrix, rotation.y, glm::vec3(0.0f, 1.0f, 0.0f));
+    rotationMatrix = glm::rotate(rotationMatrix, rotation.z, glm::vec3(0.0f, 0.0f, 1.0f));
+    
+    glm::mat4 scaleMatrix(1.0f);
+    scaleMatrix = glm::scale(scaleMatrix, transformComponent.GetScale() * 0.5f);
+    
+    glm::mat4 worldMatrix(1.0f);
+    worldMatrix = translationMatrix * rotationMatrix * scaleMatrix;
+    GL_CHECK(glUniformMatrix4fv(mShaders[mCurrentShader]->GetUniformNamesToLocations().at(StringId("world")), 1, GL_FALSE, (GLfloat*)&worldMatrix));
+    
+    
     GL_CHECK(glDrawArrays(GL_TRIANGLE_FAN, 0, 4));
  
 

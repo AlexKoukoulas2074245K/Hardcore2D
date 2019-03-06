@@ -12,6 +12,7 @@
 #include "input/PlayerInputActionConsumer.h"
 #include "input/DebugInputActionConsumer.h"
 #include "commands/SetVelocityAndAnimateCommand.h"
+#include "components/AnimationComponent.h"
 #include "components/EntityComponentManager.h"
 #include "components/IAIComponent.h"
 #include "events/EventCommunicator.h"
@@ -197,6 +198,9 @@ bool App::InitializeGame()
     {
         mShouldRestartLevelOnPlayerDeath = true;
     });
-                                                                  
+    
+    // Temp place. Add animation displacements
+    mEntityComponentManager->GetComponent<AnimationComponent>(mLevel->GetEntityIdFromName(StringId("player"))).SetSpecificAnimationDisplacement(StringId("ranged"), glm::vec2(100.0f, 20.0f));
+    mEntityComponentManager->GetComponent<AnimationComponent>(mLevel->GetEntityIdFromName(StringId("player"))).SetSpecificAnimationDisplacement(StringId("melee"), glm::vec2(13.0f, 8.0f));
     return true;
 }

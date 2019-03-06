@@ -27,6 +27,7 @@ AnimationComponent::AnimationComponent(const std::string& relativeEntityAnimatio
     , mAnimationTimer(0.0f)
 {
     CreateAnimationsMapFromRelativeEntityAnimationsDirectory(relativeEntityAnimationsDirectoryPath);
+    InitializeAnimationsDisplacements();
 }
 
 AnimationComponent::AnimationComponent(const AnimationsMap& userSuppliedAnimations, const float animationFrameDuration)
@@ -44,6 +45,7 @@ AnimationComponent::AnimationComponent(const AnimationsMap& userSuppliedAnimatio
     , mAnimationTimer(0.0f)
 {
     PlayAnimation(StringId("idle"), true);
+    InitializeAnimationsDisplacements();
 }
 
 const std::string& AnimationComponent::GetRootAnimationsPath() const
@@ -74,6 +76,11 @@ float AnimationComponent::GetAnimationFrameDuration() const
 float AnimationComponent::GetAnimationTimer() const
 {
     return mAnimationTimer;
+}
+
+const glm::vec2& AnimationComponent::GetSpecificAnimationDisplacement(const StringId animation) const
+{
+    return mAnimationsDisplacements.at(animation);
 }
 
 bool AnimationComponent::HasAnimation(const StringId animation)
@@ -118,6 +125,11 @@ void AnimationComponent::PlayAnimation(const StringId newAnimation, const bool l
 void AnimationComponent::SetAnimationTimer(const float animationTimer)
 {
     mAnimationTimer = animationTimer;
+}
+
+void AnimationComponent::SetSpecificAnimationDisplacement(const StringId animation, const glm::vec2& displacement)
+{
+    mAnimationsDisplacements[animation] = displacement;
 }
 
 void AnimationComponent::AdvanceFrame()
@@ -187,3 +199,10 @@ void AnimationComponent::CreateAnimationsMapFromRelativeEntityAnimationsDirector
     PlayAnimation(StringId("idle"), true);
 }
 
+void AnimationComponent::InitializeAnimationsDisplacements()
+{
+    for (const auto animation: mAnimations)
+    {
+        mAnimationsDisplacements[animation.first] = glm::vec2(0.0f, 0.0f);
+    }
+}
