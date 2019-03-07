@@ -64,6 +64,7 @@ CoreRenderingService::CoreRenderingService(const ServiceLocator& serviceLocator)
     , mRunning(false)
     , mRenderableDimensions(0.0f, 0.0f)
     , mSwirlAngle(0.0f)
+    , mBlurIntensity(0.0f)
     , mVAO(0U)
     , mVBO(0U)
     , mFrameBufferId(0U)
@@ -150,6 +151,11 @@ void CoreRenderingService::GameLoop(std::function<void(const float)> appUpdateMe
             SDL_SetWindowTitle(mSdlWindow, windowTitle.c_str());
             framesAccumulator = 0;
             dtAccumulator = 0.0f;
+            mBlurIntensity += 0.1f;
+            if (mBlurIntensity >= 1.0f)
+            {
+                mBlurIntensity = 1.0f;
+            }
         }
 #endif
         
@@ -303,8 +309,10 @@ bool CoreRenderingService::InitializeContext()
     GL_CHECK(glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, static_cast<GLsizei>(mRenderableDimensions.x), static_cast<GLsizei>(mRenderableDimensions.y), 0, GL_RGB, GL_UNSIGNED_BYTE, 0));
     GL_CHECK(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST));
     GL_CHECK(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST));
+    GL_CHECK(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE));
+    GL_CHECK(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE));
     GL_CHECK(glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, mScreenRenderingTexture, 0));
-
+    
     if (GL_NO_CHECK(glCheckFramebufferStatus(GL_FRAMEBUFFER)) != GL_FRAMEBUFFER_COMPLETE)
     {
         assert(false);
@@ -565,11 +573,10 @@ void CoreRenderingService::RenderEntityInternal(const EntityId entityId)
         mEntityComponentManager->HasComponent<PhysicsComponent>(entityId) &&
         mEntityComponentManager->HasComponent<FactionComponent>(entityId))
     {                
-        const auto& physicsComponent = mEntityComponentManager->GetComponent<PhysicsComponent>(entityId);
-        const auto& transformComponent = mEntityComponentManager->GetComponent<TransformComponent>(entityId);
+        const auto& physicsComponent = mEntityComponentManager->GetComponent<PhysicsComponent>(entityId);        
         const auto& factionComponent = mEntityComponentManager->GetComponent<FactionComponent>(entityId);
         
-        glm::mat4 worldMatrix(1.0f);
+        worldMatrix = glm::mat4(1.0f);
         const auto entityTranslation = transformComponent.GetTranslation();
         const auto entityRotation = transformComponent.GetRotation();
         
@@ -598,6 +605,7 @@ void CoreRenderingService::PreparePostProcessingPass()
     const auto& currentShaderUniforms = mShaders[mCurrentShader]->GetUniformNamesToLocations();
     GL_CHECK(glUniform1f(currentShaderUniforms.at(StringId("swirlRadius")), 300.0f));
     GL_CHECK(glUniform1f(currentShaderUniforms.at(StringId("swirlAngle")), mSwirlAngle));
+    GL_CHECK(glUniform1f(currentShaderUniforms.at(StringId("blurIntensity")), mBlurIntensity));
     
     glm::vec2 swirlCenter(mRenderableDimensions.x * 0.5f, mRenderableDimensions.y * 0.5f);
     GL_CHECK(glUniform2fv(currentShaderUniforms.at(StringId("swirlCenter")), 1, (GLfloat*)&swirlCenter));

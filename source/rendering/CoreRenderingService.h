@@ -84,7 +84,8 @@ private:
     std::string mFrameStatisticsMessage;
     
     float mSwirlAngle;
-    
+    float mBlurIntensity;
+
     const Camera* mAttachedCamera;
     
     GLuint mVAO, mVBO, mFrameBufferId, mScreenRenderingTexture;

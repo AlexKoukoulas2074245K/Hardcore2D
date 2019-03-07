@@ -7,6 +7,7 @@ in vec2 uv_frag;
 uniform sampler2D tex;
 uniform float swirlRadius;
 uniform float swirlAngle;
+uniform float blurIntensity;
 uniform vec2 swirlCenter;
 uniform vec2 swirlDimensions;
 
@@ -14,6 +15,7 @@ uniform vec2 swirlDimensions;
 // gl_FragColor is deprecated
 out vec4 frag_color;
 
+// Swirl post-processing effect
 vec4 swirlEffect()
 {
     vec2 tc = uv_frag * swirlDimensions;
@@ -32,7 +34,37 @@ vec4 swirlEffect()
     return vec4(texture(tex, tc/swirlDimensions).rgb, 1.);
 }
 
+// Box blur post-processing effect
+float mapBlurIntensityToPixelContribution(float intensity)
+{	
+	return 0.111111 + 0.888888 * (1.0 - intensity);
+}
+
+vec4 blurEffect(vec4 frag_color)
+{
+	float hor_offset = 0.0015625;
+	float ver_offset = 0.00277777777;
+		
+	float mainPixelContribution = mapBlurIntensityToPixelContribution(blurIntensity);
+	float otherPixelsContribution = (1.0 - mainPixelContribution)/8.0;
+	
+	vec4 blurredColor = 
+		frag_color * mainPixelContribution +
+		vec4(texture(tex, vec2(uv_frag.x - hor_offset, uv_frag.y - ver_offset)).rgb, 1.) * otherPixelsContribution +
+		vec4(texture(tex, vec2(uv_frag.x             , uv_frag.y - ver_offset)).rgb, 1.) * otherPixelsContribution +
+		vec4(texture(tex, vec2(uv_frag.x + hor_offset, uv_frag.y - ver_offset)).rgb, 1.) * otherPixelsContribution +
+		vec4(texture(tex, vec2(uv_frag.x - hor_offset, uv_frag.y             )).rgb, 1.) * otherPixelsContribution +
+		vec4(texture(tex, vec2(uv_frag.x + hor_offset, uv_frag.y             )).rgb, 1.) * otherPixelsContribution +
+		vec4(texture(tex, vec2(uv_frag.x - hor_offset, uv_frag.y + ver_offset)).rgb, 1.) * otherPixelsContribution +
+		vec4(texture(tex, vec2(uv_frag.x             , uv_frag.y + ver_offset)).rgb, 1.) * otherPixelsContribution +
+		vec4(texture(tex, vec2(uv_frag.x + hor_offset, uv_frag.y + ver_offset)).rgb, 1.) * otherPixelsContribution;
+		
+	return blurredColor;
+	
+}
+
 void main()
 {
     frag_color = swirlEffect();
+	
 }
