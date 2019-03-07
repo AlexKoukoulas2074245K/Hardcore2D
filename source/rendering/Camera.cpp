@@ -46,7 +46,7 @@ Camera::Camera(const ServiceLocator& serviceLocator,
     mEventCommunicator->RegisterEventCallback<CamerShakeEvent>([this](const IEvent&)
     {
         mIsShaking = true;
-        mShakeRadius = SHAKE_RADIUS;
+        mShakeRadius = event.shake_radius;
         mPreShakeTranslation = mTranslation;
         const auto mInitShakeRandomAngle = RandomFloat(0.0f, 2.0f * PI);
         const auto offset = glm::vec2(Sinf(mInitShakeRandomAngle) * mShakeRadius, Cosf(mInitShakeRandomAngle) * mShakeRadius);

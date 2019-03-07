@@ -147,15 +147,10 @@ void CoreRenderingService::GameLoop(std::function<void(const float)> appUpdateMe
 #ifndef NDEBUG
         if (dtAccumulator > 1.0f)
         {
-            const auto windowTitle = "FPS: " + std::to_string(framesAccumulator) + mFrameStatisticsMessage;
+            const auto windowTitle = "FPS: " + std::to_string(framesAccumulator) + mFrameStatisticsMessage + " " + std::to_string(mBlurIntensity);
             SDL_SetWindowTitle(mSdlWindow, windowTitle.c_str());
             framesAccumulator = 0;
             dtAccumulator = 0.0f;
-            mBlurIntensity += 0.1f;
-            if (mBlurIntensity >= 1.0f)
-            {
-                mBlurIntensity = 1.0f;
-            }
         }
 #endif
         
