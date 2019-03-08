@@ -208,6 +208,11 @@ void CoreRenderingService::SetFrameStatisticsMessage(const std::string& frameSta
     mFrameStatisticsMessage = frameStatisticsMessage;
 }
 
+void CoreRenderingService::SetBlurIntensity(const float blurIntensity)
+{
+    mBlurIntensity = blurIntensity;
+}
+
 const glm::vec2& CoreRenderingService::GetRenderableDimensions() const
 {
     return mRenderableDimensions;

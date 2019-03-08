@@ -46,7 +46,7 @@ public:
     void RenderEntities(const std::vector<EntityNameIdEntry>& entityIds);
     void RenderEntities(const std::vector<EntityId>& entityIds);
     void SetFrameStatisticsMessage(const std::string& frameStatisticsMessage);
-    void UpdateCamera(const EntityId focusedEntity, const float dt);
+    void SetBlurIntensity(const float blurIntensity);
     
     const glm::vec2& GetRenderableDimensions() const;
     float GetAspectRatio() const;

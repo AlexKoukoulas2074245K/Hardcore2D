@@ -9,6 +9,8 @@
 #include "../../ServiceLocator.h"
 #include "../../events/EventCommunicator.h"
 #include "../../events/NewEntityCreatedEvent.h"
+#include "../../events/PlayerKilledEvent.h"
+#include "../../events/PlayerRespawnEvent.h"
 #include "../../commands/SetVelocityCommand.h"
 #include "../../components/EntityComponentManager.h"
 #include "../../components/ShaderComponent.h"
@@ -19,10 +21,16 @@
 #include "../../components/FactionComponent.h"
 #include "../../resources/ResourceManager.h"
 #include "../../resources/TextureResource.h"
+#include "../CoreRenderingService.h"
 #include "../../util/MathUtils.h"
+
+const float EffectsManager::MAX_BLUR_UPON_DEATH = 20.0f;
+const float EffectsManager::BLUR_SPEED_UPON_DEATH = 2.0f;
 
 EffectsManager::EffectsManager(const ServiceLocator& serviceLocator)
     : mServiceLocator(serviceLocator)
+    , mBlurIntensity(0.0f)
+    , mIsBlurIntensifying(false)
 {
 }
 
@@ -34,9 +42,28 @@ bool EffectsManager::VInitialize()
 {
     mEntityComponentManager = &(mServiceLocator.ResolveService<EntityComponentManager>());
     mResourceManager = &(mServiceLocator.ResolveService<ResourceManager>());
+    mCoreRenderingService = &(mServiceLocator.ResolveService<CoreRenderingService>());
     mEventCommunicator = mServiceLocator.ResolveService<EventCommunicationService>().CreateEventCommunicator();
     
+    RegisterEventCallbacks();
+
     return true;
+}
+
+void EffectsManager::Update(const float dt)
+{
+    mBlurIntensity += (mIsBlurIntensifying ? BLUR_SPEED_UPON_DEATH : -10.0f * BLUR_SPEED_UPON_DEATH) * dt;
+
+    if (mBlurIntensity <= 0.0f)
+    {
+        mBlurIntensity = 0.0f;
+    }
+    else if (mBlurIntensity >= MAX_BLUR_UPON_DEATH)
+    {
+        mBlurIntensity = MAX_BLUR_UPON_DEATH;
+    }
+
+    mCoreRenderingService->SetBlurIntensity(mBlurIntensity);
 }
 
 void EffectsManager::PlayEffect(const glm::vec3& effectOrigin, const EffectType effectType)
@@ -80,4 +107,17 @@ void EffectsManager::CreateBloodSpurtEffect(const glm::vec3& effectOrigin)
         mEntityComponentManager->AddComponent<IAIComponent>(bloodDropEntityId, std::make_unique<BloodDropAIComponent>(mServiceLocator, bloodDropEntityId, 0.5f));
         mEventCommunicator->DispatchEvent(std::make_unique<NewEntityCreatedEvent>(EntityNameIdEntry(StringId("blood_drop"), bloodDropEntityId)));
     }
+}
+
+void EffectsManager::RegisterEventCallbacks()
+{
+    mEventCommunicator->RegisterEventCallback<PlayerKilledEvent>([this](const IEvent&) 
+    {
+        mIsBlurIntensifying = true;
+    });
+
+    mEventCommunicator->RegisterEventCallback<PlayerRespawnEvent>([this](const IEvent&) 
+    {
+        mIsBlurIntensifying = false;
+    });
 }

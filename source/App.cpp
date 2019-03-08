@@ -75,6 +75,7 @@ void App::Update(const float dt)
     mAIService->UpdateAIComponents(mLevel->GetAllActiveEntities(), dt);
     mDamageSystem->Update(mLevel->GetAllActiveEntities(), dt);
     mUIElementManager->Update(dt);
+    mEffectsManager->Update(dt);
     mAnimationService->UpdateAnimations(mLevel->GetAllActiveEntities(), dt);
     mCamera->Update(mLevel->GetEntityIdFromName(StringId("player")), dt);
     

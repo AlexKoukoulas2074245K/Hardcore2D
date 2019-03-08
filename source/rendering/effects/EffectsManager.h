@@ -17,6 +17,7 @@ class ServiceLocator;
 class EntityComponentManager;
 class EventCommunicator;
 class ResourceManager;
+class CoreRenderingService;
 
 class EffectsManager final : public IService
 {
@@ -30,18 +31,26 @@ public:
 
     ~EffectsManager();
 
-    bool VInitialize() override;    
+    bool VInitialize() override;
+    void Update(const float dt);
     void PlayEffect(const glm::vec3& effectOrigin, const EffectType effectType);
 
 private:
+    static const float MAX_BLUR_UPON_DEATH;
+    static const float BLUR_SPEED_UPON_DEATH;
+
     EffectsManager(const ServiceLocator&);
     void CreateBloodSpurtEffect(const glm::vec3& effectOrigin);
+    void RegisterEventCallbacks();
 
     const ServiceLocator& mServiceLocator;    
     EntityComponentManager* mEntityComponentManager;
     ResourceManager* mResourceManager;
+    CoreRenderingService* mCoreRenderingService;
 
     std::unique_ptr<EventCommunicator> mEventCommunicator;
+    float mBlurIntensity;
+    bool mIsBlurIntensifying;
 };
 
 #endif /* EffectsManager_h */
