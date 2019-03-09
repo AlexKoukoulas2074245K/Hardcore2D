@@ -15,6 +15,7 @@
 #include "../events/EntityCollisionEvent.h"
 #include "../events/PlayerKilledEvent.h"
 #include "../events/PlayerFlameBreathAttackEvent.h"
+#include "../events/FlameBreathFinishedEvent.h"
 #include "../commands/SetVelocityAndAnimateCommand.h"
 #include "../components/AnimationComponent.h"
 #include "../components/PhysicsComponent.h"
@@ -40,6 +41,7 @@ PlayerBehaviorController::PlayerBehaviorController(const ServiceLocator& service
     , mIsMeleeAttackReady(true)
     , mIsFlameBreathAttackReady(true)
     , mPlayerKilled(false)
+    , mIsCastingFlameBreath(false)
     , mMeleeAttackCooldownTimer(DEFAULT_PLAYER_MELEE_ATTACK_RECHARGE_DURATION, [this](){ OnMeleeAttackCooldownTimerTick(); })
     , mFlameBreathCooldownTimer(DEFAULT_PLAYER_FLAME_BREATH_ATTACK_COOLDOWN_DURATION, [this](){ OnFlameBreathCooldownTimerTick(); })
     , mBloodDropAnimationTimer(BLOOD_DROP_DEATH_ANIMATION_COOLDOWN, [this](){ OnBloodDropAnimationTimerTick(); })
@@ -67,6 +69,16 @@ void PlayerBehaviorController::Update(const float dt)
     {
         mEntityComponentManager->GetComponent<AnimationComponent>(mPlayerEntityId).PlayAnimation(StringId("jumping"), false, false);
     }
+}
+
+bool PlayerBehaviorController::IsOnAir() const
+{
+    return mJumpsAvailable < mJumpCount;
+}
+
+bool PlayerBehaviorController::IsImmobilized() const
+{
+    return mIsCastingFlameBreath == true;
 }
 
 bool PlayerBehaviorController::CanJump() const
@@ -102,6 +114,7 @@ void PlayerBehaviorController::RegisterEventCallbacks()
     {
         mIsFlameBreathAttackReady = false;
         mFlameBreathCooldownTimer.Reset();
+        mIsCastingFlameBreath = true;
     });
     
     mEventCommunicator->RegisterEventCallback<PlayerJumpEvent>([this](const IEvent&)
@@ -182,6 +195,14 @@ void PlayerBehaviorController::RegisterEventCallbacks()
         {
             mEntityComponentManager->RemoveComponent<HealthComponent>(mPlayerEntityId);
         });
+    });
+    
+    mEventCommunicator->RegisterEventCallback<FlameBreathFinishedEvent>([this](const IEvent& event)
+    {
+        if (static_cast<const FlameBreathFinishedEvent&>(event).GetCasterEntityId() == mPlayerEntityId)
+        {
+            mIsCastingFlameBreath = false;
+        }
     });
 }
 

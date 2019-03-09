@@ -180,14 +180,14 @@ std::unique_ptr<Level> LevelFactory::CreateLevel(const std::string& levelPath)
             if (entityComponentManager.HasComponent<PhysicsComponent>(entityId))
             {
                 auto& physicsComponent = entityComponentManager.GetComponent<PhysicsComponent>(entityId);
-                physicsComponent.ScaleHitBoxBy(entityName == "player" ? CHARACTER_SCALE_MULTIPLIER : 2.5f);
+                physicsComponent.ScaleHitBoxBy(CHARACTER_SCALE_MULTIPLIER);
             }
 
             if (entityComponentManager.HasComponent<TransformComponent>(entityId))
             {
                 auto& transformComponent = entityComponentManager.GetComponent<TransformComponent>(entityId);
-                transformComponent.GetScale().x *= entityName == "player" ? CHARACTER_SCALE_MULTIPLIER : 2.5f;
-                transformComponent.GetScale().y *= entityName == "player" ? CHARACTER_SCALE_MULTIPLIER : 2.5f;
+                transformComponent.GetScale().x *= CHARACTER_SCALE_MULTIPLIER;
+                transformComponent.GetScale().y *= CHARACTER_SCALE_MULTIPLIER;
             }
         }
 

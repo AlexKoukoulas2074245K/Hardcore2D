@@ -1316,10 +1316,10 @@
 			"components":
 			{
 				"BasicNinjaEnemyAIComponent": {},
-				"AnimationComponent": { "path": "characters/heavy_samurai", "animationFrameDuration": 0.03 },
+				"AnimationComponent": { "path": "characters/gareth_enemy", "animationFrameDuration": 0.08 },
 				"DamageComponent": { "damage": 8.0, "canDamageSameEntityMultipleTimes": true },
 				"HealthComponent": { "health": 75.0, "invincibilityDuration": 0.0 },
-				"PhysicsComponent": { "bodyType": "DYNAMIC", "hitBox": { "centerPoint": [0.0, 0.0], "dimensions": [20.0, 30.0] }, "gravity": [0.0, -1680.0, 0.0], "maxVelocity": [100.0, 720.0, 0.0], "minVelocity": [-100.0, -720.0, 0.0] },
+				"PhysicsComponent": { "bodyType": "DYNAMIC", "hitBox": { "centerPoint": [0.0, 0.0], "dimensions": [20.0, 20.0] }, "gravity": [0.0, -1680.0, 0.0], "maxVelocity": [100.0, 720.0, 0.0], "minVelocity": [-100.0, -720.0, 0.0] },
 				"ShaderComponent": { "shaderName": "basic" },
 				"TransformComponent": { "translation": [2200.0, 520.0, 1.0], "rotation": [0.0, 0.0, 0.0], "scale": [80.0, 80.0, 1.0] }
 			}

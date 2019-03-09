@@ -164,6 +164,7 @@ bool App::InitializeGame()
     // Parse Level
     LevelFactory levelFactory(*mServiceLocator);
     mLevel = levelFactory.CreateLevel("editornew.json");
+    mServiceLocator->RegisterService<Level>(mLevel.get());
     
     // Initialize camera
     mCamera = std::make_unique<Camera>(*mServiceLocator, mCoreRenderingService->GetRenderableDimensions(), mLevel->GetHorizontalBounds(), mLevel->GetVerticalBounds());
@@ -202,8 +203,9 @@ bool App::InitializeGame()
     });
     
     // Temp place. Add animation displacements
-    mEntityComponentManager->GetComponent<AnimationComponent>(mLevel->GetEntityIdFromName(StringId("player"))).SetSpecificAnimationDisplacement(StringId("flamebreath"), glm::vec2(100.0f, 20.0f));
+    mEntityComponentManager->GetComponent<AnimationComponent>(mLevel->GetEntityIdFromName(StringId("player"))).SetSpecificAnimationDisplacement(StringId("flame_breath"), glm::vec2(100.0f, 20.0f));
     mEntityComponentManager->GetComponent<AnimationComponent>(mLevel->GetEntityIdFromName(StringId("player"))).SetSpecificAnimationDisplacement(StringId("melee"), glm::vec2(13.0f, 8.0f));
-    mEntityComponentManager->GetComponent<AnimationComponent>(mLevel->GetEntityIdFromName(StringId("player"))).SetSpecificAnimationFrameDuration(StringId("flamebreath"), 0.06f);
+    mEntityComponentManager->GetComponent<AnimationComponent>(mLevel->GetEntityIdFromName(StringId("player"))).SetSpecificAnimationFrameDuration(StringId("flame_breath"), 0.06f);
+    
     return true;
 }

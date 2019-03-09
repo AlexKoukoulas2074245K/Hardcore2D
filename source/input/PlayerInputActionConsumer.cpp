@@ -50,7 +50,7 @@ bool PlayerInputActionConsumer::VConsumeInputAction(const InputAction& inputActi
         return true;
     }
     
-    if (mPlayerKilled)
+    if (mPlayerKilled || mPlayerBehaviorController.IsImmobilized())
     {
         SetVelocityCommand(mEntityComponentManager, mEntityId, glm::vec3(0.0f, 0.0f, 0.0f)).VExecute();
         return false;
@@ -142,7 +142,7 @@ bool PlayerInputActionConsumer::VConsumeInputAction(const InputAction& inputActi
             {
                 case InputAction::ActionState::START:
                 {
-                    if (mPlayerBehaviorController.IsFlameBreathAttackAvailable())
+                    if (mPlayerBehaviorController.IsFlameBreathAttackAvailable() && mPlayerBehaviorController.IsOnAir() == false)
                     {
                         FlameBreathAttackCommand(mServiceLocator, mEntityId).VExecute();
                         mEventCommunicator->DispatchEvent(std::make_unique<PlayerFlameBreathAttackEvent>());

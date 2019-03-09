@@ -142,7 +142,14 @@ inline int RandomInt(const int min = 0, const int max = RAND_MAX)
         hasInitializedSeed = true;
     }
     
-    return (std::rand() % (max - min + 1)) + min;
+    if (max == RAND_MAX)
+    {
+        return (std::rand() % (max - min)) + min;
+    }
+    else
+    {
+        return (std::rand() % (max - min + 1)) + min;
+    }
 }
 
 inline float RandomFloat(const float min = 0.0f, const float max = 1.0f)

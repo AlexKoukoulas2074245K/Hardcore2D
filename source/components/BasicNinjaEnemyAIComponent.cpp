@@ -24,6 +24,7 @@
 #include "../commands/SetFacingDirectionCommand.h"
 #include "../events/EntityDamagedEvent.h"
 #include "../events/EntityDestroyedEvent.h"
+#include "../game/Level.h"
 #include "../rendering/effects/EffectsManager.h"
 
 const float BasicNinjaEnemyAIComponent::PLAYER_DETECTION_DISTANCE = 300.0f;
@@ -177,7 +178,11 @@ void BasicNinjaEnemyAIComponent::OnEntityDamagedEvent(const IEvent& event)
     mState = State::DEAD;
     
     SetVelocityAndAnimateCommand(mEntityComponentManager, mThisEntityId, glm::vec3(0.0f, 0.0f, 0.0f)).VExecute();
-    mEntityComponentManager.GetComponent<AnimationComponent>(mThisEntityId).PlayAnimation(StringId("death"), false, false, AnimationComponent::AnimationPriority::HIGH, [this]() 
+    
+    const auto& level = mServiceLocator.ResolveService<Level>();
+    
+    const auto diedFromFlameBreath = level.GetEntityNameFromId(actualEvent.GetDamageSenderEntityId()).GetString() == "flame_breath";
+    mEntityComponentManager.GetComponent<AnimationComponent>(mThisEntityId).PlayAnimation(StringId(diedFromFlameBreath ? "flame_death" : "death"), false, false, AnimationComponent::AnimationPriority::HIGH, [this]()
     {        
         mEntityComponentManager.RemoveComponent<DamageComponent>(mThisEntityId);
         mEntityComponentManager.RemoveComponent<HealthComponent>(mThisEntityId);

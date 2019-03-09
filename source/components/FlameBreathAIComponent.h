@@ -21,7 +21,7 @@ class EntityComponentManager;
 class FlameBreathAIComponent final: public IAIComponent
 {
 public:
-    FlameBreathAIComponent(const ServiceLocator&, const EntityId flameBreathEntityId, const float timeToLive);
+    FlameBreathAIComponent(const ServiceLocator&, const EntityId parentEntityId, const EntityId flameBreathEntityId, const float timeToLive);
     
     void VUpdate(const float dt) override;
     
@@ -29,6 +29,7 @@ private:
     void OnTimeToLiveTimerTick();
     
     const EntityComponentManager& mEntityComponentManager;
+    const EntityId mParentEntityId;
     const EntityId mEntityId;
     Timer mTimeToLiveTimer;
     std::unique_ptr<EventCommunicator> mEventCommunicator;

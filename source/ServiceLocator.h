@@ -35,7 +35,6 @@ public:
     inline void RegisterService(IService* service)
     {
         const auto serviceTypeKey = GetTypeHash<ServiceType>();
-        assert(mServices.count(serviceTypeKey) == 0);
         mServices[serviceTypeKey] = service;
     }
     

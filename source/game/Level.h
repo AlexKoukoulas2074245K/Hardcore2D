@@ -10,6 +10,7 @@
 
 #include "../util/StringId.h"
 #include "../util/MathUtils.h"
+#include "../IService.h"
 #include "GameTypeTraits.h"
 
 #include <unordered_set>
@@ -20,7 +21,7 @@ class ServiceLocator;
 class EntityComponentManager;
 class EventCommunicator;
 
-class Level final
+class Level final: public IService
 {
     friend class LevelFactory;
 public:        

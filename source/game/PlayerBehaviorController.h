@@ -26,6 +26,8 @@ public:
     bool VInitialize() override;
     void Update(const float dt);
     
+    bool IsOnAir() const;
+    bool IsImmobilized() const;
     bool CanJump() const;
     bool IsMeleeAttackAvailable() const;
     bool IsFlameBreathAttackAvailable() const;
@@ -57,6 +59,7 @@ private:
     bool mIsMeleeAttackReady;
     bool mIsFlameBreathAttackReady;
     bool mPlayerKilled;
+    bool mIsCastingFlameBreath;
     
     Timer mMeleeAttackCooldownTimer;
     Timer mFlameBreathCooldownTimer;

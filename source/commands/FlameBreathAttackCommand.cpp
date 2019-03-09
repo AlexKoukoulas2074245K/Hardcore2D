@@ -31,20 +31,21 @@ FlameBreathAttackCommand::FlameBreathAttackCommand(const ServiceLocator& service
 void FlameBreathAttackCommand::VExecute()
 {
     const auto& parentAnimationComponent = mEntityComponentManager.GetComponent<AnimationComponent>(mParentEntityId);
-    mEntityComponentManager.GetComponent<AnimationComponent>(mParentEntityId).PlayAnimation(StringId("flamebreath"), false, true, AnimationComponent::AnimationPriority::HIGH);
+    mEntityComponentManager.GetComponent<AnimationComponent>(mParentEntityId).PlayAnimation(StringId("flame_breath"), false, true, AnimationComponent::AnimationPriority::HIGH);
     
     const auto flameBreathEntityId = mEntityComponentManager.GenerateEntity();
     mEntityComponentManager.AddComponent<PhysicsComponent>(flameBreathEntityId, std::make_unique<PhysicsComponent>
-                                                           (PhysicsComponent::BodyType::DYNAMIC, PhysicsComponent::Hitbox(glm::vec2(0.0f, 0.0f), glm::vec2(80.0f, 200.0f)), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(1000.0f, 1000.0f, 0.0f), glm::vec3(-1000.0f, -1000.0f, 0.0f)));
+                                                           (PhysicsComponent::BodyType::DYNAMIC, PhysicsComponent::Hitbox(glm::vec2(0.0f, 0.0f), glm::vec2(230.0f, 100.0f)), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(1000.0f, 1000.0f, 0.0f), glm::vec3(-1000.0f, -1000.0f, 0.0f)));
+    
     auto flameBreathTrasformComponent = std::make_unique<TransformComponent>();
-    flameBreathTrasformComponent->SetParent(mParentEntityId, glm::vec3(parentAnimationComponent.GetCurrentFacingDirection() == FacingDirection::RIGHT ? 80.0f: -80.0f, 0.0f, 0.0f));
+    flameBreathTrasformComponent->SetParent(mParentEntityId, glm::vec3(parentAnimationComponent.GetCurrentFacingDirection() == FacingDirection::RIGHT ? 140.0f: -140.0f, 20.0f, 0.0f));
     flameBreathTrasformComponent->GetScale() = glm::vec3(80.0f, 160.0f, 1.0f);
     
     const auto& parentEntityFactionGroup = mEntityComponentManager.GetComponent<FactionComponent>(mParentEntityId).GetFactionGroup();
     
     mEntityComponentManager.AddComponent<FactionComponent>(flameBreathEntityId, std::make_unique<FactionComponent>(parentEntityFactionGroup));
     mEntityComponentManager.AddComponent<TransformComponent>(flameBreathEntityId, std::move(flameBreathTrasformComponent));
-    mEntityComponentManager.AddComponent<IAIComponent>(flameBreathEntityId, std::make_unique<FlameBreathAIComponent>(mServiceLocator, flameBreathEntityId, 0.5f));
+    mEntityComponentManager.AddComponent<IAIComponent>(flameBreathEntityId, std::make_unique<FlameBreathAIComponent>(mServiceLocator, mParentEntityId, flameBreathEntityId, 0.5f));
     mEntityComponentManager.AddComponent<DamageComponent>(flameBreathEntityId, std::make_unique<DamageComponent>(mParentEntityId, 50.0f, false));
     mEventCommunicator->DispatchEvent(std::make_unique<NewEntityCreatedEvent>(EntityNameIdEntry(StringId("flame_breath"), flameBreathEntityId)));
 }

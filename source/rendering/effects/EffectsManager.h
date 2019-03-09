@@ -54,7 +54,7 @@ private:
     std::unique_ptr<EventCommunicator> mEventCommunicator;
     float mSceneBlurIntensity;
     bool mIsBlurIntensifying;
-    EntityId mdeathQuoteEntityId;
+    EntityId mDeathQuoteEntityId;
 };
 
 #endif /* EffectsManager_h */
