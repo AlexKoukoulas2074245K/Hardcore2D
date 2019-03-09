@@ -43,6 +43,10 @@ BasicNinjaEnemyAIComponent::BasicNinjaEnemyAIComponent(const ServiceLocator& ser
     , mInitializationTimer(RandomFloat(0.0f, 1.0f), [this](){ OnInitializationTimerTick(); })
     , mAttackTimer(MELEE_ATTACK_COOLDOWN, [this](){ OnAttackTimerTick(); })
 {
+    mEntityComponentManager.GetComponent<AnimationComponent>(mThisEntityId).SetSpecificAnimationDisplacement(StringId("flame_breath"), glm::vec2(100.0f, 20.0f));
+    mEntityComponentManager.GetComponent<AnimationComponent>(mThisEntityId).SetSpecificAnimationDisplacement(StringId("melee"), glm::vec2(13.0f, 8.0f));
+    mEntityComponentManager.GetComponent<AnimationComponent>(mThisEntityId).SetSpecificAnimationFrameDuration(StringId("flame_breath"), 0.06f);
+    
     mEventCommunicator->RegisterEventCallback<AnnouncePlayerEntityIdEvent>([this](const IEvent& event) 
     {
         OnAnnouncePlayerEntityId(event);

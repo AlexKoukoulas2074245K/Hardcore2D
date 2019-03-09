@@ -9,6 +9,7 @@
 #include "Level.h"
 #include "../components/EntityComponentManager.h"
 #include "../components/BasicNinjaEnemyAIComponent.h"
+#include "../components/CastingFlameBreathOnlyEnemyAIComponent.h"
 #include "../components/MovingPlatformAIComponent.h"
 #include "../components/AnimationComponent.h"
 #include "../components/DamageComponent.h"
@@ -105,6 +106,10 @@ std::unique_ptr<Level> LevelFactory::CreateLevel(const std::string& levelPath)
                 if (componentName == "BasicNinjaEnemyAIComponent")
                 {
                     entityComponentManager.AddComponent<IAIComponent>(entityId, std::make_unique<BasicNinjaEnemyAIComponent>(mServiceLocator, entityId));
+                }
+                else if (componentName == "CastingFlameBreathOnlyEnemyAIComponent")
+                {
+                    entityComponentManager.AddComponent<IAIComponent>(entityId, std::make_unique<CastingFlameBreathOnlyEnemyAIComponent>(mServiceLocator, entityId));
                 }
                 else if (componentName == "MovingPlatformAIComponent")
                 {
