@@ -55,8 +55,6 @@ void EntityMeleeAttackCommand::VExecute()
     
     const auto& parentEntityFactionGroup = mEntityComponentManager.GetComponent<FactionComponent>(mParentEntityId).GetFactionGroup();
 
-    //mEntityComponentManager.AddComponent<AnimationComponent>(swingEntityId, std::move(swingAnimationComponent));
-    //SetFacingDirectionCommand(mEntityComponentManager, swingEntityId, entityAnimationComponent.GetCurrentFacingDirection()).VExecute();
     mEntityComponentManager.AddComponent<FactionComponent>(swingEntityId, std::make_unique<FactionComponent>(parentEntityFactionGroup));
     mEntityComponentManager.AddComponent<TransformComponent>(swingEntityId, std::move(swingTransformComponent));
     mEntityComponentManager.AddComponent<IAIComponent>(swingEntityId, std::make_unique<MeleeSwingAIComponent>(mServiceLocator, swingEntityId, 0.10f));

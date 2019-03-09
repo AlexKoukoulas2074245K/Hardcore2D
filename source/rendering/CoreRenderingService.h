@@ -64,6 +64,7 @@ private:
 
     void RenderOutlineRectangles(const std::list<std::pair<glm::vec2, glm::vec2>>& rectangles);
     void RenderEntityInternal(const EntityId);
+    void RenderPhysicsDebugRectangles(const std::vector<EntityNameIdEntry>& entities);
     void PreparePostProcessingPass();
     void RenderEntitiesUnaffectedByPostProcessing();
     

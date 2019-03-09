@@ -221,6 +221,8 @@ void CoreRenderingService::RenderEntities(const std::vector<EntityNameIdEntry>& 
             }
         }
     }
+    
+    RenderPhysicsDebugRectangles(entityIds);
 }
 
 void CoreRenderingService::SetFrameStatisticsMessage(const std::string& frameStatisticsMessage)
@@ -586,34 +588,40 @@ void CoreRenderingService::RenderEntityInternal(const EntityId entityId)
     
     
     GL_CHECK(glDrawArrays(GL_TRIANGLE_FAN, 0, 4));
- 
+}
 
-    if (mDebugHitboxDisplay &&
-        mEntityComponentManager->HasComponent<PhysicsComponent>(entityId) &&
-        mEntityComponentManager->HasComponent<FactionComponent>(entityId))
-    {                
-        const auto& physicsComponent = mEntityComponentManager->GetComponent<PhysicsComponent>(entityId);        
-        const auto& factionComponent = mEntityComponentManager->GetComponent<FactionComponent>(entityId);
-        
-        worldMatrix = glm::mat4(1.0f);
-        const auto entityTranslation = transformComponent.GetTranslation();
-        const auto entityRotation = transformComponent.GetRotation();
-        
-        worldMatrix = glm::translate(worldMatrix, glm::vec3(entityTranslation.x + physicsComponent.GetHitBox().mCenterPoint.x, entityTranslation.y + physicsComponent.GetHitBox().mCenterPoint.y, 1.0f));
-        worldMatrix = glm::rotate(worldMatrix, entityRotation.x, glm::vec3(1.0f, 0.0f, 0.0f));
-        worldMatrix = glm::rotate(worldMatrix, entityRotation.y, glm::vec3(0.0f, 1.0f, 0.0f));
-        worldMatrix = glm::rotate(worldMatrix, entityRotation.z, glm::vec3(0.0f, 0.0f, 1.0f));
-        worldMatrix = glm::scale(worldMatrix, glm::vec3(physicsComponent.GetHitBox().mDimensions.x * 0.5f, physicsComponent.GetHitBox().mDimensions.y * 0.5f, 1.0));
-
-        mCurrentShader = StringId("debug_rect");
-        GL_CHECK(glUseProgram(mShaders[mCurrentShader]->GetShaderId()));
-        GL_CHECK(glUniformMatrix4fv(mShaders[mCurrentShader]->GetUniformNamesToLocations().at(StringId("world")), 1, GL_FALSE, (GLfloat*)&worldMatrix));        
-        GL_CHECK(glBindTexture(GL_TEXTURE_2D, (mResourceManager->GetResource<TextureResource>(sFactionGroupToTextureName.at(factionComponent.GetFactionGroup()))).GetGLTextureId()));
-        GL_CHECK(glUniformMatrix4fv(mShaders[mCurrentShader]->GetUniformNamesToLocations().at(StringId("view")), 1, GL_FALSE, (GLfloat*)&(mAttachedCamera->GetViewMatrix())));
-        GL_CHECK(glUniformMatrix4fv(mShaders[mCurrentShader]->GetUniformNamesToLocations().at(StringId("proj")), 1, GL_FALSE, (GLfloat*)&mProjectionMatrix));
-        GL_CHECK(glDrawArrays(GL_TRIANGLE_FAN, 0, 4));
+void CoreRenderingService::RenderPhysicsDebugRectangles(const std::vector<EntityNameIdEntry>& entities)
+{
+    for (const auto& entityEntry: entities)
+    {
+        const auto entityId = entityEntry.mEntityId;
+        if (mDebugHitboxDisplay &&
+            mEntityComponentManager->HasComponent<PhysicsComponent>(entityId) &&
+            mEntityComponentManager->HasComponent<FactionComponent>(entityId))
+        {
+            const auto& physicsComponent = mEntityComponentManager->GetComponent<PhysicsComponent>(entityId);
+            const auto& factionComponent = mEntityComponentManager->GetComponent<FactionComponent>(entityId);
+            const auto& transformComponent = mEntityComponentManager->GetComponent<TransformComponent>(entityId);
+            
+            glm::mat4 worldMatrix = glm::mat4(1.0f);
+            const auto& entityTranslation = transformComponent.GetTranslation();
+            const auto& entityRotation = transformComponent.GetRotation();
+            
+            worldMatrix = glm::translate(worldMatrix, glm::vec3(entityTranslation.x + physicsComponent.GetHitBox().mCenterPoint.x, entityTranslation.y + physicsComponent.GetHitBox().mCenterPoint.y, 1.0f));
+            worldMatrix = glm::rotate(worldMatrix, entityRotation.x, glm::vec3(1.0f, 0.0f, 0.0f));
+            worldMatrix = glm::rotate(worldMatrix, entityRotation.y, glm::vec3(0.0f, 1.0f, 0.0f));
+            worldMatrix = glm::rotate(worldMatrix, entityRotation.z, glm::vec3(0.0f, 0.0f, 1.0f));
+            worldMatrix = glm::scale(worldMatrix, glm::vec3(physicsComponent.GetHitBox().mDimensions.x * 0.5f, physicsComponent.GetHitBox().mDimensions.y * 0.5f, 1.0));
+            
+            mCurrentShader = StringId("debug_rect");
+            GL_CHECK(glUseProgram(mShaders[mCurrentShader]->GetShaderId()));
+            GL_CHECK(glUniformMatrix4fv(mShaders[mCurrentShader]->GetUniformNamesToLocations().at(StringId("world")), 1, GL_FALSE, (GLfloat*)&worldMatrix));
+            GL_CHECK(glBindTexture(GL_TEXTURE_2D, (mResourceManager->GetResource<TextureResource>(sFactionGroupToTextureName.at(factionComponent.GetFactionGroup()))).GetGLTextureId()));
+            GL_CHECK(glUniformMatrix4fv(mShaders[mCurrentShader]->GetUniformNamesToLocations().at(StringId("view")), 1, GL_FALSE, (GLfloat*)&(mAttachedCamera->GetViewMatrix())));
+            GL_CHECK(glUniformMatrix4fv(mShaders[mCurrentShader]->GetUniformNamesToLocations().at(StringId("proj")), 1, GL_FALSE, (GLfloat*)&mProjectionMatrix));
+            GL_CHECK(glDrawArrays(GL_TRIANGLE_FAN, 0, 4));
+        }
     }
-    
 }
 
 void CoreRenderingService::PreparePostProcessingPass()
