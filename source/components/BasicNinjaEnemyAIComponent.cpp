@@ -171,7 +171,7 @@ void BasicNinjaEnemyAIComponent::OnEntityDamagedEvent(const IEvent& event)
 
     if (actualEvent.GetHealthRemaining() > 0.0f)
     {
-        mEffectsManager.PlayEffect(mEntityComponentManager.GetComponent<TransformComponent>(actualEvent.GetDamageSenderEntityId()).GetTranslation(), EffectsManager::EffectType::BLOOD_SPURT);
+        mEffectsManager.PlayEffect(mEntityComponentManager.GetComponent<TransformComponent>(actualEvent.GetDamageSenderEntityId()).GetTranslation(), EffectsManager::EffectType::BLOOD_SPURT_MULTI);
         return;
     }
 

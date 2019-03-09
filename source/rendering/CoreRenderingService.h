@@ -46,7 +46,7 @@ public:
     void RenderEntities(const std::vector<EntityNameIdEntry>& entityIds);
     void RenderEntities(const std::vector<EntityId>& entityIds);
     void SetFrameStatisticsMessage(const std::string& frameStatisticsMessage);
-    void SetBlurIntensity(const float blurIntensity);
+    void SetSceneBlurIntensity(const float blurIntensity);
     
     const glm::vec2& GetRenderableDimensions() const;
     float GetAspectRatio() const;
@@ -65,7 +65,8 @@ private:
     void RenderOutlineRectangles(const std::list<std::pair<glm::vec2, glm::vec2>>& rectangles);
     void RenderEntityInternal(const EntityId);
     void PreparePostProcessingPass();
-        
+    void RenderEntitiesUnaffectedByPostProcessing();
+    
     const ServiceLocator& mServiceLocator;
     EntityComponentManager* mEntityComponentManager;
     ResourceManager* mResourceManager;
@@ -84,13 +85,14 @@ private:
     std::string mFrameStatisticsMessage;
     
     float mSwirlAngle;
-    float mBlurIntensity;
+    float mSceneBlurIntensity;
 
     const Camera* mAttachedCamera;
     
     GLuint mVAO, mVBO, mFrameBufferId, mScreenRenderingTexture;
 
     std::unordered_map<StringId, std::unique_ptr<Shader>, StringIdHasher> mShaders;
+    std::list<EntityId> mEntitiesUnaffectedByPostProcessing;
     StringId mCurrentShader;
 };
 

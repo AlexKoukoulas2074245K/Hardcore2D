@@ -15,6 +15,7 @@
 #include "components/AnimationComponent.h"
 #include "components/EntityComponentManager.h"
 #include "components/IAIComponent.h"
+#include "components/ShaderComponent.h"
 #include "events/EventCommunicator.h"
 #include "events/AnnouncePlayerEntityIdEvent.h"
 #include "events/EntityDamagedEvent.h"

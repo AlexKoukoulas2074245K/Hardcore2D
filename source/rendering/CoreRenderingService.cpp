@@ -64,7 +64,7 @@ CoreRenderingService::CoreRenderingService(const ServiceLocator& serviceLocator)
     , mRunning(false)
     , mRenderableDimensions(0.0f, 0.0f)
     , mSwirlAngle(0.0f)
-    , mBlurIntensity(0.0f)
+    , mSceneBlurIntensity(0.0f)
     , mVAO(0U)
     , mVBO(0U)
     , mFrameBufferId(0U)
@@ -147,7 +147,7 @@ void CoreRenderingService::GameLoop(std::function<void(const float)> appUpdateMe
 #ifndef NDEBUG
         if (dtAccumulator > 1.0f)
         {
-            const auto windowTitle = "FPS: " + std::to_string(framesAccumulator) + mFrameStatisticsMessage + " " + std::to_string(mBlurIntensity);
+            const auto windowTitle = "FPS: " + std::to_string(framesAccumulator) + mFrameStatisticsMessage + " " + std::to_string(mSceneBlurIntensity);
             SDL_SetWindowTitle(mSdlWindow, windowTitle.c_str());
             framesAccumulator = 0;
             dtAccumulator = 0.0f;
@@ -161,14 +161,11 @@ void CoreRenderingService::GameLoop(std::function<void(const float)> appUpdateMe
         GL_CHECK(glViewport(0, 0, static_cast<GLsizei>(mRenderableDimensions.x), static_cast<GLsizei>(mRenderableDimensions.y)));
         GL_CHECK(glBindVertexArray(mVAO));
         
+        // Clear entities unaffected by post-processing (main menu texture etc)
+        mEntitiesUnaffectedByPostProcessing.clear();
+        
         // Update client
         appUpdateMethod(Min(dt, 0.05f));
-       
-        // Render Debug Scene graph
-        if (mDebugSceneGraphDisplay)
-        {
-            RenderOutlineRectangles(mServiceLocator.ResolveService<PhysicsSystem>().GetSceneGraphDebugRectangles());
-        }
         
         // Clear buffers for post-processing
         GL_CHECK(glBindFramebuffer(GL_FRAMEBUFFER, 0));
@@ -182,6 +179,9 @@ void CoreRenderingService::GameLoop(std::function<void(const float)> appUpdateMe
         GL_CHECK(glBindVertexArray(mVAO));
         GL_CHECK(glDrawArrays(GL_TRIANGLE_FAN, 0, 4));
 
+        // Render all top layer entities unaffected by post-processing
+        RenderEntitiesUnaffectedByPostProcessing();
+        
         // Swap window buffers
         SDL_GL_SwapWindow(mSdlWindow);
     }
@@ -191,7 +191,17 @@ void CoreRenderingService::RenderEntities(const std::vector<EntityId>& entityIds
 {
     for (const auto entityId: entityIds)
     {
-        RenderEntityInternal(entityId);
+        if (mEntityComponentManager->HasComponent<ShaderComponent>(entityId))
+        {
+            if (mEntityComponentManager->GetComponent<ShaderComponent>(entityId).IsAffectedByPostProcessing())
+            {
+                RenderEntityInternal(entityId);
+            }
+            else
+            {
+                mEntitiesUnaffectedByPostProcessing.push_back(entityId);
+            }
+        }
     }
 }
 
@@ -199,7 +209,17 @@ void CoreRenderingService::RenderEntities(const std::vector<EntityNameIdEntry>& 
 {
     for (const auto entityEntry: entityIds)
     {
-        RenderEntityInternal(entityEntry.mEntityId);
+        if (mEntityComponentManager->HasComponent<ShaderComponent>(entityEntry.mEntityId))
+        {
+            if (mEntityComponentManager->GetComponent<ShaderComponent>(entityEntry.mEntityId).IsAffectedByPostProcessing())
+            {
+                RenderEntityInternal(entityEntry.mEntityId);
+            }
+            else
+            {
+                mEntitiesUnaffectedByPostProcessing.push_back(entityEntry.mEntityId);
+            }
+        }
     }
 }
 
@@ -208,9 +228,9 @@ void CoreRenderingService::SetFrameStatisticsMessage(const std::string& frameSta
     mFrameStatisticsMessage = frameStatisticsMessage;
 }
 
-void CoreRenderingService::SetBlurIntensity(const float blurIntensity)
+void CoreRenderingService::SetSceneBlurIntensity(const float blurIntensity)
 {
-    mBlurIntensity = blurIntensity;
+    mSceneBlurIntensity = blurIntensity;
 }
 
 const glm::vec2& CoreRenderingService::GetRenderableDimensions() const
@@ -508,7 +528,6 @@ void CoreRenderingService::RenderEntityInternal(const EntityId entityId)
         return;
     }
     
-    
     mCurrentShader = mEntityComponentManager->GetComponent<ShaderComponent>(entityId).GetShaderName();
     GL_CHECK(glUseProgram(mShaders[mCurrentShader]->GetShaderId()));
     
@@ -605,12 +624,24 @@ void CoreRenderingService::PreparePostProcessingPass()
     const auto& currentShaderUniforms = mShaders[mCurrentShader]->GetUniformNamesToLocations();
     GL_CHECK(glUniform1f(currentShaderUniforms.at(StringId("swirlRadius")), 300.0f));
     GL_CHECK(glUniform1f(currentShaderUniforms.at(StringId("swirlAngle")), mSwirlAngle));
-    GL_CHECK(glUniform1f(currentShaderUniforms.at(StringId("blurIntensity")), mBlurIntensity));
+    GL_CHECK(glUniform1f(currentShaderUniforms.at(StringId("blurIntensity")), mSceneBlurIntensity));
     
     glm::vec2 swirlCenter(mRenderableDimensions.x * 0.5f, mRenderableDimensions.y * 0.5f);
     GL_CHECK(glUniform2fv(currentShaderUniforms.at(StringId("swirlCenter")), 1, (GLfloat*)&swirlCenter));
     
     glm::vec2 swirlDimensions(mRenderableDimensions.x, mRenderableDimensions.y);
     GL_CHECK(glUniform2fv(currentShaderUniforms.at(StringId("swirlDimensions")), 1, (GLfloat*)&swirlDimensions));
+}
+
+void CoreRenderingService::RenderEntitiesUnaffectedByPostProcessing()
+{
+    for (const auto& entityId: mEntitiesUnaffectedByPostProcessing)
+    {
+        RenderEntityInternal(entityId);
+    }
     
+    if (mDebugSceneGraphDisplay)
+    {
+        RenderOutlineRectangles(mServiceLocator.ResolveService<PhysicsSystem>().GetSceneGraphDebugRectangles());
+    }
 }

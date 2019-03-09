@@ -7,8 +7,9 @@
 
 #include "ShaderComponent.h"
 
-ShaderComponent::ShaderComponent(const StringId& shaderName)
+ShaderComponent::ShaderComponent(const StringId& shaderName, const bool affectedByPostProcessing /* true */)
     : mShaderName(shaderName)
+    , mAffectedByPostProcessing(affectedByPostProcessing)
 {
     
 }
@@ -16,4 +17,14 @@ ShaderComponent::ShaderComponent(const StringId& shaderName)
 const StringId& ShaderComponent::GetShaderName() const
 {
     return mShaderName;
+}
+
+bool ShaderComponent::IsAffectedByPostProcessing() const
+{
+    return mAffectedByPostProcessing;
+}
+
+void ShaderComponent::SetIsAffectedByPostProcessing(const bool affectedByPostProcessing)
+{
+    mAffectedByPostProcessing = affectedByPostProcessing;
 }

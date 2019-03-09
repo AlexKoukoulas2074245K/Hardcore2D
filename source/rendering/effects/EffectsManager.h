@@ -10,6 +10,7 @@
 
 #include "../../IService.h"
 #include "../../util/MathUtils.h"
+#include "../../util/TypeTraits.h"
 
 #include <memory>
 
@@ -26,7 +27,7 @@ class EffectsManager final : public IService
 public:
     enum class EffectType
     {
-        BLOOD_SPURT
+        BLOOD_SPURT_SINGLE, BLOOD_SPURT_MULTI
     };
 
     ~EffectsManager();
@@ -40,17 +41,20 @@ private:
     static const float BLUR_SPEED_UPON_DEATH;
 
     EffectsManager(const ServiceLocator&);
-    void CreateBloodSpurtEffect(const glm::vec3& effectOrigin);
+    void CreateBloodSpurtSingleEffect(const glm::vec3& effectOrigin);
+    void CreateBloodSpurtMultiEffect(const glm::vec3& effectOrigin);
     void RegisterEventCallbacks();
-
+    void CreateDeathQuoteEntity();
+    
     const ServiceLocator& mServiceLocator;    
     EntityComponentManager* mEntityComponentManager;
     ResourceManager* mResourceManager;
     CoreRenderingService* mCoreRenderingService;
 
     std::unique_ptr<EventCommunicator> mEventCommunicator;
-    float mBlurIntensity;
+    float mSceneBlurIntensity;
     bool mIsBlurIntensifying;
+    EntityId mdeathQuoteEntityId;
 };
 
 #endif /* EffectsManager_h */

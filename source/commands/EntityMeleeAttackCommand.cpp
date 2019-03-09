@@ -38,7 +38,7 @@ void EntityMeleeAttackCommand::VExecute()
     
     if (entityAnimationComponent.HasAnimation(StringId("kick")))
     {
-        entityAnimationComponent.PlayAnimation(StringId(RandomInt(0, 2) == 0 ? "melee" : "kick"), false, true, AnimationComponent::AnimationPriority::HIGH);
+        entityAnimationComponent.PlayAnimation(StringId(RandomInt(0, 1) == 0 ? "melee" : "kick"), false, true, AnimationComponent::AnimationPriority::HIGH);
     }
     else
     {

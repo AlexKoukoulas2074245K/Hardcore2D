@@ -14,12 +14,15 @@
 class ShaderComponent final: public IComponent
 {
 public:
-    ShaderComponent(const StringId& shaderName);
+    ShaderComponent(const StringId& shaderName, const bool affectedByPostProcessing = true);
 
     const StringId& GetShaderName() const;
+    bool IsAffectedByPostProcessing() const;
+    void SetIsAffectedByPostProcessing(const bool affectedByPostProcessing);
     
 private:
     const StringId mShaderName;
+    bool mAffectedByPostProcessing;
 };
 
 #endif /* ShaderComponent_h */

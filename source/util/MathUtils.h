@@ -51,6 +51,16 @@ inline glm::vec3 ClampToMin(const glm::vec3& vec, const glm::vec3& minVec)
     return glm::vec3(Max(vec.x, minVec.x), Max(vec.y, minVec.y), Max(vec.z, minVec.z));
 }
 
+inline glm::vec2 Vec3ToVec2(const glm::vec3& vec)
+{
+    return glm::vec2(vec.x, vec.y);
+}
+
+inline glm::vec3 Vec2ToVec3(const glm::vec2& vec)
+{
+    return glm::vec3(vec.x, vec.y, 0.0f);
+}
+
 enum class TweeningMode
 {
     EASE_IN, EASE_OUT, EASE_IN_OUT
@@ -132,7 +142,7 @@ inline int RandomInt(const int min = 0, const int max = RAND_MAX)
         hasInitializedSeed = true;
     }
     
-    return (std::rand() % (max - min)) + min;
+    return (std::rand() % (max - min + 1)) + min;
 }
 
 inline float RandomFloat(const float min = 0.0f, const float max = 1.0f)

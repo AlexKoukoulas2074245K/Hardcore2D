@@ -21,6 +21,7 @@
 #include "../components/HealthComponent.h"
 #include "../components/EntityComponentManager.h"
 #include "../components/TransformComponent.h"
+#include "../rendering/effects/EffectsManager.h"
 #include "../util/MathUtils.h"
 #include "../util/Logging.h"
 
@@ -44,6 +45,7 @@ PlayerBehaviorController::PlayerBehaviorController(const ServiceLocator& service
     , mJumpsAvailable(mJumpCount)
     , mIsMeleeAttackRecharging(false)    
     , mPlayerKilled(false)
+    , mBloodDropAnimationTimer(0.08f, [this](){ OnBloodDropAnimationTimerTick(); })
 {
     
 }
@@ -52,13 +54,16 @@ bool PlayerBehaviorController::VInitialize()
 {
     mEventCommunicator = mServiceLocator.ResolveService<EventCommunicationService>().CreateEventCommunicator();
     mEntityComponentManager = &(mServiceLocator.ResolveService<EntityComponentManager>());
-
+    mEffectsManager = &(mServiceLocator.ResolveService<EffectsManager>());
+    
     RegisterEventCallbacks();
     return true;
 }
 
 void PlayerBehaviorController::Update(const float dt)
 {
+    mBloodDropAnimationTimer.Update(dt);
+    
     if (mIsMeleeAttackRecharging)
     {
         mMeleeAttackRechargeTimer += dt;
@@ -190,9 +195,12 @@ void PlayerBehaviorController::RegisterEventCallbacks()
 
         if (actualEvent.GetHealthRemaining() > 0.0f)
         {
+            const auto& playerPhysicsComponent = mEntityComponentManager->GetComponent<PhysicsComponent>(mPlayerEntityId);
+            const auto& playerTransformComponent = mEntityComponentManager->GetComponent<TransformComponent>(mPlayerEntityId);
+            mEffectsManager->PlayEffect(playerTransformComponent.GetTranslation() + Vec2ToVec3(playerPhysicsComponent.GetHitBox().mCenterPoint), EffectsManager::EffectType::BLOOD_SPURT_MULTI);
             return;
         }
-
+        
         mPlayerKilled = true;
         mEventCommunicator->DispatchEvent(std::make_unique<PlayerKilledEvent>());
         mEntityComponentManager->GetComponent<AnimationComponent>(mPlayerEntityId).PlayAnimation(StringId("death"), false, false, AnimationComponent::AnimationPriority::HIGH, [this]()
@@ -202,4 +210,13 @@ void PlayerBehaviorController::RegisterEventCallbacks()
     });
 }
 
+void PlayerBehaviorController::OnBloodDropAnimationTimerTick()
+{
+    if (mPlayerKilled)
+    {
+        const auto& playerPhysicsComponent = mEntityComponentManager->GetComponent<PhysicsComponent>(mPlayerEntityId);
+        const auto& playerTransformComponent = mEntityComponentManager->GetComponent<TransformComponent>(mPlayerEntityId);
+        mEffectsManager->PlayEffect(playerTransformComponent.GetTranslation() + Vec2ToVec3(playerPhysicsComponent.GetHitBox().mCenterPoint) + glm::vec3(0.0f, -25.0f, 0.0f), EffectsManager::EffectType::BLOOD_SPURT_SINGLE);
+    }
+}
 

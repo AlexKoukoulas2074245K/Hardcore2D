@@ -10,12 +10,14 @@
 
 #include "../IService.h"
 #include "../util/TypeTraits.h"
+#include "../util/Timer.h"
 
 #include <memory>
 
 class ServiceLocator;
 class EventCommunicator;
 class EntityComponentManager;
+class EffectsManager;
 
 class PlayerBehaviorController final: public IService
 {
@@ -37,9 +39,11 @@ private:
     PlayerBehaviorController(const ServiceLocator&);
     
     void RegisterEventCallbacks();
-
+    void OnBloodDropAnimationTimerTick();
+    
     const ServiceLocator& mServiceLocator;
     EntityComponentManager* mEntityComponentManager;
+    EffectsManager* mEffectsManager;
     std::unique_ptr<EventCommunicator> mEventCommunicator;
     
     EntityId mPlayerEntityId;
@@ -57,6 +61,8 @@ private:
 
     bool mIsMeleeAttackRecharging;
     bool mPlayerKilled;
+    
+    Timer mBloodDropAnimationTimer;
 };
 
 #endif /* PlayerBehaviorController_h */

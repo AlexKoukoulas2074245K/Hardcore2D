@@ -22,17 +22,7 @@ BloodDropAIComponent::BloodDropAIComponent(const ServiceLocator& serviceLocator,
     , mTimeToLive(timeToLive)
     , mEventCommunicator(serviceLocator.ResolveService<EventCommunicationService>().CreateEventCommunicator())
 {
-    
-    mEventCommunicator->RegisterEventCallback<EntityCollisionEvent>([this](const IEvent& event)
-    {
-        const auto& actualEvent = static_cast<const EntityCollisionEvent&>(event);
-        const auto& collidedEntitiesPair = actualEvent.GetCollidedEntityIds();
-        
-        if (collidedEntitiesPair.first == mEntityId)
-        {            
-            SetVelocityCommand(mEntityComponentManager, mEntityId, glm::vec3(0.0f, 0.0f, 0.0f)).VExecute();
-        }
-    });
+
 }
 
 void BloodDropAIComponent::VUpdate(const float dt)
