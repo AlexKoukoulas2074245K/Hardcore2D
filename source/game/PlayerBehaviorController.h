@@ -28,18 +28,21 @@ public:
     
     bool CanJump() const;
     bool IsMeleeAttackAvailable() const;
-    bool IsRangedAttackAvailable() const;
+    bool IsFlameBreathAttackAvailable() const;
     
 private:
     static const float DEFAULT_PLAYER_MELEE_ATTACK_RECHARGE_DURATION;
-    static const float DEFAULT_PLAYER_RANGED_ATTACK_RECHARGE_DURATION;
-    static const int DEFAULT_RANGED_ATTACK_BATCH_COUNT;
+    static const float DEFAULT_PLAYER_FLAME_BREATH_ATTACK_COOLDOWN_DURATION;
+    static const float BLOOD_DROP_DEATH_ANIMATION_COOLDOWN;
     static const int DEFAULT_JUMP_COUNT;
 
     PlayerBehaviorController(const ServiceLocator&);
     
     void RegisterEventCallbacks();
+    void OnMeleeAttackCooldownTimerTick();
+    void OnFlameBreathCooldownTimerTick();
     void OnBloodDropAnimationTimerTick();
+    
     
     const ServiceLocator& mServiceLocator;
     EntityComponentManager* mEntityComponentManager;
@@ -48,20 +51,15 @@ private:
     
     EntityId mPlayerEntityId;
 
-    float mMeleeAttackRechargeDuration;
-    float mRangedAttackRechargeDuration;
-    int mRangedAttackBatchCount;
-    
-    float mMeleeAttackRechargeTimer;
-    float mRangedAttackRechargeTimer;
-    int mRangedAttackCount;
-    
     int mJumpCount;
     int mJumpsAvailable;
 
-    bool mIsMeleeAttackRecharging;
+    bool mIsMeleeAttackReady;
+    bool mIsFlameBreathAttackReady;
     bool mPlayerKilled;
     
+    Timer mMeleeAttackCooldownTimer;
+    Timer mFlameBreathCooldownTimer;
     Timer mBloodDropAnimationTimer;
 };
 

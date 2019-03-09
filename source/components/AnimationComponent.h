@@ -31,16 +31,17 @@ public:
     using AnimationCompleteCallback = std::function<void()>;
     using AnimationsMap = std::unordered_map<StringId, std::vector<GLuint>, StringIdHasher>;
     using AnimationsDisplacementMap = std::unordered_map<StringId, glm::vec2, StringIdHasher>;
+    using AnimationsFrameDurationsMap = std::unordered_map<StringId, float, StringIdHasher>;
     
-    AnimationComponent(const std::string& relativeEntityAnimationsDirectoryPath, const float animationFrameDuration, ResourceManager&);
-    AnimationComponent(const AnimationsMap& userSuppliedAnimations, const float animationFrameDuration);
+    AnimationComponent(const std::string& relativeEntityAnimationsDirectoryPath, const float defaultAnimationFrameDuration, ResourceManager&);
+    AnimationComponent(const AnimationsMap& userSuppliedAnimations, const float defaultAnimationFrameDuration);
 
     const std::string& GetRootAnimationsPath() const;
 
     FacingDirection GetCurrentFacingDirection() const;
     StringId GetCurrentAnimation() const;
     GLuint GetCurrentFrameResourceId() const;
-    float GetAnimationFrameDuration() const;
+    float GetCurrentAnimationFrameDuration() const;
     float GetAnimationTimer() const;
     const glm::vec2& GetSpecificAnimationDisplacement(const StringId animation) const;
     bool HasAnimation(const StringId animation);
@@ -49,6 +50,7 @@ public:
     void PlayAnimation(const StringId newAnimation, const bool loop = false, const bool resetToIdleWhenFinished = true, const AnimationPriority priority = AnimationPriority::NORMAL, AnimationCompleteCallback animationCompleteCallback = nullptr);    
     void SetAnimationTimer(const float animationTimer);
     void SetSpecificAnimationDisplacement(const StringId animation, const glm::vec2& displacement);
+    void SetSpecificAnimationFrameDuration(const StringId animation, const float animationFrameDuration);
     
     void AdvanceFrame();
     void SetPause(const bool paused);
@@ -56,6 +58,7 @@ public:
 private:
     void CreateAnimationsMapFromRelativeEntityAnimationsDirectory(const std::string& relativeEntityAnimationsDirectoryPath);
     void InitializeAnimationsDisplacements();
+    void InitializeAnimationsFrameDurations(const float defaultAnimationFrameDuration);
     
     ResourceManager* mResourceManager;
     
@@ -63,6 +66,7 @@ private:
 
     AnimationsMap mAnimations;
     AnimationsDisplacementMap mAnimationsDisplacements;
+    AnimationsFrameDurationsMap mAnimationsFrameDurations;
     
     FacingDirection mFacingDirection;
     StringId mCurrentAnimation;
@@ -73,7 +77,6 @@ private:
 
     AnimationPriority mCurrentAnimationPriority;
     int mCurrentFrameIndex;
-    float mAnimationFrameDuration;
     float mAnimationTimer;
 
     AnimationCompleteCallback mAnimationCompleteCallback;

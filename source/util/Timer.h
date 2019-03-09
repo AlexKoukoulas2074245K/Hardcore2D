@@ -23,6 +23,16 @@ public:
     {
     }
     
+    inline float GetTimerValue()
+    {
+        return mTimeCounter;
+    }
+    
+    inline void SetTimerTickCallback(const TimerTickCallback timerTickCallback)
+    {
+        mTimerTickCallback = timerTickCallback;
+    }
+    
     inline void Update(const float dt)
     {
         if (!mIsRunning)
@@ -48,9 +58,14 @@ public:
         mIsRunning = true;
     }
     
+    inline void Reset()
+    {
+        mTimeCounter = mPeriod;
+    }
+    
 private:
     const float mPeriod;
-    const TimerTickCallback mTimerTickCallback;
+    TimerTickCallback mTimerTickCallback;
     bool mIsRunning;
     float mTimeCounter;
 };

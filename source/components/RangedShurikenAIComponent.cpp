@@ -20,7 +20,7 @@
 RangedShurikenAIComponent::RangedShurikenAIComponent(const ServiceLocator& serviceLocator, const EntityId entityId, const float timeToLive)
     : mEntityComponentManager(serviceLocator.ResolveService<EntityComponentManager>())
     , mEntityId(entityId)
-    , mTimeToLive(timeToLive)
+    , mTimeToLiveTimer(timeToLive, [this](){ OnTimeToLiveTimerTick(); })
     , mEventCommunicator(serviceLocator.ResolveService<EventCommunicationService>().CreateEventCommunicator())
 {
     mEventCommunicator->RegisterEventCallback<EntityDamagedEvent>([this](const IEvent& event)
@@ -45,9 +45,10 @@ RangedShurikenAIComponent::RangedShurikenAIComponent(const ServiceLocator& servi
 
 void RangedShurikenAIComponent::VUpdate(const float dt)
 {
-    mTimeToLive -= dt;
-    if (mTimeToLive <= 0.0f)
-    {
-        mEventCommunicator->DispatchEvent(std::make_unique<EntityDestroyedEvent>(mEntityId));
-    }
+    mTimeToLiveTimer.Update(dt);
+}
+
+void RangedShurikenAIComponent::OnTimeToLiveTimerTick()
+{
+    mEventCommunicator->DispatchEvent(std::make_unique<EntityDestroyedEvent>(mEntityId));
 }

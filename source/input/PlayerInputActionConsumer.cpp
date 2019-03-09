@@ -13,10 +13,10 @@
 #include "../commands/SetVelocityCommand.h"
 #include "../commands/SetVelocityAndAnimateCommand.h"
 #include "../commands/EntityMeleeAttackCommand.h"
-#include "../commands/EntityRangedShurikenAttackCommand.h"
+#include "../commands/FlameBreathAttackCommand.h"
 #include "../events/EventCommunicator.h"
 #include "../events/PlayerMeleeAttackEvent.h"
-#include "../events/PlayerRangedAttackEvent.h"
+#include "../events/PlayerFlameBreathAttackEvent.h"
 #include "../events/PlayerRespawnEvent.h"
 #include "../events/PlayerChangedDirectionEvent.h"
 #include "../events/PlayerJumpEvent.h"
@@ -136,16 +136,16 @@ bool PlayerInputActionConsumer::VConsumeInputAction(const InputAction& inputActi
                 case InputAction::ActionState::STOP: break;
             }                         
         } break;
-        case InputAction::ActionType::RANGED:
+        case InputAction::ActionType::FLAME_BREATH:
         {
             switch (inputAction.mActionState)
             {
                 case InputAction::ActionState::START:
                 {
-                    if (mPlayerBehaviorController.IsRangedAttackAvailable())
+                    if (mPlayerBehaviorController.IsFlameBreathAttackAvailable())
                     {
-                        EntityRangedShurikenAttackCommand(mServiceLocator, mEntityId).VExecute();
-                        mEventCommunicator->DispatchEvent(std::make_unique<PlayerRangedAttackEvent>());
+                        FlameBreathAttackCommand(mServiceLocator, mEntityId).VExecute();
+                        mEventCommunicator->DispatchEvent(std::make_unique<PlayerFlameBreathAttackEvent>());
                     }
                     return true;
                 } break;

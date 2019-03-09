@@ -10,6 +10,7 @@
 
 #include "IAIComponent.h"
 #include "../util/TypeTraits.h"
+#include "../util/Timer.h"
 
 #include <memory>
 #include <glm/vec3.hpp>
@@ -40,6 +41,8 @@ private:
     static const float PURSUING_MELEE_ATTACK_DISTANCE;
     static const float MELEE_ATTACK_COOLDOWN;
 
+    void OnInitializationTimerTick();
+    void OnAttackTimerTick();
     void OnAnnouncePlayerEntityId(const IEvent&);    
     void OnEntityDamagedEvent(const IEvent&);
     
@@ -53,7 +56,9 @@ private:
     State mState;
     bool mMovingRight;
     glm::vec3 mInitPosition;        
-    float mTimer;    
+    
+    Timer mInitializationTimer;
+    Timer mAttackTimer;
 };
 
 #endif /* BasicNinjaEnemyAIComponent_h */

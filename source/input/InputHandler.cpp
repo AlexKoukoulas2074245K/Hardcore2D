@@ -53,7 +53,7 @@ void InputHandler::SetDefaultKeybindings()
     mKeybindingsToActions[SDL_SCANCODE_RIGHT] = InputAction::ActionType::MOVE_RIGHT;
     mKeybindingsToActions[SDL_SCANCODE_Z] = InputAction::ActionType::JUMP;
     mKeybindingsToActions[SDL_SCANCODE_X] = InputAction::ActionType::ATTACK;
-    mKeybindingsToActions[SDL_SCANCODE_C] = InputAction::ActionType::RANGED;
+    mKeybindingsToActions[SDL_SCANCODE_C] = InputAction::ActionType::FLAME_BREATH;
     mKeybindingsToActions[SDL_SCANCODE_R] = InputAction::ActionType::RESPAWN;
     mKeybindingsToActions[SDL_SCANCODE_H] = InputAction::ActionType::DEBUG_TOGGLE_HITBOX_DISPLAY;
     mKeybindingsToActions[SDL_SCANCODE_Q] = InputAction::ActionType::DEBUG_TOGGLE_SCENEGRAPH_DISPLAY;

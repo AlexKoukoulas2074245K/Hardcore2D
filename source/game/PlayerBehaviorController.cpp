@@ -9,12 +9,12 @@
 #include "../ServiceLocator.h"
 #include "../events/EventCommunicator.h"
 #include "../events/PlayerMeleeAttackEvent.h"
-#include "../events/PlayerRangedAttackEvent.h"
 #include "../events/EntityDamagedEvent.h"
 #include "../events/AnnouncePlayerEntityIdEvent.h"
 #include "../events/PlayerJumpEvent.h"
 #include "../events/EntityCollisionEvent.h"
 #include "../events/PlayerKilledEvent.h"
+#include "../events/PlayerFlameBreathAttackEvent.h"
 #include "../commands/SetVelocityAndAnimateCommand.h"
 #include "../components/AnimationComponent.h"
 #include "../components/PhysicsComponent.h"
@@ -26,8 +26,8 @@
 #include "../util/Logging.h"
 
 const float PlayerBehaviorController::DEFAULT_PLAYER_MELEE_ATTACK_RECHARGE_DURATION = 0.5f;
-const float PlayerBehaviorController::DEFAULT_PLAYER_RANGED_ATTACK_RECHARGE_DURATION = 1.0f;
-const int PlayerBehaviorController::DEFAULT_RANGED_ATTACK_BATCH_COUNT = 5;
+const float PlayerBehaviorController::DEFAULT_PLAYER_FLAME_BREATH_ATTACK_COOLDOWN_DURATION = 1.0f;
+const float PlayerBehaviorController::BLOOD_DROP_DEATH_ANIMATION_COOLDOWN = 0.08f;
 const int PlayerBehaviorController::DEFAULT_JUMP_COUNT = 2;
 
 PlayerBehaviorController::PlayerBehaviorController(const ServiceLocator& serviceLocator)
@@ -35,17 +35,14 @@ PlayerBehaviorController::PlayerBehaviorController(const ServiceLocator& service
     , mEntityComponentManager(nullptr)
     , mEventCommunicator(nullptr)
     , mPlayerEntityId(-1)
-    , mMeleeAttackRechargeDuration(DEFAULT_PLAYER_MELEE_ATTACK_RECHARGE_DURATION)
-    , mRangedAttackRechargeDuration(DEFAULT_PLAYER_RANGED_ATTACK_RECHARGE_DURATION)
-    , mRangedAttackBatchCount(DEFAULT_RANGED_ATTACK_BATCH_COUNT)
-    , mMeleeAttackRechargeTimer(0.0f)
-    , mRangedAttackRechargeTimer(0.0f)
-    , mRangedAttackCount(DEFAULT_RANGED_ATTACK_BATCH_COUNT)
     , mJumpCount(DEFAULT_JUMP_COUNT)
     , mJumpsAvailable(mJumpCount)
-    , mIsMeleeAttackRecharging(false)    
+    , mIsMeleeAttackReady(true)
+    , mIsFlameBreathAttackReady(true)
     , mPlayerKilled(false)
-    , mBloodDropAnimationTimer(0.08f, [this](){ OnBloodDropAnimationTimerTick(); })
+    , mMeleeAttackCooldownTimer(DEFAULT_PLAYER_MELEE_ATTACK_RECHARGE_DURATION, [this](){ OnMeleeAttackCooldownTimerTick(); })
+    , mFlameBreathCooldownTimer(DEFAULT_PLAYER_FLAME_BREATH_ATTACK_COOLDOWN_DURATION, [this](){ OnFlameBreathCooldownTimerTick(); })
+    , mBloodDropAnimationTimer(BLOOD_DROP_DEATH_ANIMATION_COOLDOWN, [this](){ OnBloodDropAnimationTimerTick(); })
 {
     
 }
@@ -62,29 +59,9 @@ bool PlayerBehaviorController::VInitialize()
 
 void PlayerBehaviorController::Update(const float dt)
 {
+    mMeleeAttackCooldownTimer.Update(dt);
+    mFlameBreathCooldownTimer.Update(dt);
     mBloodDropAnimationTimer.Update(dt);
-    
-    if (mIsMeleeAttackRecharging)
-    {
-        mMeleeAttackRechargeTimer += dt;
-        if (mMeleeAttackRechargeTimer > mMeleeAttackRechargeDuration)
-        {
-            mMeleeAttackRechargeTimer = 0.0f;
-            mIsMeleeAttackRecharging = false;
-        }
-    }
-    
-    
-    mRangedAttackRechargeTimer += dt;
-    if (mRangedAttackRechargeTimer > mRangedAttackRechargeDuration)
-    {
-        mRangedAttackRechargeTimer = 0.0f;
-        mRangedAttackCount++;
-        if (mRangedAttackCount > mRangedAttackBatchCount)
-        {
-            mRangedAttackCount = mRangedAttackBatchCount;
-        }
-    }
     
     if (mJumpsAvailable < mJumpCount)
     {
@@ -99,12 +76,12 @@ bool PlayerBehaviorController::CanJump() const
 
 bool PlayerBehaviorController::IsMeleeAttackAvailable() const
 {
-    return !mIsMeleeAttackRecharging;
+    return mIsMeleeAttackReady;
 }
 
-bool PlayerBehaviorController::IsRangedAttackAvailable() const
+bool PlayerBehaviorController::IsFlameBreathAttackAvailable() const
 {
-    return mRangedAttackCount > 0;
+    return mIsFlameBreathAttackReady;
 }
 
 void PlayerBehaviorController::RegisterEventCallbacks()
@@ -117,18 +94,16 @@ void PlayerBehaviorController::RegisterEventCallbacks()
 
     mEventCommunicator->RegisterEventCallback<PlayerMeleeAttackEvent>([this](const IEvent&)
     {
-        mIsMeleeAttackRecharging = true;
+        mIsMeleeAttackReady = false;
+        mMeleeAttackCooldownTimer.Reset();
     });
-
-    mEventCommunicator->RegisterEventCallback<PlayerRangedAttackEvent>([this](const IEvent&)
+    
+    mEventCommunicator->RegisterEventCallback<PlayerFlameBreathAttackEvent>([this](const IEvent&)
     {
-        mRangedAttackRechargeTimer = 0.0f;
-        if (--mRangedAttackCount < 0)
-        {
-            mRangedAttackCount = 0;
-        }
+        mIsFlameBreathAttackReady = false;
+        mFlameBreathCooldownTimer.Reset();
     });
-
+    
     mEventCommunicator->RegisterEventCallback<PlayerJumpEvent>([this](const IEvent&)
     {
         if (--mJumpsAvailable < 0)
@@ -208,6 +183,16 @@ void PlayerBehaviorController::RegisterEventCallbacks()
             mEntityComponentManager->RemoveComponent<HealthComponent>(mPlayerEntityId);
         });
     });
+}
+
+void PlayerBehaviorController::OnMeleeAttackCooldownTimerTick()
+{
+    mIsMeleeAttackReady = true;
+}
+
+void PlayerBehaviorController::OnFlameBreathCooldownTimerTick()
+{
+    mIsFlameBreathAttackReady = true;
 }
 
 void PlayerBehaviorController::OnBloodDropAnimationTimerTick()

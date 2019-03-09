@@ -10,6 +10,7 @@
 
 #include "IAIComponent.h"
 #include "../util/TypeTraits.h"
+#include "../util/Timer.h"
 
 #include <memory>
 
@@ -25,9 +26,11 @@ public:
     void VUpdate(const float dt) override;
     
 private:
+    void OnTimeToLiveTimerTick();
+    
     const EntityComponentManager& mEntityComponentManager;
     const EntityId mEntityId;
-    float mTimeToLive;
+    Timer mTimeToLiveTimer;
     std::unique_ptr<EventCommunicator> mEventCommunicator;
     
 };

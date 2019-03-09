@@ -39,7 +39,8 @@ BasicNinjaEnemyAIComponent::BasicNinjaEnemyAIComponent(const ServiceLocator& ser
     , mThisEntityId(thisEntityId)
     , mState(State::INITIALIZE)
     , mMovingRight(true)
-    , mTimer(RandomFloat(0.0f, 1.0f))    
+    , mInitializationTimer(RandomFloat(0.0f, 1.0f), [this](){ OnInitializationTimerTick(); })
+    , mAttackTimer(MELEE_ATTACK_COOLDOWN, [this](){ OnAttackTimerTick(); })
 {
     mEventCommunicator->RegisterEventCallback<AnnouncePlayerEntityIdEvent>([this](const IEvent& event) 
     {
@@ -66,14 +67,7 @@ void BasicNinjaEnemyAIComponent::VUpdate(const float dt)
     {
         case State::INITIALIZE:
         {
-            mTimer -= dt;
-            if (mTimer <= 0.0f)
-            {
-                mInitPosition = mEntityComponentManager.GetComponent<TransformComponent>(mThisEntityId).GetTranslation();
-                mState = State::PATROLLING;
-                mTimer = 0.0f;
-            }
-            
+            mInitializationTimer.Update(dt);
         } break;
 
         case State::PATROLLING: 
@@ -109,14 +103,8 @@ void BasicNinjaEnemyAIComponent::VUpdate(const float dt)
 
             if (distanceFromPlayer < PURSUING_MELEE_ATTACK_DISTANCE)
             {                          
-                SetVelocityAndAnimateCommand(mEntityComponentManager, mThisEntityId, glm::vec3(0.0f, physicsComponent.GetVelocity().y, physicsComponent.GetVelocity().z)).VExecute();                                                   
-
-                mTimer -= dt;
-                if (mTimer <= 0.0f)
-                {
-                    mTimer = MELEE_ATTACK_COOLDOWN;
-                    EntityMeleeAttackCommand(mServiceLocator, mThisEntityId).VExecute();
-                }
+                SetVelocityAndAnimateCommand(mEntityComponentManager, mThisEntityId, glm::vec3(0.0f, physicsComponent.GetVelocity().y, physicsComponent.GetVelocity().z)).VExecute();
+                mAttackTimer.Update(dt);
             }
             else
             {
@@ -134,6 +122,17 @@ void BasicNinjaEnemyAIComponent::VUpdate(const float dt)
             SetVelocityCommand(mEntityComponentManager, mThisEntityId, glm::vec3(0.0f, 0.0f, 0.0f)).VExecute();
         } break;
     }
+}
+
+void BasicNinjaEnemyAIComponent::OnInitializationTimerTick()
+{
+    mInitPosition = mEntityComponentManager.GetComponent<TransformComponent>(mThisEntityId).GetTranslation();
+    mState = State::PATROLLING;
+}
+
+void BasicNinjaEnemyAIComponent::OnAttackTimerTick()
+{
+    EntityMeleeAttackCommand(mServiceLocator, mThisEntityId).VExecute();
 }
 
 void BasicNinjaEnemyAIComponent::OnAnnouncePlayerEntityId(const IEvent& event)

@@ -202,7 +202,8 @@ bool App::InitializeGame()
     });
     
     // Temp place. Add animation displacements
-    mEntityComponentManager->GetComponent<AnimationComponent>(mLevel->GetEntityIdFromName(StringId("player"))).SetSpecificAnimationDisplacement(StringId("ranged"), glm::vec2(100.0f, 20.0f));
+    mEntityComponentManager->GetComponent<AnimationComponent>(mLevel->GetEntityIdFromName(StringId("player"))).SetSpecificAnimationDisplacement(StringId("flamebreath"), glm::vec2(100.0f, 20.0f));
     mEntityComponentManager->GetComponent<AnimationComponent>(mLevel->GetEntityIdFromName(StringId("player"))).SetSpecificAnimationDisplacement(StringId("melee"), glm::vec2(13.0f, 8.0f));
+    mEntityComponentManager->GetComponent<AnimationComponent>(mLevel->GetEntityIdFromName(StringId("player"))).SetSpecificAnimationFrameDuration(StringId("flamebreath"), 0.06f);
     return true;
 }

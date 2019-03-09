@@ -18,7 +18,7 @@ MovingPlatformAIComponent::MovingPlatformAIComponent(const ServiceLocator& servi
     : mEntityComponentManager(serviceLocator.ResolveService<EntityComponentManager>())
     , mEntityId(entityId)    
     , mMovingNorthOrEastOrBoth(true)
-    , mTimer(RandomFloat(0.0f, MOVEMENT_DURATION_PER_DIRECTION))
+    , mMovementTimer(RandomFloat(0.0f, MOVEMENT_DURATION_PER_DIRECTION), [this](){ OnMovementTimerTick(); })
 {
     
 }
@@ -27,12 +27,7 @@ void MovingPlatformAIComponent::VUpdate(const float dt)
 {    
     auto& physicsComponent = mEntityComponentManager.GetComponent<PhysicsComponent>(mEntityId);       
 
-    mTimer += dt;
-    if (mTimer > MOVEMENT_DURATION_PER_DIRECTION)
-    {
-        mTimer = 0.0f;
-        mMovingNorthOrEastOrBoth = !mMovingNorthOrEastOrBoth;
-    }
+    mMovementTimer.Update(dt);
 
     if (mMovingNorthOrEastOrBoth)
     {
@@ -45,3 +40,7 @@ void MovingPlatformAIComponent::VUpdate(const float dt)
     }                 
 }
 
+void MovingPlatformAIComponent::OnMovementTimerTick()
+{
+    mMovingNorthOrEastOrBoth = !mMovingNorthOrEastOrBoth;
+}

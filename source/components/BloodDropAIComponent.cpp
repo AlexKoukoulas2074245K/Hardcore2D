@@ -19,7 +19,7 @@
 BloodDropAIComponent::BloodDropAIComponent(const ServiceLocator& serviceLocator, const EntityId bloodDropEntityId, const float timeToLive)
     : mEntityComponentManager(serviceLocator.ResolveService<EntityComponentManager>())
     , mEntityId(bloodDropEntityId)
-    , mTimeToLive(timeToLive)
+    , mTimeToLiveTimer(timeToLive, [this](){ OnTimeToLiveTimerTick(); })
     , mEventCommunicator(serviceLocator.ResolveService<EventCommunicationService>().CreateEventCommunicator())
 {
 
@@ -39,10 +39,10 @@ void BloodDropAIComponent::VUpdate(const float dt)
         transformComponent.GetRotation().z = PI*0.5f + Arctan2(-physicsComponent.GetVelocity().x, physicsComponent.GetVelocity().y);
     }
     
-    
-    mTimeToLive -= dt;
-    if (mTimeToLive <= 0.0f)
-    {
-        mEventCommunicator->DispatchEvent(std::make_unique<EntityDestroyedEvent>(mEntityId));
-    }
+    mTimeToLiveTimer.Update(dt);
+}
+
+void BloodDropAIComponent::OnTimeToLiveTimerTick()
+{
+    mEventCommunicator->DispatchEvent(std::make_unique<EntityDestroyedEvent>(mEntityId));
 }

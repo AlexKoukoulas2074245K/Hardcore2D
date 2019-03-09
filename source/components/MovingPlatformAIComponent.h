@@ -11,6 +11,7 @@
 #include "IAIComponent.h"
 #include "../util/TypeTraits.h"
 #include "../util/MathUtils.h"
+#include "../util/Timer.h"
 
 class ServiceLocator;
 class EntityComponentManager;
@@ -25,10 +26,12 @@ public:
 private:
     static const float MOVEMENT_DURATION_PER_DIRECTION;
     
+    void OnMovementTimerTick();
+    
     EntityComponentManager& mEntityComponentManager;
     const EntityId mEntityId;    
     bool mMovingNorthOrEastOrBoth;
-    float mTimer;
+    Timer mMovementTimer;
     
 };
 

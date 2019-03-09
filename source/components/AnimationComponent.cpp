@@ -13,7 +13,7 @@
 
 #include <cassert>
 
-AnimationComponent::AnimationComponent(const std::string& relativeEntityAnimationsDirectoryPath, const float animationFrameDuration, ResourceManager& resourceManager)
+AnimationComponent::AnimationComponent(const std::string& relativeEntityAnimationsDirectoryPath, const float defaultAnimationFrameDuration, ResourceManager& resourceManager)
     : mResourceManager(&resourceManager)
     , mRootAnimationsPath(relativeEntityAnimationsDirectoryPath)
     , mFacingDirection(FacingDirection::RIGHT)
@@ -23,14 +23,14 @@ AnimationComponent::AnimationComponent(const std::string& relativeEntityAnimatio
     , mResetToIdleWhenFinished(true)
     , mCurrentAnimationPriority(AnimationPriority::NORMAL)
     , mCurrentFrameIndex(0)
-    , mAnimationFrameDuration(animationFrameDuration)
     , mAnimationTimer(0.0f)
 {
     CreateAnimationsMapFromRelativeEntityAnimationsDirectory(relativeEntityAnimationsDirectoryPath);
     InitializeAnimationsDisplacements();
+    InitializeAnimationsFrameDurations(defaultAnimationFrameDuration);
 }
 
-AnimationComponent::AnimationComponent(const AnimationsMap& userSuppliedAnimations, const float animationFrameDuration)
+AnimationComponent::AnimationComponent(const AnimationsMap& userSuppliedAnimations, const float defaultAnimationFrameDuration)
     : mResourceManager(nullptr)
     , mRootAnimationsPath("")
     , mAnimations(userSuppliedAnimations)
@@ -41,11 +41,11 @@ AnimationComponent::AnimationComponent(const AnimationsMap& userSuppliedAnimatio
     , mResetToIdleWhenFinished(true)
     , mCurrentAnimationPriority(AnimationPriority::NORMAL)
     , mCurrentFrameIndex(0)
-    , mAnimationFrameDuration(animationFrameDuration)
     , mAnimationTimer(0.0f)
 {
     PlayAnimation(StringId("idle"), true);
     InitializeAnimationsDisplacements();
+    InitializeAnimationsFrameDurations(defaultAnimationFrameDuration);
 }
 
 const std::string& AnimationComponent::GetRootAnimationsPath() const
@@ -68,9 +68,9 @@ GLuint AnimationComponent::GetCurrentFrameResourceId() const
     return mAnimations.at(mCurrentAnimation)[mCurrentFrameIndex];
 }
 
-float AnimationComponent::GetAnimationFrameDuration() const
+float AnimationComponent::GetCurrentAnimationFrameDuration() const
 {
-    return mAnimationFrameDuration;
+    return mAnimationsFrameDurations.at(mCurrentAnimation);
 }
 
 float AnimationComponent::GetAnimationTimer() const
@@ -130,6 +130,11 @@ void AnimationComponent::SetAnimationTimer(const float animationTimer)
 void AnimationComponent::SetSpecificAnimationDisplacement(const StringId animation, const glm::vec2& displacement)
 {
     mAnimationsDisplacements[animation] = displacement;
+}
+
+void AnimationComponent::SetSpecificAnimationFrameDuration(const StringId animation, const float animationFrameDuration)
+{
+    mAnimationsFrameDurations[animation] = animationFrameDuration;
 }
 
 void AnimationComponent::AdvanceFrame()
@@ -201,8 +206,16 @@ void AnimationComponent::CreateAnimationsMapFromRelativeEntityAnimationsDirector
 
 void AnimationComponent::InitializeAnimationsDisplacements()
 {
-    for (const auto animation: mAnimations)
+    for (const auto& animation: mAnimations)
     {
         mAnimationsDisplacements[animation.first] = glm::vec2(0.0f, 0.0f);
+    }
+}
+
+void AnimationComponent::InitializeAnimationsFrameDurations(const float defaultAnimationFrameDuration)
+{
+    for (const auto& animation: mAnimations)
+    {
+        mAnimationsFrameDurations[animation.first] = defaultAnimationFrameDuration;
     }
 }

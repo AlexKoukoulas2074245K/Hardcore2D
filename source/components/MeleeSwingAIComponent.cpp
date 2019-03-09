@@ -14,7 +14,7 @@
 MeleeSwingAIComponent::MeleeSwingAIComponent(const ServiceLocator& serviceLocator, const EntityId meleeSwingEntityId, const float timeToLive)
     : mEntityComponentManager(serviceLocator.ResolveService<EntityComponentManager>())
     , mEntityId(meleeSwingEntityId)
-    , mTimeToLive(timeToLive)
+    , mTimeToLiveTimer(timeToLive, [this](){ OnTimeToLiveTimerTick(); })
     , mEventCommunicator(serviceLocator.ResolveService<EventCommunicationService>().CreateEventCommunicator())
 {
     
@@ -22,9 +22,10 @@ MeleeSwingAIComponent::MeleeSwingAIComponent(const ServiceLocator& serviceLocato
 
 void MeleeSwingAIComponent::VUpdate(const float dt)
 {
-    mTimeToLive -= dt;
-    if (mTimeToLive <= 0.0f)
-    {
-        mEventCommunicator->DispatchEvent(std::make_unique<EntityDestroyedEvent>(mEntityId));
-    }
+    mTimeToLiveTimer.Update(dt);
+}
+
+void MeleeSwingAIComponent::OnTimeToLiveTimerTick()
+{
+    mEventCommunicator->DispatchEvent(std::make_unique<EntityDestroyedEvent>(mEntityId));
 }
