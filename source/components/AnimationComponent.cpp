@@ -13,14 +13,14 @@
 
 #include <cassert>
 
-AnimationComponent::AnimationComponent(const std::string& relativeEntityAnimationsDirectoryPath, const float defaultAnimationFrameDuration, ResourceManager& resourceManager)
+AnimationComponent::AnimationComponent(const std::string& relativeEntityAnimationsDirectoryPath, const float defaultAnimationFrameDuration, ResourceManager& resourceManager, const bool idleAnimationLoop /* false */, const bool idleAnimationResetToIdleWhenFinished /* true */)
     : mResourceManager(&resourceManager)
     , mRootAnimationsPath(relativeEntityAnimationsDirectoryPath)
     , mFacingDirection(FacingDirection::RIGHT)
     , mCurrentAnimation("")    
-    , mIsLooping(false)
+    , mIsLooping(idleAnimationLoop)
     , mIsPaused(false)
-    , mResetToIdleWhenFinished(true)
+    , mResetToIdleWhenFinished(idleAnimationResetToIdleWhenFinished)
     , mCurrentAnimationPriority(AnimationPriority::NORMAL)
     , mCurrentFrameIndex(0)
     , mAnimationTimer(0.0f)
@@ -28,24 +28,25 @@ AnimationComponent::AnimationComponent(const std::string& relativeEntityAnimatio
     CreateAnimationsMapFromRelativeEntityAnimationsDirectory(relativeEntityAnimationsDirectoryPath);
     InitializeAnimationsDisplacements();
     InitializeAnimationsFrameDurations(defaultAnimationFrameDuration);
+    mCurrentAnimation = StringId("idle");
 }
 
-AnimationComponent::AnimationComponent(const AnimationsMap& userSuppliedAnimations, const float defaultAnimationFrameDuration)
+AnimationComponent::AnimationComponent(const AnimationsMap& userSuppliedAnimations, const float defaultAnimationFrameDuration, const bool idleAnimationLoop /* false */, const bool idleAnimationResetToIdleWhenFinished /* true */)
     : mResourceManager(nullptr)
     , mRootAnimationsPath("")
     , mAnimations(userSuppliedAnimations)
     , mFacingDirection(FacingDirection::RIGHT)
     , mCurrentAnimation("")    
-    , mIsLooping(false)
+    , mIsLooping(idleAnimationLoop)
     , mIsPaused(false)
-    , mResetToIdleWhenFinished(true)
+    , mResetToIdleWhenFinished(idleAnimationResetToIdleWhenFinished)
     , mCurrentAnimationPriority(AnimationPriority::NORMAL)
     , mCurrentFrameIndex(0)
     , mAnimationTimer(0.0f)
-{
-    PlayAnimation(StringId("idle"), true);
+{    
     InitializeAnimationsDisplacements();
     InitializeAnimationsFrameDurations(defaultAnimationFrameDuration);
+    mCurrentAnimation = StringId("idle");
 }
 
 const std::string& AnimationComponent::GetRootAnimationsPath() const
@@ -199,9 +200,7 @@ void AnimationComponent::CreateAnimationsMapFromRelativeEntityAnimationsDirector
             mAnimations[animationNameStringId].push_back(mResourceManager->GetResource<TextureResource>(resourceId).GetGLTextureId());
         }
         
-    }
-    
-    PlayAnimation(StringId("idle"), true);
+    }        
 }
 
 void AnimationComponent::InitializeAnimationsDisplacements()
