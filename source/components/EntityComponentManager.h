@@ -21,7 +21,8 @@ class EntityComponentManager final: public IService
     friend class App;
 public:
     using ComponentTypeToImplementationMap = std::unordered_map<ComponentTypeId, std::unique_ptr<IComponent>, ComponentTypeIdHasher>;
-    
+    static const EntityId NULL_ENTITY_ID = -1;
+
     EntityId GenerateEntity()
     {
         return mEntityCounter++;
@@ -29,12 +30,17 @@ public:
 
     inline bool HasEntityEntry(const EntityId entityId)
     {
+        if (entityId == NULL_ENTITY_ID)
+        {
+            return false;
+        }
+
         return mEntityComponentMap.count(entityId) != 0;
     }
 
     inline void RemoveEntityEntry(const EntityId entityId)
     {
-        if (mEntityComponentMap.count(entityId) == 0)
+        if (mEntityComponentMap.count(entityId) == 0 || entityId == NULL_ENTITY_ID)
         {
             assert(false);
         }        
@@ -79,29 +85,6 @@ public:
         const auto componentTypeId = GetTypeHash<ComponentType>();
         mEntityComponentMap[entityId].erase(componentTypeId);
     }
-    
-    template<class ComponentType>
-    inline std::unordered_map<EntityId, IComponent*> GetAllComponents()
-    {
-        const auto componentTypeId = GetTypeHash<ComponentType>();
-        std::unordered_map<EntityId, IComponent*> result;
-        
-        for (const auto entry: mEntityComponentMap)
-        {
-            if (entry.second.count(componentTypeId) != 0)
-            {
-                result[entry.first] = entry.second.at(componentTypeId).get();
-            }
-        }
-        
-        return result;
-    }
-    
-    inline const ComponentTypeToImplementationMap& GetAllEntityComponents(const EntityId entityId)
-    {
-        return mEntityComponentMap.at(entityId);
-    }
-    
     
 private:
     EntityComponentManager() = default;

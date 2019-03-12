@@ -35,7 +35,7 @@ PlayerBehaviorController::PlayerBehaviorController(const ServiceLocator& service
     : mServiceLocator(serviceLocator)
     , mEntityComponentManager(nullptr)
     , mEventCommunicator(nullptr)
-    , mPlayerEntityId(-1)
+    , mPlayerEntityId(EntityComponentManager::NULL_ENTITY_ID)
     , mJumpCount(DEFAULT_JUMP_COUNT)
     , mJumpsAvailable(mJumpCount)
     , mIsMeleeAttackReady(true)

@@ -45,6 +45,7 @@ private:
     void CreateBloodSpurtMultiEffect(const glm::vec3& effectOrigin);
     void RegisterEventCallbacks();
     void CreateDeathQuoteEntity();
+    void CreateRespawnQuoteEntity();
     
     const ServiceLocator& mServiceLocator;    
     EntityComponentManager* mEntityComponentManager;
@@ -55,6 +56,7 @@ private:
     float mSceneBlurIntensity;
     bool mIsBlurIntensifying;
     EntityId mDeathQuoteEntityId;
+    EntityId mRespawnQuoteEntityId;
 };
 
 #endif /* EffectsManager_h */

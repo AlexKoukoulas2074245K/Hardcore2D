@@ -26,7 +26,7 @@ PlayerHealthbarUIElement::PlayerHealthbarUIElement(const ServiceLocator& service
     , mEntityComponentManager(serviceLocator.ResolveService<EntityComponentManager>())
     , mResourceManager(serviceLocator.ResolveService<ResourceManager>())
     , mEventCommunicator(serviceLocator.ResolveService<EventCommunicationService>().CreateEventCommunicator())
-    , mPlayerId(-1)
+    , mPlayerId(EntityComponentManager::NULL_ENTITY_ID)
     , mStartingHealth(0.0f)
     , mCurrentHealth(0.0f)
     , mAnimationStartingHealth(0.0f)    

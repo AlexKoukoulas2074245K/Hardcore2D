@@ -30,7 +30,7 @@ CastingFlameBreathOnlyEnemyAIComponent::CastingFlameBreathOnlyEnemyAIComponent(c
     , mEffectsManager(mServiceLocator.ResolveService<EffectsManager>())
     , mEventCommunicator(serviceLocator.ResolveService<EventCommunicationService>().CreateEventCommunicator())
     , mThisEntityId(thisEntityId)
-    , mTargetEntityId(-1)
+    , mTargetEntityId(EntityComponentManager::NULL_ENTITY_ID)
     , mFlameBreathRechargeTimer(FLAME_BREATH_RECHARGE_DURATION, [this](){ OnFlameBreathRechargeTimerTick(); })
     , mIsKilled(false)
 {

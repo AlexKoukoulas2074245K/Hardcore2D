@@ -32,7 +32,8 @@ EffectsManager::EffectsManager(const ServiceLocator& serviceLocator)
     : mServiceLocator(serviceLocator)
     , mSceneBlurIntensity(0.0f)
     , mIsBlurIntensifying(false)
-    , mDeathQuoteEntityId(-1)
+    , mDeathQuoteEntityId(EntityComponentManager::NULL_ENTITY_ID)
+    , mRespawnQuoteEntityId(EntityComponentManager::NULL_ENTITY_ID)
 {
 }
 
@@ -128,10 +129,16 @@ void EffectsManager::RegisterEventCallbacks()
     mEventCommunicator->RegisterEventCallback<PlayerRespawnEvent>([this](const IEvent&) 
     {
         mIsBlurIntensifying = false;
-        if (mDeathQuoteEntityId != -1)
+        if (mDeathQuoteEntityId != EntityComponentManager::NULL_ENTITY_ID)
         {
             mEventCommunicator->DispatchEvent(std::make_unique<EntityDestroyedEvent>(mDeathQuoteEntityId));
-            mDeathQuoteEntityId = -1;
+            mDeathQuoteEntityId = EntityComponentManager::NULL_ENTITY_ID;
+        }
+
+        if (mRespawnQuoteEntityId != EntityComponentManager::NULL_ENTITY_ID)
+        {
+            mEventCommunicator->DispatchEvent(std::make_unique<EntityDestroyedEvent>(mRespawnQuoteEntityId));
+            mRespawnQuoteEntityId = EntityComponentManager::NULL_ENTITY_ID;
         }
     });
 }
@@ -142,7 +149,20 @@ void EffectsManager::CreateDeathQuoteEntity()
     mEntityComponentManager->AddComponent<ShaderComponent>(mDeathQuoteEntityId, std::make_unique<ShaderComponent>(StringId("background"), false));
     
     const auto deathQuoteNumber = RandomInt(0, 2);    
-    mEntityComponentManager->AddComponent<AnimationComponent>(mDeathQuoteEntityId, std::make_unique<AnimationComponent>("misc/death_quote_" + std::to_string(deathQuoteNumber), 0.1f, *mResourceManager, false, false));    
+    mEntityComponentManager->AddComponent<AnimationComponent>(mDeathQuoteEntityId, std::make_unique<AnimationComponent>("misc/death_quote_" + std::to_string(deathQuoteNumber), 0.05f, *mResourceManager, false, false, [this]() 
+    {
+        CreateRespawnQuoteEntity();
+    }));
+
     mEntityComponentManager->AddComponent<TransformComponent>(mDeathQuoteEntityId, std::make_unique<TransformComponent>(glm::vec3(0.0f, 0.5f, 0.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(1.0f/mCoreRenderingService->GetAspectRatio(), 1.0f, 0.0f)));
     mEventCommunicator->DispatchEvent(std::make_unique<NewEntityCreatedEvent>(EntityNameIdEntry(StringId("game_over_quote"), mDeathQuoteEntityId)));
+}
+
+void EffectsManager::CreateRespawnQuoteEntity()
+{
+    mRespawnQuoteEntityId = mEntityComponentManager->GenerateEntity();
+    mEntityComponentManager->AddComponent<ShaderComponent>(mRespawnQuoteEntityId, std::make_unique<ShaderComponent>(StringId("background"), false));
+    mEntityComponentManager->AddComponent<AnimationComponent>(mRespawnQuoteEntityId, std::make_unique<AnimationComponent>("misc/respawn_quote", 0.05f, *mResourceManager, false, false));
+    mEntityComponentManager->AddComponent<TransformComponent>(mRespawnQuoteEntityId, std::make_unique<TransformComponent>(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(1.0f / mCoreRenderingService->GetAspectRatio(), 1.0f, 0.0f)));
+    mEventCommunicator->DispatchEvent(std::make_unique<NewEntityCreatedEvent>(EntityNameIdEntry(StringId("respawn_quote"), mRespawnQuoteEntityId)));
 }

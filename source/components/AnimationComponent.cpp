@@ -13,7 +13,7 @@
 
 #include <cassert>
 
-AnimationComponent::AnimationComponent(const std::string& relativeEntityAnimationsDirectoryPath, const float defaultAnimationFrameDuration, ResourceManager& resourceManager, const bool idleAnimationLoop /* false */, const bool idleAnimationResetToIdleWhenFinished /* true */)
+AnimationComponent::AnimationComponent(const std::string& relativeEntityAnimationsDirectoryPath, const float defaultAnimationFrameDuration, ResourceManager& resourceManager, const bool idleAnimationLoop /* false */, const bool idleAnimationResetToIdleWhenFinished /* true */, AnimationCompleteCallback animationCompleteCallback /* nullptr */)
     : mResourceManager(&resourceManager)
     , mRootAnimationsPath(relativeEntityAnimationsDirectoryPath)
     , mFacingDirection(FacingDirection::RIGHT)
@@ -24,6 +24,7 @@ AnimationComponent::AnimationComponent(const std::string& relativeEntityAnimatio
     , mCurrentAnimationPriority(AnimationPriority::NORMAL)
     , mCurrentFrameIndex(0)
     , mAnimationTimer(0.0f)
+    , mAnimationCompleteCallback(animationCompleteCallback)
 {
     CreateAnimationsMapFromRelativeEntityAnimationsDirectory(relativeEntityAnimationsDirectoryPath);
     InitializeAnimationsDisplacements();
@@ -31,7 +32,7 @@ AnimationComponent::AnimationComponent(const std::string& relativeEntityAnimatio
     mCurrentAnimation = StringId("idle");
 }
 
-AnimationComponent::AnimationComponent(const AnimationsMap& userSuppliedAnimations, const float defaultAnimationFrameDuration, const bool idleAnimationLoop /* false */, const bool idleAnimationResetToIdleWhenFinished /* true */)
+AnimationComponent::AnimationComponent(const AnimationsMap& userSuppliedAnimations, const float defaultAnimationFrameDuration, const bool idleAnimationLoop /* false */, const bool idleAnimationResetToIdleWhenFinished /* true */, AnimationCompleteCallback animationCompleteCallback /* nullptr */)
     : mResourceManager(nullptr)
     , mRootAnimationsPath("")
     , mAnimations(userSuppliedAnimations)
@@ -43,6 +44,7 @@ AnimationComponent::AnimationComponent(const AnimationsMap& userSuppliedAnimatio
     , mCurrentAnimationPriority(AnimationPriority::NORMAL)
     , mCurrentFrameIndex(0)
     , mAnimationTimer(0.0f)
+    , mAnimationCompleteCallback(animationCompleteCallback)
 {    
     InitializeAnimationsDisplacements();
     InitializeAnimationsFrameDurations(defaultAnimationFrameDuration);

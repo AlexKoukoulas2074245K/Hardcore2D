@@ -33,8 +33,8 @@ public:
     using AnimationsDisplacementMap = std::unordered_map<StringId, glm::vec2, StringIdHasher>;
     using AnimationsFrameDurationsMap = std::unordered_map<StringId, float, StringIdHasher>;
     
-    AnimationComponent(const std::string& relativeEntityAnimationsDirectoryPath, const float defaultAnimationFrameDuration, ResourceManager&, const bool idleAnimationLoop = false, const bool idleAnimationResetToIdleWhenFinished = true);
-    AnimationComponent(const AnimationsMap& userSuppliedAnimations, const float defaultAnimationFrameDuration, const bool idleAnimationLoop = false, const bool idleAnimationResetToIdleWhenFinished = true);
+    AnimationComponent(const std::string& relativeEntityAnimationsDirectoryPath, const float defaultAnimationFrameDuration, ResourceManager&, const bool idleAnimationLoop = false, const bool idleAnimationResetToIdleWhenFinished = true, AnimationCompleteCallback animationCompleteCallback = nullptr);
+    AnimationComponent(const AnimationsMap& userSuppliedAnimations, const float defaultAnimationFrameDuration, const bool idleAnimationLoop = false, const bool idleAnimationResetToIdleWhenFinished = true, AnimationCompleteCallback animationCompleteCallback = nullptr);
 
     const std::string& GetRootAnimationsPath() const;
 
