@@ -22,7 +22,7 @@
 #include "../ServiceLocator.h"
 #include "../game/Level.h"
 
-const float CastingFlameBreathOnlyEnemyAIComponent::FLAME_BREATH_RECHARGE_DURATION = 2.0f;
+const float CastingFlameBreathOnlyEnemyAIComponent::FLAME_BREATH_RECHARGE_DURATION = 4.0f;
 
 CastingFlameBreathOnlyEnemyAIComponent::CastingFlameBreathOnlyEnemyAIComponent(const ServiceLocator& serviceLocator, const EntityId thisEntityId)
     : mServiceLocator(serviceLocator)
@@ -35,8 +35,10 @@ CastingFlameBreathOnlyEnemyAIComponent::CastingFlameBreathOnlyEnemyAIComponent(c
     , mIsKilled(false)
 {
     mEntityComponentManager.GetComponent<AnimationComponent>(mThisEntityId).SetSpecificAnimationDisplacement(StringId("flame_breath"), glm::vec2(100.0f, 20.0f));
+    mEntityComponentManager.GetComponent<AnimationComponent>(mThisEntityId).SetSpecificAnimationDisplacement(StringId("flame_death"), glm::vec2(5.0f, 10.0f));
     mEntityComponentManager.GetComponent<AnimationComponent>(mThisEntityId).SetSpecificAnimationDisplacement(StringId("melee"), glm::vec2(13.0f, 8.0f));
     mEntityComponentManager.GetComponent<AnimationComponent>(mThisEntityId).SetSpecificAnimationFrameDuration(StringId("flame_breath"), 0.06f);
+    mEntityComponentManager.GetComponent<AnimationComponent>(mThisEntityId).SetSpecificAnimationFrameDuration(StringId("flame_death"), 0.06f);
     
     RegisterEventCallbacks();
 }

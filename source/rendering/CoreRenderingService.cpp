@@ -152,8 +152,7 @@ void CoreRenderingService::GameLoop(std::function<void(const float)> appUpdateMe
             framesAccumulator = 0;
             dtAccumulator = 0.0f;
         }
-#endif
-        
+#endif        
         // Execute first pass rendering
         GL_CHECK(glBindFramebuffer(GL_FRAMEBUFFER, mFrameBufferId));
         GL_CHECK(glClearColor(0.1f, 0.1f, 0.1f, 1.0f));
@@ -548,7 +547,7 @@ void CoreRenderingService::RenderEntityInternal(const EntityId entityId)
     const auto& animationComponent = mEntityComponentManager->GetComponent<AnimationComponent>(entityId);
     GL_CHECK(glBindTexture(GL_TEXTURE_2D, animationComponent.GetCurrentFrameResourceId()));
     
-    if (mCurrentShader.GetString() == "basic")
+    if (StringStartsWith(mCurrentShader.GetString(), "basic"))
     {
         const auto textureFlip = animationComponent.GetCurrentFacingDirection() == FacingDirection::LEFT ? 1 : 0;
         GL_CHECK(glUniform1i(mShaders[mCurrentShader]->GetUniformNamesToLocations().at(StringId("flip_tex_hor")), textureFlip));
