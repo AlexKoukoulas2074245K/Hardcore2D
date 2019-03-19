@@ -19,6 +19,7 @@ class EntityComponentManager;
 class EventCommunicator;
 class ServiceLocator;
 class TransformComponent;
+class IEvent;
 
 class Camera final
 {
@@ -42,7 +43,8 @@ private:
 
     void UpdateFollowingEntity(const EntityId focusedEntityId, const float dt);
     void UpdateScreenShake(const float dt);
-
+    void OnCameraShakeRequestEvent(const IEvent& event);
+    
     const EntityComponentManager& mEntityComponentManager;
     std::unique_ptr<EventCommunicator> mEventCommunicator;
         
@@ -51,6 +53,8 @@ private:
     const glm::vec2& mRenderableDimensions;
     
     glm::vec3 mTranslation;
+    glm::vec3 mPreShakeTranslation;
+    
     glm::mat4x4 mViewMatrix;
     bool mLookingAheadRight;
     bool mIsShaking;

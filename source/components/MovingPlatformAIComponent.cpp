@@ -18,7 +18,7 @@ MovingPlatformAIComponent::MovingPlatformAIComponent(const ServiceLocator& servi
     : mEntityComponentManager(serviceLocator.ResolveService<EntityComponentManager>())
     , mEntityId(entityId)    
     , mMovingNorthOrEastOrBoth(true)
-    , mMovementTimer(RandomFloat(0.0f, MOVEMENT_DURATION_PER_DIRECTION), [this](){ OnMovementTimerTick(); })
+    , mMovementTimer(2.0f + RandomFloat(0.0f, MOVEMENT_DURATION_PER_DIRECTION), [this](){ OnMovementTimerTick(); })
 {
     
 }

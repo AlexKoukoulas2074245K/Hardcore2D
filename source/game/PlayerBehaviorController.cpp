@@ -16,6 +16,7 @@
 #include "../events/PlayerKilledEvent.h"
 #include "../events/PlayerFlameBreathAttackEvent.h"
 #include "../events/FlameBreathFinishedEvent.h"
+#include "../events/CameraShakeRequestEvent.h"
 #include "../commands/SetVelocityAndAnimateCommand.h"
 #include "../components/AnimationComponent.h"
 #include "../components/PhysicsComponent.h"
@@ -108,6 +109,7 @@ void PlayerBehaviorController::RegisterEventCallbacks()
     {
         mIsMeleeAttackReady = false;
         mMeleeAttackCooldownTimer.Reset();
+        mEventCommunicator->DispatchEvent(std::make_unique<CameraShakeRequestEvent>(5.0f));
     });
     
     mEventCommunicator->RegisterEventCallback<PlayerFlameBreathAttackEvent>([this](const IEvent&)

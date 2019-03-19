@@ -80,7 +80,7 @@ void EffectsManager::PlayEffect(const glm::vec3& effectOrigin, const EffectType 
 
 void EffectsManager::CreateBloodSpurtMultiEffect(const glm::vec3& effectOrigin)
 {
-    const auto bloodDropsCount = RandomInt(6, 12);
+    const auto bloodDropsCount = RandomInt(20, 30);
     
     for (int i = 0; i < bloodDropsCount; ++i)
     {

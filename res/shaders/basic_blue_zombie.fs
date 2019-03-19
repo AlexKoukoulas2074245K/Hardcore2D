@@ -63,7 +63,7 @@ vec3 rgb2hsv(vec3 inputRGB)
 vec3 hsv2rgb(vec3 inputHSV)
 {
     float      hh, p, q, t, ff;
-    long        i;
+    int        i;
     vec3         outputRGB;
 
     if(inputHSV.g <= 0.0) {       // < is bogus, just shuts up warnings
@@ -75,7 +75,7 @@ vec3 hsv2rgb(vec3 inputHSV)
     hh = inputHSV.r;
     if(hh >= 360.0) hh = 0.0;
     hh /= 60.0;
-    i = long(hh);
+    i = int(hh);
     ff = hh - i;
     p = inputHSV.b * (1.0 - inputHSV.g);
     q = inputHSV.b * (1.0 - (inputHSV.g * ff));

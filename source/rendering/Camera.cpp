@@ -10,6 +10,7 @@
 #include "../events/EventCommunicator.h"
 #include "../events/PlayerChangedDirectionEvent.h"
 #include "../events/PlayerMeleeAttackEvent.h"
+#include "../events/CameraShakeRequestEvent.h"
 #include "../components/EntityComponentManager.h"
 #include "../components/TransformComponent.h"
 #include "../components/PhysicsComponent.h"
@@ -20,7 +21,6 @@
 #include <glm/gtc/matrix_transform.hpp>
 
 const float Camera::MAX_LOOKAHEAD_DISTANCE = 150.0f;
-const float Camera::SHAKE_RADIUS = 50.0f;
 
 Camera::Camera(const ServiceLocator& serviceLocator,
                const glm::vec2& renderableDimensions,
@@ -42,18 +42,10 @@ Camera::Camera(const ServiceLocator& serviceLocator,
     {
         mLookingAheadRight = static_cast<const PlayerChangedDirectionEvent&>(event).GetNewFacingDirection() == FacingDirection::RIGHT;
     });
-    /*
-    mEventCommunicator->RegisterEventCallback<CamerShakeEvent>([this](const IEvent&)
+    mEventCommunicator->RegisterEventCallback<CameraShakeRequestEvent>([this](const IEvent& event)
     {
-        mIsShaking = true;
-        mShakeRadius = event.shake_radius;
-        mPreShakeTranslation = mTranslation;
-        const auto mInitShakeRandomAngle = RandomFloat(0.0f, 2.0f * PI);
-        const auto offset = glm::vec2(Sinf(mInitShakeRandomAngle) * mShakeRadius, Cosf(mInitShakeRandomAngle) * mShakeRadius);
-        mTranslation.x += offset.x;
-        mTranslation.y += offset.y;
+        OnCameraShakeRequestEvent(event);
     });
-    */
 }
 
 Camera::~Camera()
@@ -133,4 +125,15 @@ void Camera::UpdateScreenShake(const float)
     {
         mIsShaking = false;
     }
+}
+
+void Camera::OnCameraShakeRequestEvent(const IEvent& event)
+{
+    mIsShaking = true;
+    mShakeRadius = static_cast<const CameraShakeRequestEvent&>(event).GetShakeRadius();
+    mPreShakeTranslation = mTranslation;
+    const auto mInitShakeRandomAngle = RandomFloat(0.0f, 2.0f * PI);
+    const auto offset = glm::vec2(Sinf(mInitShakeRandomAngle) * mShakeRadius, Cosf(mInitShakeRandomAngle) * mShakeRadius);
+    mTranslation.x += offset.x;
+    mTranslation.y += offset.y;
 }

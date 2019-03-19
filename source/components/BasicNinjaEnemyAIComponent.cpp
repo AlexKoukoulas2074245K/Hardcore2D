@@ -161,18 +161,6 @@ void BasicNinjaEnemyAIComponent::OnEntityDamagedEvent(const IEvent& event)
         return;
     }
     
-    auto& thisPhysicsComponent = mEntityComponentManager.GetComponent<PhysicsComponent>(mThisEntityId);    
-    const auto& animationComponent = mEntityComponentManager.GetComponent<AnimationComponent>(mThisEntityId);
-
-    if (animationComponent.GetCurrentFacingDirection() == FacingDirection::LEFT)
-    {
-        thisPhysicsComponent.SetPushbackForce(glm::vec3(1000.0f, 0.0f, 0.0f));
-    }    
-    else
-    {
-        thisPhysicsComponent.SetPushbackForce(glm::vec3(-1000.0f, 0.0f, 0.0f));
-    }
-    
     mState = State::PURSUING;
 
     if (actualEvent.GetHealthRemaining() > 0.0f)
